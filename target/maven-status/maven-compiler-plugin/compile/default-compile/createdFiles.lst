@@ -1,0 +1,6 @@
+com\follow_disease\App.class
+com\follow_disease\controller\PatientController.class
+com\follow_disease\controller\RegisterController.class
+com\follow_disease\Main.class
+com\follow_disease\service\UserService.class
+com\follow_disease\controller\LoginController.class
