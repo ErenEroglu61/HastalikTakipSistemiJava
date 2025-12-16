@@ -10,7 +10,7 @@
 Bu proje, doktor ve hastaların hastalık seyirini takip edebildiği basit bir Java uygulamasıdır. Amaç; hasta tahlil verilerinin güvenli bir şekilde kaydedilmesi, doktorun bu verileri görmesi ve "Hastalarım" görünümünde hasta listesi veya form şeklinde gösterilebilmesidir. Veri kalıcı depolama olarak JSON dosyası kullanılır.
 
 ## Temel Özellikler
-- Doktor ve Hasta için ayrı giriş ekranları (login).
+- Doctor ve Hasta için ayrı giriş ekranları (login).
 - Hasta hesabı üzerinden tahlil (laboratuvar) verilerinin girilmesi.
 - Girilen tahlillerin JSON formatında dosyaya kaydedilmesi.
 - Doktorun ilgili hastanın tahlillerini görüntüleyebilmesi.
@@ -82,9 +82,9 @@ Aşağıda projede kullanılması önerilen Java özellikleri ve rolleri bulunma
 
 ## Proje Yapısı (Öneri)
 - src/
-  - model/ (Patient, Doctor, TestRecord)
+  - com.follow_disease.com.follow_disease.controller.model/ (Patient, Doctor, TestRecord)
   - service/ (AuthService, PatientService, JsonStorageService)
-  - ui/ (Swing/JavaFX veya web controller)
+  - ui/ (Swing/JavaFX veya web com.follow_disease.com.follow_disease.controller)
   - util/ (JsonUtils, ValidationUtils)
 - data/
   - patients.json (uygulama çalışırken okunur/yazılır)
@@ -93,11 +93,11 @@ Aşağıda projede kullanılması önerilen Java özellikleri ve rolleri bulunma
 1. Maven/Gradle ile bağımlılıkları ekleyin (ör. Gson veya Jackson).
 2. data/patients.json dosyasını oluşturun (başlangıç için boş bir şablon).
 3. Uygulamayı IDE üzerinden veya `mvn package` ardından `java -jar` ile çalıştırın.
-4. Doktor veya hasta kullanıcı adı/şifre ile giriş yaparak özellikleri deneyin.
+4. Doctor veya hasta kullanıcı adı/şifre ile giriş yaparak özellikleri deneyin.
 
 ## Geliştirme & Katkı
 - Yeni özellik eklemek için:
-  - Yeni model sınıfları ekleyin, JSON serileştirme kurallarını güncelleyin.
+  - Yeni com.follow_disease.com.follow_disease.controller.model sınıfları ekleyin, JSON serileştirme kurallarını güncelleyin.
   - Service katmanında veri okuma/yazma tutarlılığını sağlayın.
   - UI tarafında "Hastalarım" listesi ve detay formu ekleyin.
 - Kodlama standardı: Anlaşılır isimlendirme, null kontrolleri, exception handling.

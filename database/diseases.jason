@@ -1,0 +1,12 @@
+[
+  {
+    "disease_name": "Grip",
+    "disease_symptoms": ["Yüksek Ateş", "Öksürük", "Halsizlik", "Boğaz Ağrısı"],
+    "disease_course": ["Hafif seyrediyor, istirahat verildi", "İlaç tedavisine başlandı", "Durumu ağırlaştı, hastaneye sevk"]
+  },
+  {
+    "disease_name": "Migren",
+    "disease_symptoms": ["Baş Ağrısı", "Işığa Hassasiyet", "Mide Bulantısı"],
+    "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi"]
+  }
+]

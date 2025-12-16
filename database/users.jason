@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Erdem",
+    "surname":"Yılmaz",
+    "email": "erdem@hotmail.com",
+    "password": "123",
+    "role": "doktor",
+    "branch": "Dahiliye"
+  },
+  {
+    "id": 2,
+    "name": "Ahmet",
+    "surname":"Özçelik",
+    "email": "ahmet@gmail.com",
+    "password": "1234",
+    "role": "hasta",
+    "doctor's_id": 1,
+    "current_disease": "Grip",
+    "medicines": ["Parol", "C Vitamini"]
+  }
+]
