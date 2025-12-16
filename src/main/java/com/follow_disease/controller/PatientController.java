@@ -14,8 +14,6 @@ public class PatientController {
     @FXML private Label ageLabel;
     @FXML private Label genderLabel;
 
-    // Sağ taraftaki Hoş Geldiniz mesajı
-    @FXML private Label welcomeLabel;
 
     // Profil ikonu ve Güncelle butonu (Gerektiğinde renk vs. değiştirmek için)
     @FXML private Circle profileCircle;
@@ -34,10 +32,9 @@ public class PatientController {
         emailLabel.setText("ahmet@mail.com");
         ageLabel.setText("34");
         genderLabel.setText("Erkek");
-
-        // Hoş geldin mesajını kişiselleştirelim
-        welcomeLabel.setText("Hoş Geldiniz, Ahmet Bey");
     }
+
+
 
 
      //Bilgileri Güncelle butonuna tıklandığında çalışacak olan metot
@@ -46,5 +43,11 @@ public class PatientController {
     public void handleUpdateAction(ActionEvent event) {
         System.out.println("Bilgileri Güncelle butonuna tıklandı!");
         // İleride buraya güncelleme formunun açılma kodlarını yazacağız
+    }
+
+    @FXML
+    public void handleLogout(ActionEvent event) {
+        // Burada giriş ekranına yönlendirme kodunu yazacağız
+        System.out.println("Çıkış yapılıyor...");
     }
 }

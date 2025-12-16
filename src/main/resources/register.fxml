@@ -44,7 +44,7 @@
                 <TextField fx:id="emailField" promptText="E-Posta Adresi" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
                 <PasswordField fx:id="passwordField" promptText="Şifre" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
 
-                <Button fx:id="registerButton" maxWidth="Infinity" onAction="#handleRegister" style="-fx-background-color: #2E7D32; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;" text="KAYIT OL">
+                <Button fx:id="registerButton" maxWidth="Infinity" onAction="#handleRegister" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;" text="KAYIT OL">
                     <padding><Insets bottom="10.0" top="10.0" /></padding>
                 </Button>
 
