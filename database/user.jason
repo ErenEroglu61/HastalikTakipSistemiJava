@@ -7,7 +7,8 @@
     "email": "erdem@hotmail.com",
     "password": "123",
     "role": "doktor",
-    "branch": "Dahiliye"
+    "branch": "dahiliye"
+    "medical_title": "uzman"
   },
   {
     "id": 2,
@@ -17,8 +18,9 @@
     "email": "ahmet@gmail.com",
     "password": "1234",
     "role": "hasta",
-    "doctor's_id": 1,
+    "doctor_id": 1,
     "current_disease": "Grip",
-    "medicines": ["Parol", "C Vitamini"]
+    "medicines": ["Parol", "C Vitamini"],
+    "disease_history": []
   }
 ]

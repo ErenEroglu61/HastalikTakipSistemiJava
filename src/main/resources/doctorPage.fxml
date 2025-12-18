@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: #F1F5F9;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.follow_disease.controller.DoctorController">
+    <children>
+        <VBox prefWidth="300.0" style="-fx-background-color: #F8FAFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" spacing="15.0">
+                    <padding><Insets bottom="20.0" top="40.0" /></padding>
+                    <children>
+                        <StackPane>
+                            <children>
+                                <Circle fill="#D32F2F" radius="60.0" stroke="WHITE" strokeWidth="4.0">
+                                    <effect><DropShadow color="#00000033" radius="10.0" /></effect>
+                                </Circle>
+                                <Label text="👤" textFill="WHITE" style="-fx-font-size: 50;" />
+                            </children>
+                        </StackPane>
+                        <Label fx:id="nameLabel" text="Erdem Yılmaz" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
+                        <Label text="Doktor Profili" textFill="#64748B" style="-fx-font-size: 14;" />
+                    </children>
+                </VBox>
+
+                <Separator prefWidth="200.0" style="-fx-opacity: 0.5;">
+                    <VBox.margin><Insets left="40.0" right="40.0" bottom="20.0" /></VBox.margin>
+                </Separator>
+
+                <VBox spacing="15.0">
+                    <padding><Insets left="30.0" right="30.0" /></padding>
+                    <children>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="E-POSTA" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="emailLabel" text="doktor@hastane.com" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="BRANŞ" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="branchLabel" text="Dahiliye" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="UNVAN" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="titleLabel" text="Uzman Doktor" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <VBox alignment="CENTER" spacing="10.0">
+                    <padding><Insets bottom="30.0" left="30.0" right="30.0" /></padding>
+                    <children>
+                        <Button maxWidth="Infinity" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="PROFİLİMİ GÜNCELLE" prefHeight="40" />
+                        <Button onAction="#handleLogout" maxWidth="Infinity" style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="ÇIKIŞ YAP" prefHeight="40" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
+        <VBox layoutX="320.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+            <children>
+                <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 25;">
+                    <effect><DropShadow color="#0000001a" radius="15.0" /></effect>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #D32F2F; -fx-background-radius: 25 25 0 0;">
+                            <padding><Insets left="30.0" /></padding>
+                            <children>
+                                <Label text="Hastalarım" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 18;" />
+                            </children>
+                        </HBox>
+
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="patientListContainer" spacing="15.0" style="-fx-padding: 25;">
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

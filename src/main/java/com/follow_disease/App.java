@@ -15,9 +15,9 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         // Hangi ekranı görmek istiyorsanız başındaki açıklama kısmını kaldırın şimdilik sayfları bağlamadığımız için boyle olsun
         //showLogin(stage);         // Giriş ekranını açar
-         showPatientPage(stage); // Hasta panelini açar
+        //showPatientPage(stage); // Hasta panelini açar
+        showDoctorPage(stage);
 
-        // ------------------
     }
 
     // GİRİŞ EKRANINI AÇAN METOT
@@ -33,7 +33,19 @@ public class App extends Application {
     private void showPatientPage(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/patientPage.fxml"));
         scene = new Scene(root, 1000, 700); // Panel daha geniş olduğu için 1000x700
-        stage.setTitle("Hasta Kontrol Paneli - Test Modu");
+        stage.setTitle("Hasta Kontrol Paneli");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // DOKTOR PANELİ
+    private void showDoctorPage(Stage stage) throws IOException {
+
+        Parent root = FXMLLoader.load(getClass().getResource("/doctorPage.fxml"));
+
+
+        scene = new Scene(root, 1100, 700);
+        stage.setTitle("Doktor Kontrol Paneli");
         stage.setScene(scene);
         stage.show();
     }

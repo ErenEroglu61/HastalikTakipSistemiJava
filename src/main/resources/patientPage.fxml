@@ -22,7 +22,7 @@
                                 <Label text="👤" textFill="WHITE" style="-fx-font-size: 50;" />
                             </children>
                         </StackPane>
-                        <Label fx:id="nameLabel" text="Ahmet Yılmaz" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
+                        <Label fx:id="nameLabel" text="Ahmet Özçelik" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
                         <Label text="Hasta Profili" textFill="#64748B" style="-fx-font-size: 14;" />
                     </children>
                 </VBox>
