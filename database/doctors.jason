@@ -1,0 +1,21 @@
+[
+  {
+      "id": 1,
+      "tc": "12345678911",
+      "name": "Mehmet",
+      "surname": "Öztekin",
+      "role": "doktor",
+      "branch": "Dahiliye",
+      "medical_title": "uzman"
+   },
+   {
+         "id": 2,
+         "tc": "12345678912",
+         "name": "Zeynep",
+         "surname": "Çelik",
+         "role": "doktor",
+         "branch": "Genel Cerrahi",
+         "medical_title": "Prof Dr."
+      }
+
+]

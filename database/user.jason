@@ -4,10 +4,19 @@
     "name": "Test",
     "surname": "Kullanicisi",
     "age": "20",
-    "tcNo": "12345678901",
-    "phone": "05654562356",
     "email": "test@gmail.com",
     "password": "1234",
+    "role": "hasta"
+  },
+  {
+    "id": 2,
+    "name": "Ahmet",
+    "surname": "Yılmaz",
+    "age": "35",
+    "tcNo": "12345678902",
+    "phone": "05456542321",
+    "email": "ahmet@gmail.com",
+    "password": "12345",
     "role": "hasta"
   }
 ]
