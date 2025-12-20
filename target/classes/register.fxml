@@ -24,6 +24,13 @@
                     <VBox.margin> <Insets top="10.0" /> </VBox.margin>
                 </Label>
 
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="tcNoField" maxWidth="Infinity" promptText="TC Kimlik No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="phoneField" maxWidth="Infinity" promptText="Telefon No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
                 <TextField fx:id="nameField" promptText="Adınız" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
                 <TextField fx:id="surnameField" promptText="Soyadınız" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
 
@@ -38,13 +45,6 @@
                                 </FXCollections>
                             </items>
                         </ComboBox>
-                    </children>
-                </HBox>
-
-                <HBox spacing="10.0">
-                    <children>
-                        <TextField fx:id="tcnumberField" maxWidth="Infinity" promptText="TC Kimlik No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="phonenumberField" maxWidth="Infinity" promptText="Telefon No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
                     </children>
                 </HBox>
 

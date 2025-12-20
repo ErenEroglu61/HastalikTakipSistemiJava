@@ -1,5 +1,6 @@
 package com.follow_disease.service;
 
+import com.follow_disease.User;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -16,66 +17,126 @@ import java.util.Optional;
 
 public class UserService {
 
-    // database klasörü proje çalışma dizininde
     private static final Path DB_DIR = Paths.get(System.getProperty("user.dir"), "database");
+    private static final Path HOSPITAL_RECORDS = DB_DIR.resolve("hospital_records.jason");
     private static final String[] DB_FILENAMES = {"user.jason"};
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Type LIST_TYPE = new TypeToken<List<RegisteredUser>>(){}.getType();
+
+
+    public static class HospitalRecord {  //Hastane arşivindeki resmi kayıtları temsil eden DTO
+        public String name;
+        public String surname;
+
+        public HospitalRecord(String name, String surname) {
+            this.name = name;
+            this.surname = surname;
+        }
+    }
+
+    public static HospitalRecord getHospitalRecord(String tcNo) {//Verilen TC numarasına göre hastane arşivinden
+     //isim ve soyisim bilgilerini getirirmek için
+        try {
+            if (!Files.exists(HOSPITAL_RECORDS)) return null;
+
+            String content = new String(Files.readAllBytes(HOSPITAL_RECORDS), StandardCharsets.UTF_8);
+            JsonArray records = JsonParser.parseString(content).getAsJsonArray();
+
+            for (JsonElement el : records) {
+                JsonObject obj = el.getAsJsonObject();
+                if (obj.get("tc").getAsString().equals(tcNo.trim())) {
+                    return new HospitalRecord(
+                            obj.get("name").getAsString(),
+                            obj.get("surname").getAsString()
+                    );
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // Kayıt bulunamazsa null döner
+    }
+    private static boolean isTcInHospitalRecords(String tcNo) {
+        try {
+            if (!Files.exists(HOSPITAL_RECORDS)) return false;
+
+            String content = new String(Files.readAllBytes(HOSPITAL_RECORDS), StandardCharsets.UTF_8);
+            JsonArray records = JsonParser.parseString(content).getAsJsonArray();
+
+            for (JsonElement el : records) {
+                JsonObject obj = el.getAsJsonObject();
+                String registeredTc = obj.get("tc").getAsString().trim();// boşlukları silsin diye
+                if (registeredTc.equals(tcNo.trim())) return true;
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return false;
+    }
 
     public static synchronized boolean register_method(String name, String surname, String age,
-                                                       String gender, String email, String password) {
-        System.out.println("Sisteme Kaydediliyor: " + name + " " + surname + " / " + email);
+                                                       String gender, String tcNo, String phone,
+                                                       String email, String password,
+                                                       String branch, String medical_title) {
 
-        if (isNullOrEmpty(name) || isNullOrEmpty(surname) || isNullOrEmpty(age) ||
-                isNullOrEmpty(gender) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            showAlert("Eksik alan", "Lütfen tüm alanları doldurun.");
+        //  Boş alan kontrolü
+        if (isNullOrEmpty(name) || isNullOrEmpty(surname) || isNullOrEmpty(tcNo) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
+            showAlert("Eksik alan", "Lütfen zorunlu alanları (Ad, Soyad, TC, E-posta, Şifre) doldurun.");
             return false;
         }
 
+        // E-posta format kontrolü
         if (!isValidEmail(email)) {
             showAlert("Geçersiz e-posta", "Lütfen geçerli bir e-posta adresi girin.");
             return false;
         }
 
-        try {  //expection kullanımı
+        //  TC Kontrolü (hospital_records.json)
+        if (!isTcInHospitalRecords(tcNo)) {
+            showAlert("Erişim Engellendi", "Hastanemizde bu TC kimlik numarasına ait bir kayıt bulunamadı.");
+            return false;
+        }
+
+        try {
             Path dbFile = getDbFile();
             List<RegisteredUser> users = readUsers(dbFile);
 
-            Optional<RegisteredUser> exists = users.stream()
-                    .filter(u -> u.getEmail().equalsIgnoreCase(email))
-                    .findAny();
-            if (exists.isPresent()) {
-                showAlert("Kayıt hatası", "Bu e-posta ile zaten kayıt yapılmış.");
+            // 4. ADIM: Mükerrer kayıt kontrolü (Email veya TC ile)
+            boolean exists = users.stream()
+                    .anyMatch(u -> u.getEmail().equalsIgnoreCase(email) || (u.getTcNo() != null && u.getTcNo().equals(tcNo)));
+
+            if (exists) {
+                showAlert("Kayıt hatası", "Bu e-posta veya TC numarası ile zaten kayıt yapılmış.");
                 return false;
             }
 
-            // "hastane.com" ise doktor / değilse hasta yapma kısmı[registerda]
+            // Rol belirleme
             String role = email.toLowerCase().endsWith("@hastane.com") ? "doktor" : "hasta";
 
-            // Eğer doktor rolü olacaksa e-posta domain'ini zorunlu kural ekle
+            //  Doktor kuralı kontrolü
             if ("doktor".equals(role) && !email.toLowerCase().endsWith("@hastane.com")) {
                 showAlert("E-posta hatası", "Doktorlar yalnızca @hastane.com uzantılı e-posta kullanabilir.");
                 return false;
             }
 
-            // ID arttırma dosyada
+            // ID hesaplama
             int nextId = 1;
             if (!users.isEmpty()) {
                 nextId = users.stream().max(Comparator.comparingInt(RegisteredUser::getId)).get().getId() + 1;
             }
 
-            // Branch ve medical_title default boş -> REGİSTER SAYFASINDA TEXTFİELD YOK BUNLARI GİRECEK EKLEMELİ MİYİZ?
-            RegisteredUser newUser = new RegisteredUser(nextId, name, surname, age, gender, email, password, role);
+            //Nesneyi oluştur ve listeye ekle
+            RegisteredUser newUser = new RegisteredUser(nextId, name, surname, age, gender, email, password, role, branch, medical_title);
+            newUser.tcNo = tcNo; // TC numarasını manuel set ediyoruz
+            newUser.phone = phone; // Telefonu set ediyoruz
+
             users.add(newUser);
 
+            //  Dosyaya yaz
             writeUsers(dbFile, users);
             showInfo("Kayıt başarılı", "Kayıt başarıyla oluşturuldu. Giriş yapabilirsiniz.");
-            System.out.println("Yeni kullanıcı eklendi: ID=" + nextId + " role=" + role);
             return true;
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Dosya hatası", "Kullanıcı veritabanına yazılamadı: " + e.getMessage());
+            showAlert("Hata", "Kayıt sırasında bir sorun oluştu: " + e.getMessage());
             return false;
         }
     }
@@ -136,6 +197,8 @@ public class UserService {
         private String surname;
         private String age;
         private String gender;
+        private String tcNo;
+        private String phone;
         private String email;
         private String password;
         private String role;
@@ -149,6 +212,8 @@ public class UserService {
             this.surname = surname;
             this.age = age;
             this.gender = gender;
+            this.tcNo = tcNo;
+            this.phone = phone;
             this.email = email;
             this.password = password;
             this.role = role;
@@ -175,6 +240,8 @@ public class UserService {
         public String getSurname() { return surname; }
         public String getAge() { return age; }
         public String getGender() { return gender; }
+        public String getTcNo() { return tcNo; }
+        public String getPhone() { return phone; }
         public String getEmail() { return email; }
         public String getPassword() { return password; }
         public String getRole() { return role; }
@@ -226,6 +293,8 @@ public class UserService {
                 String name = obj.has("name") && !obj.get("name").isJsonNull() ? obj.get("name").getAsString() : "";
                 String surname = obj.has("surname") && !obj.get("surname").isJsonNull() ? obj.get("surname").getAsString() : "";
                 String age = obj.has("age") && !obj.get("age").isJsonNull() ? obj.get("age").getAsString() : "";
+                String tcNo = obj.has("tcNo") && !obj.get("tcNo").isJsonNull() ? obj.get("tcNo").getAsString() : "";
+                String phone = obj.has("phone") && !obj.get("phone").isJsonNull() ? obj.get("phone").getAsString() : "";
                 String email = obj.has("email") && !obj.get("email").isJsonNull() ? obj.get("email").getAsString() : "";
                 String password = obj.has("password") && !obj.get("password").isJsonNull() ? obj.get("password").getAsString() : "";
                 String role = obj.has("role") && !obj.get("role").isJsonNull() ? obj.get("role").getAsString() : "";
@@ -256,6 +325,8 @@ public class UserService {
             obj.addProperty("name", u.getName());
             obj.addProperty("surname", u.getSurname());
             obj.addProperty("age", u.getAge());
+            obj.addProperty("tcNo", u.getTcNo());
+            obj.addProperty("phone", u.getPhone());
             obj.addProperty("email", u.getEmail());
             obj.addProperty("password", u.getPassword());
             obj.addProperty("role", u.getRole());
