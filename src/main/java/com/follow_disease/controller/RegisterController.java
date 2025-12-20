@@ -1,6 +1,7 @@
 package com.follow_disease.controller;
 
 import com.follow_disease.service.UserService;
+import com.follow_disease.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,9 +23,8 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
-    @FXML
     public void initialize() {
-        // TC No alanından odak çıktığında (Focus Lost) otomatik kontrol yapalım
+        // TC No alanından odak çıktığında (Focus Lost) kontrol tetiklenir
         tcNoField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             // newValue false ise kullanıcı kutudan çıkmış demektir
             if (!newValue) {
@@ -32,37 +32,35 @@ public class RegisterController {
             }
         });
     }
-
+    @FXML
     private void handleAutoFill() {
         String tc = tcNoField.getText();
 
-        // TC 11 haneli ise kontrolü başlat
         if (tc != null && tc.trim().length() == 11) {
             UserService.HospitalRecord record = UserService.getHospitalRecord(tc);
 
             if (record != null) {
+
                 nameField.setText(record.name);
                 surnameField.setText(record.surname);
 
-                // Kutucukları kilitledik Kullanıcı değiştiremesin diye
+                // Kutucukları kilitliyoruz
                 nameField.setEditable(false);
                 surnameField.setEditable(false);
 
                 System.out.println("Resmi kayıt bulundu: " + record.name + " " + record.surname);
             } else {
-                // Kayıt bulunamadıysa alanları temizle ve uyar
+
                 nameField.clear();
                 surnameField.clear();
                 nameField.setEditable(true);
                 surnameField.setEditable(true);
-                nameField.setStyle(""); // Stilleri sıfırla
-                surnameField.setStyle("");
             }
         }
     }
+
     @FXML
     public void handleRegister(ActionEvent event) {
-
         String name = nameField.getText();
         String surname = surnameField.getText();
         String age = ageField.getText();
@@ -72,35 +70,27 @@ public class RegisterController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        //  FXML'de olmayan alanlar için boş string ("") oluşturuyoruz
+        // Branş ve Ünvan alanları kayıt ekranında yoksa boş gönderiyoruz
         String branch = "";
         String medical_title = "";
 
-
         boolean success = UserService.register_method(
-                name,
-                surname,
-                age,
-                gender,
-                tcNo,
-                phone,
-                email,
-                password,
-                branch,
-                medical_title
+                name, surname, age, gender, tcNo, phone, email, password, branch, medical_title
         );
 
         if (success) {
             redirectToLogin(event);
         }
     }
+
     @FXML
     public void handleLoginRedirect(ActionEvent event) {
         redirectToLogin(event);
     }
+
     private void redirectToLogin(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/view/login.fxml")); // Dosya yolunu kontrol et
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));

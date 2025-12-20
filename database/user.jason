@@ -13,9 +13,18 @@
     "name": "Ahmet",
     "surname": "Yılmaz",
     "age": "35",
-    "tcNo": "12345678902",
-    "phone": "05456542321",
     "email": "ahmet@gmail.com",
+    "password": "12345",
+    "role": "hasta"
+  },
+  {
+    "id": 3,
+    "name": "Ayşe",
+    "surname": "Demir",
+    "age": "20",
+    "tcNo": "12345678903",
+    "phone": "05696547898",
+    "email": "ayse@gmail.com",
     "password": "12345",
     "role": "hasta"
   }
