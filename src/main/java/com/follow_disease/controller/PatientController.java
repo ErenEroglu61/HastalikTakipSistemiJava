@@ -4,50 +4,114 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
 public class PatientController {
 
-    // Sol paneldeki Label'lar (FXML'deki fx:id'ler ile birebir aynı olmalı)
-    @FXML private Label nameLabel;
-    @FXML private Label emailLabel;
-    @FXML private Label ageLabel;
-    @FXML private Label genderLabel;
+  // Sol paneldeki Label'lar (FXML'deki fx:id'ler ile birebir aynı olmalı)
+  @FXML private Label nameLabel;
+  @FXML private Label emailLabel;
+  @FXML private Label ageLabel;
+  @FXML private Label genderLabel;
 
+  // Profil ikonu ve Güncelle butonu (Gerektiğinde renk vs. değiştirmek için)
+  @FXML private Circle profileCircle;
+  @FXML private Button updateButton;
 
-    // Profil ikonu ve Güncelle butonu (Gerektiğinde renk vs. değiştirmek için)
-    @FXML private Circle profileCircle;
-    @FXML private Button updateButton;
+  // Bildirim sistemi
+  @FXML private MenuButton notificationMenuButton;
+  @FXML private Circle notificationBadge;
 
+  // Bu metot FXML dosyası yüklendiğinde otomatik olarak çalışır.
+  @FXML
+  public void initialize() {
+    System.out.println("Hasta sayfası başarıyla yüklendi.");
 
-      //Bu metot FXML dosyası yüklendiğinde otomatik olarak çalışır.
+    // Şimdilik JSON'dan çekmediğimiz için varsayılan örnek veriler koyalım
+    // İleride UserService.getCurrentUser() ile buraları dolduracağız
+    nameLabel.setText("Ahmet Yılmaz");
+    emailLabel.setText("ahmet@mail.com");
+    ageLabel.setText("34");
+    genderLabel.setText("Erkek");
 
-    @FXML
-    public void initialize() {
-        System.out.println("Hasta sayfası başarıyla yüklendi.");
+    // Bildirimleri yükle
+    loadNotifications();
+  }
 
-        // Şimdilik JSON'dan çekmediğimiz için varsayılan örnek veriler koyalım
-        // İleride UserService.getCurrentUser() ile buraları dolduracağız
-        nameLabel.setText("Ahmet Yılmaz");
-        emailLabel.setText("ahmet@mail.com");
-        ageLabel.setText("34");
-        genderLabel.setText("Erkek");
-    }
+  // Bilgileri Güncelle butonuna tıklandığında çalışacak olan metot
+  @FXML
+  public void handleUpdateAction(ActionEvent event) {
+    System.out.println("Bilgileri Güncelle butonuna tıklandı!");
+    // İleride buraya güncelleme formunun açılma kodlarını yazacağız
+  }
 
+  @FXML
+  public void handleLogout(ActionEvent event) {
+    // Burada giriş ekranına yönlendirme kodunu yazacağız
+    System.out.println("Çıkış yapılıyor...");
+  }
 
+  // Bildirim Sistemi
+  private void loadNotifications() {
+    notificationMenuButton.getItems().clear();
 
+    // Örnek bildirimler - gerçek veritabanı verilerinizle değiştirilecek
+    CustomMenuItem item1 = createNotificationItem("İlaç hatırlatması: Lisinopril", "2 saat önce");
+    CustomMenuItem item2 = createNotificationItem("Doktor randevusu yarın saat 14:00", "5 saat önce");
+    CustomMenuItem item3 = createNotificationItem("Yeni test sonuçlarınız hazır", "1 gün önce");
 
-     //Bilgileri Güncelle butonuna tıklandığında çalışacak olan metot
+    notificationMenuButton.getItems().addAll(item1, item2, item3);
 
-    @FXML
-    public void handleUpdateAction(ActionEvent event) {
-        System.out.println("Bilgileri Güncelle butonuna tıklandı!");
-        // İleride buraya güncelleme formunun açılma kodlarını yazacağız
-    }
+    // Bildirim sayısına göre gösterebip gösterilmeyeceği seçecek
+    int notificationCount = notificationMenuButton.getItems().size();
+    notificationBadge.setVisible(notificationCount > 0);
+  }
 
-    @FXML
-    public void handleLogout(ActionEvent event) {
-        // Burada giriş ekranına yönlendirme kodunu yazacağız
-        System.out.println("Çıkış yapılıyor...");
-    }
+  private CustomMenuItem createNotificationItem(String title, String time) {
+    VBox content = new VBox(5);
+    content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
+    content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
+    content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
+
+    Label titleLabel = new Label(title);
+    titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
+    titleLabel.setWrapText(true);
+    titleLabel.setMaxWidth(260);
+
+    Label timeLabel = new Label(time);
+    timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
+
+    content.getChildren().addAll(titleLabel, timeLabel);
+
+    CustomMenuItem item = new CustomMenuItem(content);
+    item.setHideOnClick(false);
+
+    // Bildirime tıklandığında ne yapılacak
+    content.setOnMouseClicked(e -> {
+      System.out.println("Bildirime tıklandı: " + title);
+    });
+
+    return item;
+  }
+
+  // Bildirim sayısını güncelleme metodu zorunlu değil
+  public void updateNotificationCount(int count) {
+    notificationBadge.setVisible(count > 0);
+  }
+
+  // Dinamik olarak yeni bildirim ekleme metodu zorunlu değil
+  public void addNotification(String title, String time) {
+    CustomMenuItem newItem = createNotificationItem(title, time);
+    notificationMenuButton.getItems().add(0, newItem); // En üste ekle
+    notificationBadge.setVisible(true);
+  }
+
+  // Tüm bildirimleri temizleme metodu zorunlu değil
+  public void clearNotifications() {
+    notificationMenuButton.getItems().clear();
+    notificationBadge.setVisible(false);
+  }
 }
