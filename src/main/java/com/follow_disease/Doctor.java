@@ -1,8 +1,8 @@
 package com.follow_disease;
 
 public class Doctor extends User {
-    private String branch;
-    private String medical_title;
+    private final String branch;
+    private final String  medical_title; //doktorun unvanı ve branşı değiştirilemeyecek sistemde tanımlı olduğu için
 
     public Doctor(int id, String name, String surname, String email, String password, String branch, String medical_title) {
         // Üst sınıf olan User'ın constructor'ına ortak bilgileri gönderiyoruz
@@ -10,6 +10,12 @@ public class Doctor extends User {
         this.branch = branch;
         this.medical_title = medical_title;
     }
+
+    // Getters
+    public String getBranch() {
+        return branch; }
+    public String getMedical_title() {
+        return medical_title; }
 
     @Override
     public String getWelcomeMessage() { // giriş ekranı açıldığında bu mesajı kullanabiliriz
@@ -31,9 +37,5 @@ public class Doctor extends User {
             System.out.println("HATA: Doktorlar sadece kurumsal (@hastane.com) mail kullanabilir.");
         }
     }
-    // Getters
-    public String getBranch() {
-        return branch; }
-    public String getMedical_title() {
-        return medical_title; }
+
 }

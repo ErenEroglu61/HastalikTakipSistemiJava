@@ -6,7 +6,9 @@ public abstract class User {
     private String surname;
     private String email;
     private String password;
-    private String role;
+    private final String role;      // bu satırı şimdilik boyle yaptım
+    // bence rol değiştirilemese daha iyi olur kodun mantığı açısından doktorları sisteme biz giriyoruz çünkü
+    // en azından şimdilik böyle yapalım dedik
 
     public User(int id, String name, String surname, String email, String password, String role) {
         this.id = id;
@@ -44,11 +46,6 @@ public abstract class User {
         this.id = id; }
     public void setEmail(String email){
         this.email = email; } ;
-
-    //public void setRole(String role) {this.role = role;} bu satırı şimdilik boyle yaptım
-    // bence rol değiştirilemese daha iyi olur kodun mantığı açısından doktorları sisteme biz giriyoruz çünkü
-    // en azından şimdilik böyle yapalım dedik
-
     public void setName(String name) {
         this.name = name; }
     public void setSurname(String surname) {

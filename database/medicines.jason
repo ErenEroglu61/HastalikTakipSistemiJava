@@ -1,16 +1,19 @@
 [
   {
     "medicine_name": "Parol",
-    "medicine_type": "Ağrı Kesici"
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": ["Kaşıntı"]
 
   },
   {
     "medicine_name": "Augmentin",
-    "medicine_type": "Antibiyotik"
+    "medicine_type": "Antibiyotik",
+    "additional_side_effects": []
   },
   {
     "medicine_name": "Majezik",
-    "medicine_type": "Ağrı Kesici"
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": []
 
   }
 ]

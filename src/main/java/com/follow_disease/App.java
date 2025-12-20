@@ -15,8 +15,8 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         // Hangi ekranı görmek istiyorsanız başındaki açıklama kısmını kaldırın şimdilik sayfları bağlamadığımız için boyle olsun
         //showLogin(stage);         // Giriş ekranını açar
-        //showPatientPage(stage); // Hasta panelini açar
-        showDoctorPage(stage);
+        showPatientPage(stage); // Hasta panelini açar
+       // showDoctorPage(stage);
 
     }
 
