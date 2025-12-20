@@ -41,6 +41,13 @@
                     </children>
                 </HBox>
 
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="tcnumberField" maxWidth="Infinity" promptText="TC Kimlik No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="phonenumberField" maxWidth="Infinity" promptText="Telefon No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
                 <TextField fx:id="emailField" promptText="E-Posta Adresi" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
                 <PasswordField fx:id="passwordField" promptText="Şifre" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
 

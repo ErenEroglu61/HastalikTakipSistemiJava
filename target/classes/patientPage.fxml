@@ -52,6 +52,18 @@
                                 <Label fx:id="genderLabel" text="Erkek" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
                             </children>
                         </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="TC KİMLİK NO" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="tcnumberLabel" text="45685622286" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="TEL NO" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="phonenumberLabel" text="05986659451" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
                     </children>
                 </VBox>
 

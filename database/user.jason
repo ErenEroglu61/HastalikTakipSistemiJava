@@ -1,26 +1,3 @@
 [
-  {
-    "id": 1,
-    "name": "Erdem",
-    "surname":"Yılmaz",
-    "age": "40",
-    "email": "erdem@hotmail.com",
-    "password": "123",
-    "role": "doktor",
-    "branch": "dahiliye"
-    "medical_title": "uzman"
-  },
-  {
-    "id": 2,
-    "name": "Ahmet",
-    "surname":"Özçelik",
-    "age" : "27",
-    "email": "ahmet@gmail.com",
-    "password": "1234",
-    "role": "hasta",
-    "doctor_id": 1,
-    "current_disease": "Grip",
-    "medicines": ["Parol", "C Vitamini"],
-    "disease_history": []
-  }
+
 ]
