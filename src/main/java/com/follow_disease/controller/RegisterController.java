@@ -10,6 +10,8 @@ public class RegisterController {
     @FXML private TextField surnameField;
     @FXML private TextField ageField;
     @FXML private ComboBox<String> genderComboBox;
+    @FXML private TextField phoneField;
+    @FXML private TextField tcNoField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
@@ -20,13 +22,15 @@ public class RegisterController {
         String surname = surnameField.getText();
         String age = ageField.getText();
         String gender = genderComboBox.getValue();
+        String tcNo = tcNoField.getText();
+        String phone = phoneField.getText();
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        boolean success = UserService.register_method(name, surname, age, gender, email, password);
+
+        boolean success = UserService.register_method(name, surname, age, gender, tcNo, phone, email, password);
 
         if (success) {
-            System.out.println("Kayıt Başarılı: " + name + " (" + gender + ", " + age + ")");
             redirectToLogin(event);
         }
     }

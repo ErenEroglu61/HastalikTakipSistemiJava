@@ -5,14 +5,20 @@ import java.util.List;
 
 public class Patient extends User {
     private String age;
+    private String gender;
+    private String tcNo;
+    private String phone;
     private int doctor_id;
     private String current_disease;
     private List<String> medicines;
     private List<String> disease_history;
 
-    public Patient(int id, String name, String surname, String email, String password, String age, int doctor_id, String current_disease, List<String> medicines) {
+    public Patient(int id, String name, String surname, String tcNo, String phone, String email, String password, String age, String gender, int doctor_id, String current_disease, List<String> medicines) {
         super(id, name, surname, email, password, "hasta");
         this.age = age;
+        this.gender = gender;
+        this.tcNo = tcNo;
+        this.phone = phone;
         this.doctor_id = doctor_id;
         this.current_disease = current_disease;
         this.medicines = medicines;
@@ -27,6 +33,12 @@ public class Patient extends User {
     // Getters and Setters
     public String getAge() {
         return age; }
+    public String getGender() {
+        return gender;}
+    public String getTcNo() {
+        return tcNo;}
+    public String getPhone() {
+        return phone;}
     public int getDoctor_id() {
         return doctor_id; }
     public String getCurrent_disease() {
@@ -39,6 +51,12 @@ public class Patient extends User {
 
     public void setAge(String age) {
         this.age = age; }
+    public void setGender(String gender) {
+        this.gender = gender;}
+    public void setTcno(String tcno) {
+        this.tcNo = tcno;}
+    public void setPhone(String phone) {
+        this.phone = phone;}
     public void setDoctor_id(int doctor_id) {
         this.doctor_id = doctor_id;}
     public void setCurrent_disease(String current_disease) {
@@ -87,5 +105,5 @@ public class Patient extends User {
                     this.medicines.clear();
                 }
             }
-        }
+     }
 }
