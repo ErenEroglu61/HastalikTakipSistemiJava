@@ -1,6 +1,7 @@
 package com.follow_disease.service;
 
 import com.follow_disease.User;
+import com.follow_disease.Session;
 
 public final class ProfileService {
 

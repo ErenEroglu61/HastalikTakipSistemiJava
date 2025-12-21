@@ -8,6 +8,14 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 
 import com.follow_disease.User;
 import com.follow_disease.Session;

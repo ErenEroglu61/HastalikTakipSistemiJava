@@ -5,7 +5,7 @@ import com.follow_disease.Patient;
 import com.follow_disease.User;
 import com.follow_disease.service.JsonDb;
 import com.follow_disease.service.ProfileService;
-import com.follow_disease.service.Session;
+import com.follow_disease.Session;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.event.ActionEvent;
@@ -80,10 +80,10 @@ public class DoctorController {
         ageLabel.setText(safe(u.getAge()));
         genderLabel.setText(safe(u.getGender()));
         phoneLabel.setText(safe(u.getPhone()));
-        tcLabel.setText(safe(u.getTcNo())); // user.json alan adı tcNo
+        tcLabel.setText(safe(u.getTc())); // user.json alan adı tcNo
 
         // doctors.json’dan branch/title
-        Doctor d = JsonDb.findDoctorByTc(u.getTcNo());
+        Doctor d = JsonDb.findDoctorByTc(u.getTc());
         if (d != null) {
             currentDoctorId = d.getId();
             branchLabel.setText(safe(d.getBranch()));

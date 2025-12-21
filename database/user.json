@@ -47,5 +47,15 @@
     "password": "123456",
     "role": "doktor",
     "gender": "Kadın"
+  },
+  {
+    "id": 6,
+    "name": "Erdem",
+    "surname": "Yılmaz",
+    "age": "30",
+    "email": "erdem@hastane.com",
+    "password": "123456",
+    "role": "doktor",
+    "gender": "Erkek"
   }
 ]

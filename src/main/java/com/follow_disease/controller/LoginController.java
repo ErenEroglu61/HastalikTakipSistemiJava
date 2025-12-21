@@ -5,6 +5,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import com.follow_disease.User;
 import com.follow_disease.Session;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 
 public class LoginController {
 

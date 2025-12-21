@@ -20,11 +20,18 @@ public class UserService {
 
     private static final Path DB_DIR = Paths.get(System.getProperty("user.dir"), "database");
     private static final Path HOSPITAL_RECORDS = DB_DIR.resolve("hospital_records.json");
+    private static final Path DOCTORS_FILE = DB_DIR.resolve("doctors.json"); // Doktor listesi yolu
     private static final String[] DB_FILENAMES = {"user.json"};
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    private static User currentUser;
 
-    public static class HospitalRecord {  //Hastane arşivindeki resmi kayıtları temsil eden DTO
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    //  DTO Sınıfı
+    public static class HospitalRecord {
         public String name;
         public String surname;
 
@@ -34,14 +41,8 @@ public class UserService {
         }
     }
 
-    private static User currentUser;
-
-    public static User getCurrentUser() {
-        return currentUser;
-    }
-
-    public static HospitalRecord getHospitalRecord(String tcNo) {//Verilen TC numarasına göre hastane arşivinden
-     //isim ve soyisim bilgilerini getirirmek için
+    // Otomatik Doldurma için kullanılan metot
+    public static HospitalRecord getHospitalRecord(String tc) {
         try {
             if (!Files.exists(HOSPITAL_RECORDS)) return null;
 
@@ -50,7 +51,7 @@ public class UserService {
 
             for (JsonElement el : records) {
                 JsonObject obj = el.getAsJsonObject();
-                if (obj.get("tc").getAsString().equals(tcNo.trim())) {
+                if (obj.get("tc").getAsString().equals(tc.trim())) {
                     return new HospitalRecord(
                             obj.get("name").getAsString(),
                             obj.get("surname").getAsString()
@@ -58,46 +59,81 @@ public class UserService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Arşiv okuma hatası: " + e.getMessage());
         }
         return null; // Kayıt bulunamazsa null döner
     }
-    private static boolean isTcInHospitalRecords(String tcNo) {
+
+    private static boolean isNullOrEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    // Hata veren repository yerine bu metodu kullanacağız
+    private static boolean isDoctor(String tc) {
+        try {
+            if (!Files.exists(DOCTORS_FILE)) return false;
+            String content = new String(Files.readAllBytes(DOCTORS_FILE), StandardCharsets.UTF_8);
+            JsonArray arr = JsonParser.parseString(content).getAsJsonArray();
+            for (JsonElement el : arr) {
+                JsonObject obj = el.getAsJsonObject();
+                if (obj.has("tc") && obj.get("tc").getAsString().equals(tc.trim())) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Doctor kontrol hatası: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private static void showAlert(String title, String message) {
+        Platform.runLater(() -> {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setTitle(title);
+            a.setHeaderText(null);
+            a.setContentText(message);
+            a.showAndWait();
+        });
+    }
+
+    private static void showInfo(String title, String message) {
+        Platform.runLater(() -> {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setTitle(title);
+            a.setHeaderText(null);
+            a.setContentText(message);
+            a.showAndWait();
+        });
+    }
+
+    // --- KAYIT VE GİRİŞ METOTLARI ---
+
+    private static boolean isTcInHospitalRecords(String tc) {
         try {
             if (!Files.exists(HOSPITAL_RECORDS)) return false;
-
             String content = new String(Files.readAllBytes(HOSPITAL_RECORDS), StandardCharsets.UTF_8);
             JsonArray records = JsonParser.parseString(content).getAsJsonArray();
 
             for (JsonElement el : records) {
                 JsonObject obj = el.getAsJsonObject();
-                String registeredTc = obj.get("tc").getAsString().trim();// boşlukları silsin diye
-                if (registeredTc.equals(tcNo.trim())) return true;
+                if (obj.get("tc").getAsString().trim().equals(tc.trim())) return true;
             }
         } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
     public static synchronized boolean register_method(String name, String surname, String age,
-                                                       String gender, String tcNo, String phone,
+                                                       String gender, String tc, String phone,
                                                        String email, String password,
                                                        String branch, String medical_title) {
 
-        //  Boş alan kontrolü
-        if (isNullOrEmpty(name) || isNullOrEmpty(surname) || isNullOrEmpty(tcNo) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            showAlert("Eksik alan", "Lütfen zorunlu alanları (Ad, Soyad, TC, E-posta, Şifre) doldurun.");
+        if (isNullOrEmpty(name) || isNullOrEmpty(surname) || isNullOrEmpty(tc) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
+            showAlert("Eksik alan", "Lütfen zorunlu alanları doldurun.");
             return false;
         }
 
-        // E-posta format kontrolü
-        if (!isValidEmail(email)) {
-            showAlert("Geçersiz e-posta", "Lütfen geçerli bir e-posta adresi girin.");
-            return false;
-        }
-
-        //  TC Kontrolü (hospital_records.json)
-        if (!isTcInHospitalRecords(tcNo)) {
-            showAlert("Erişim Engellendi", "Hastanemizde bu TC kimlik numarasına ait bir kayıt bulunamadı.");
+        if (!isTcInHospitalRecords(tc)) {
+            showAlert("Erişim Engellendi", "Hastanede bu TC numarasına ait kayıt bulunamadı.");
             return false;
         }
 
@@ -105,112 +141,75 @@ public class UserService {
             Path dbFile = getDbFile();
             List<RegisteredUser> users = readUsers(dbFile);
 
-            // 4. ADIM: Mükerrer kayıt kontrolü (Email veya TC ile)
-            boolean exists = users.stream()
-                    .anyMatch(u -> u.getEmail().equalsIgnoreCase(email) || (u.getTcNo() != null && u.getTcNo().equals(tcNo)));
-
-            if (exists) {
-                showAlert("Kayıt hatası", "Bu e-posta veya TC numarası ile zaten kayıt yapılmış.");
+            if (users.stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email) || u.getTc().equals(tc))) {
+                showAlert("Kayıt hatası", "Bu e-posta veya TC zaten kayıtlı.");
                 return false;
             }
 
-            // Rol belirleme
-            String role = (com.follow_disease.repository.DoctorJsonRepository.findByTc(tcNo) != null)
-                    ? "doktor"
-                    : "hasta";
+            // HATA VEREN KISIM BURADA DÜZELTİLDİ:
+            String role = isDoctor(tc) ? "doktor" : "hasta";
 
+            int nextId = users.stream().max(Comparator.comparingInt(RegisteredUser::getId)).map(u -> u.getId() + 1).orElse(1);
 
-            // ID hesaplama
-            int nextId = 1;
-            if (!users.isEmpty()) {
-                nextId = users.stream().max(Comparator.comparingInt(RegisteredUser::getId)).get().getId() + 1;
-            }
-
-            //Nesneyi oluştur ve listeye ekle
-            RegisteredUser newUser = new RegisteredUser(nextId, name, surname, age, gender, email, password, role, branch, medical_title);
-            newUser.tcNo = tcNo; // TC numarasını manuel set ediyoruz
-            newUser.phone = phone; // Telefonu set ediyoruz
-
+            RegisteredUser newUser = new RegisteredUser(nextId, tc, name, surname, age, gender, phone, email, password, role, branch, medical_title);
             users.add(newUser);
 
-            //  Dosyaya yaz
             writeUsers(dbFile, users);
-            showInfo("Kayıt başarılı", "Kayıt başarıyla oluşturuldu. Giriş yapabilirsiniz.");
+            showInfo("Başarılı", "Kayıt başarıyla oluşturuldu.");
             return true;
-
         } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Hata", "Kayıt sırasında bir sorun oluştu: " + e.getMessage());
+            showAlert("Hata", "Kayıt hatası: " + e.getMessage());
             return false;
         }
     }
 
     public static boolean login_method(String email, String password) {
-        System.out.println("UserService: Giriş kontrolü yapılıyor... " + email);
-
-        if (isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            showAlert("Eksik alan", "Lütfen e-posta ve şifre alanlarını doldurun.");
-            return false;
-        }
-
-        if (!isValidEmail(email)) {
-            showAlert("Geçersiz e-posta", "Lütfen geçerli bir e-posta adresi girin.");
-            return false;
-        }
-
         try {
             Path dbFile = getDbFile();
             List<RegisteredUser> users = readUsers(dbFile);
 
             Optional<RegisteredUser> found = users.stream()
-                    .filter(u -> u.getEmail().equalsIgnoreCase(email))
+                    .filter(u -> u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password))
                     .findFirst();
 
-            if (!found.isPresent()) {
-                showAlert("Giriş hatası", "Böyle bir kullanıcı bulunamadı.");
-                return false;
+            if (found.isPresent()) {
+                RegisteredUser ru = found.get();
+
+                User u;
+                if ("doktor".equalsIgnoreCase(ru.getRole())) {
+                    u = new com.follow_disease.Doctor(); // Doctor nesnesi üret
+                } else {
+                    u = new com.follow_disease.Patient(); // Patient nesnesi üret
+                }
+
+                // Ortak alanları set et
+                u.setId(ru.getId());
+                u.setName(ru.getName());
+                u.setSurname(ru.getSurname());
+                u.setTc(ru.getTc());
+                u.setEmail(ru.getEmail());
+                u.setPassword(ru.getPassword());
+
+
+                currentUser = u;
+                Session.setCurrentUser(u);
+                return true;
             }
-
-            RegisteredUser user = found.get();
-
-            if (!user.getPassword().equals(password)) {
-                showAlert("Giriş hatası", "E-posta veya şifre hatalı.");
-                return false;
-            }
-            User u = new User();
-            u.setId(user.getId());
-            u.setName(user.getName());
-            u.setSurname(user.getSurname());
-            u.setAge(user.getAge());
-            u.setGender(user.getGender());
-            u.setTcNo(user.getTcNo());
-            u.setPhone(user.getPhone());
-            u.setEmail(user.getEmail());
-            u.setPassword(user.getPassword());
-            u.setRole(user.getRole());
-
-            currentUser = u;
-            Session.setCurrentUser(u);
-
-            showInfo("Giriş başarılı", "Hoş geldiniz, " + user.getName() + " " + user.getSurname());
-            return true;
-
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Hata", "Giriş sırasında hata oluştu: " + e.getMessage());
-            return false;
         }
+        return false;
     }
 
+    // --- DTO VE NESNE YAPISI ---
 
-    // DTO sınıfı   -> DTO ne demek? Data transfer object -> json dosyasına veri aktarımını yapan sınıf olarak oluşturdum (transfer işlemlerini yapıyor sadece dr ya da patient'a)
     private static class RegisteredUser {
         private int id;
+        private String tc;
         private String name;
         private String surname;
         private String age;
         private String gender;
-        private String tcNo;
         private String phone;
         private String email;
         private String password;
@@ -218,186 +217,88 @@ public class UserService {
         private String branch;
         private String medical_title;
 
-        public RegisteredUser(int id, String name, String surname, String age, String gender,
-                              String email, String password, String role) {
+        public RegisteredUser(int id, String tc, String name, String surname, String age, String gender, String phone,
+                              String email, String password, String role, String branch, String medical_title) {
             this.id = id;
+            this.tc = tc;
             this.name = name;
             this.surname = surname;
             this.age = age;
             this.gender = gender;
-            this.tcNo = tcNo;
             this.phone = phone;
             this.email = email;
             this.password = password;
             this.role = role;
-            this.branch = "";
-            this.medical_title = "";
-        }
-
-        public RegisteredUser(int id, String name, String surname, String age, String gender,
-                              String email, String password, String role, String branch, String medical_title) {
-            this.id = id;
-            this.name = name;
-            this.surname = surname;
-            this.age = age;
-            this.gender = gender;
-            this.email = email;
-            this.password = password;
-            this.role = role;
-            this.branch = branch == null ? "" : branch;
-            this.medical_title = medical_title == null ? "" : medical_title;  //bu alanları gireceksek diye oluşturduğum 2. constructor
+            this.branch = branch;
+            this.medical_title = medical_title;
         }
 
         public int getId() { return id; }
+        public String getTc() { return tc; }
         public String getName() { return name; }
         public String getSurname() { return surname; }
         public String getAge() { return age; }
         public String getGender() { return gender; }
-        public String getTcNo() { return tcNo; }
         public String getPhone() { return phone; }
         public String getEmail() { return email; }
         public String getPassword() { return password; }
         public String getRole() { return role; }
         public String getBranch() { return branch; }
         public String getMedical_title() { return medical_title; }
-
-        public void setBranch(String branch) { this.branch = branch; }
-        public void setMedical_title(String medical_title) { this.medical_title = medical_title; }
     }
 
     private static Path getDbFile() throws IOException {
-        if (!Files.exists(DB_DIR)) {
-            Files.createDirectories(DB_DIR);
-        }
-
-        for (String fname : DB_FILENAMES) {
-            Path p = DB_DIR.resolve(fname);
-            if (Files.exists(p)) return p;
-        }
-
-        Path defaultPath = DB_DIR.resolve(DB_FILENAMES[0]);
-        if (!Files.exists(defaultPath)) {
-            Files.createFile(defaultPath);
-            Files.write(defaultPath, "[]".getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
-        }
-        return defaultPath;
+        if (!Files.exists(DB_DIR)) Files.createDirectories(DB_DIR);
+        Path path = DB_DIR.resolve("user.json");
+        if (!Files.exists(path)) Files.write(path, "[]".getBytes(StandardCharsets.UTF_8));
+        return path;
     }
 
     private static List<RegisteredUser> readUsers(Path dbFile) {
         try {
-            if (!Files.exists(dbFile)) {
-                return new ArrayList<>();
-            }
-            byte[] bytes = Files.readAllBytes(dbFile);
-            String content = new String(bytes, StandardCharsets.UTF_8).trim();
-            if (content.isEmpty()) return new ArrayList<>();
-
-            // JSON içeriğini manuel parse edip role'a göre alanları oku
-            JsonElement rootElem = JsonParser.parseString(content);
-            if (!rootElem.isJsonArray()) return new ArrayList<>();
-            JsonArray arr = rootElem.getAsJsonArray();
-
+            String content = new String(Files.readAllBytes(dbFile), StandardCharsets.UTF_8);
+            if (content.isEmpty() || content.equals("[]")) return new ArrayList<>();
+            JsonArray arr = JsonParser.parseString(content).getAsJsonArray();
             List<RegisteredUser> users = new ArrayList<>();
             for (JsonElement el : arr) {
-                if (!el.isJsonObject()) continue;
-                JsonObject obj = el.getAsJsonObject();
-
-                int id = obj.has("id") && !obj.get("id").isJsonNull() ? obj.get("id").getAsInt() : 0;
-                String name = obj.has("name") && !obj.get("name").isJsonNull() ? obj.get("name").getAsString() : "";
-                String surname = obj.has("surname") && !obj.get("surname").isJsonNull() ? obj.get("surname").getAsString() : "";
-                String age = obj.has("age") && !obj.get("age").isJsonNull() ? obj.get("age").getAsString() : "";
-                String tcNo = obj.has("tcNo") && !obj.get("tcNo").isJsonNull() ? obj.get("tcNo").getAsString() : "";
-                String phone = obj.has("phone") && !obj.get("phone").isJsonNull() ? obj.get("phone").getAsString() : "";
-                String email = obj.has("email") && !obj.get("email").isJsonNull() ? obj.get("email").getAsString() : "";
-                String password = obj.has("password") && !obj.get("password").isJsonNull() ? obj.get("password").getAsString() : "";
-                String role = obj.has("role") && !obj.get("role").isJsonNull() ? obj.get("role").getAsString() : "";
-
-                // role'a bağlı alanlar: doktor için gender, branch, medical_title; hasta için bu alanlar olmayabilir
-                String gender = obj.has("gender") && !obj.get("gender").isJsonNull() ? obj.get("gender").getAsString() : "";
-                String branch = obj.has("branch") && !obj.get("branch").isJsonNull() ? obj.get("branch").getAsString() : "";
-                String medical_title = obj.has("medical_title") && !obj.get("medical_title").isJsonNull() ? obj.get("medical_title").getAsString() : "";
-
-                // Eğer role hasta ise, bazı dosyalarda gender/branch yok olabilir; yine de nesne oluştur (alanlar boş)
-                RegisteredUser ru = new RegisteredUser(id, name, surname, age, gender, email, password, role, branch, medical_title);
-                users.add(ru);
+                JsonObject o = el.getAsJsonObject();
+                users.add(new RegisteredUser(
+                        o.get("id").getAsInt(),
+                        o.get("tc").getAsString(),
+                        o.get("name").getAsString(),
+                        o.get("surname").getAsString(),
+                        o.get("age").getAsString(),
+                        o.has("gender") ? o.get("gender").getAsString() : "",
+                        o.has("phone") ? o.get("phone").getAsString() : "",
+                        o.get("email").getAsString(),
+                        o.get("password").getAsString(),
+                        o.get("role").getAsString(),
+                        o.has("branch") ? o.get("branch").getAsString() : "",
+                        o.has("medical_title") ? o.get("medical_title").getAsString() : ""
+                ));
             }
-
-            return users == null ? new ArrayList<>() : users;
-        } catch (IOException | JsonSyntaxException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+            return users;
+        } catch (Exception e) { return new ArrayList<>(); }
     }
 
     private static void writeUsers(Path dbFile, List<RegisteredUser> users) throws IOException {
-        // role'a göre alanları kısıtlayarak JsonArray oluştur
         JsonArray arr = new JsonArray();
         for (RegisteredUser u : users) {
-            JsonObject obj = new JsonObject();
-            obj.addProperty("id", u.getId());
-            obj.addProperty("name", u.getName());
-            obj.addProperty("surname", u.getSurname());
-            obj.addProperty("age", u.getAge());
-            obj.addProperty("tcNo", u.getTcNo());
-            obj.addProperty("phone", u.getPhone());
-            obj.addProperty("email", u.getEmail());
-            obj.addProperty("password", u.getPassword());
-            obj.addProperty("role", u.getRole());
-
-            // Doktor ise ekstra alanları ekle
-            if ("doktor".equalsIgnoreCase(u.getRole())) {
-                // gender eklenmesi gerekiyorsa ekle
-                if (!isNullOrEmpty(u.getGender())) { obj.addProperty("gender", u.getGender());}
-                // branch ve medical_title alanlarını doktor için ekle
-                if (!isNullOrEmpty(u.getBranch())) { obj.addProperty("branch", u.getBranch());}
-                if (!isNullOrEmpty(u.getMedical_title())) { obj.addProperty("medical_title", u.getMedical_title());}
-            }
-            else {
-                // role hasta ise -> gender/branch/medical_title yok
-            }
-
-            arr.add(obj);
+            JsonObject o = new JsonObject();
+            o.addProperty("id", u.getId());
+            o.addProperty("tc", u.getTc());
+            o.addProperty("name", u.getName());
+            o.addProperty("surname", u.getSurname());
+            o.addProperty("age", u.getAge());
+            o.addProperty("gender", u.getGender());
+            o.addProperty("phone", u.getPhone());
+            o.addProperty("email", u.getEmail());
+            o.addProperty("password", u.getPassword());
+            o.addProperty("role", u.getRole());
+            o.addProperty("branch", u.getBranch());
+            o.addProperty("medical_title", u.getMedical_title());
+            arr.add(o);
         }
-
-        String json = GSON.toJson(arr);
-        Files.write(dbFile, json.getBytes(StandardCharsets.UTF_8),
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        System.out.println("Users saved to: " + dbFile.toAbsolutePath());
-    }
-
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.trim().isEmpty();
-    }
-
-    private static boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
-    }
-
-    private static void showAlert(String title, String message) {
-        try {
-            Platform.runLater(() -> {
-                Alert a = new Alert(Alert.AlertType.ERROR);
-                a.setTitle(title);
-                a.setHeaderText(null);
-                a.setContentText(message);
-                a.showAndWait();
-            });
-        } catch (IllegalStateException ex) {
-            System.err.println("ALERT (GUI yok): " + title + " - " + message);
-        }
-    }
-
-    private static void showInfo(String title, String message) {
-        try {
-            Platform.runLater(() -> {
-                Alert a = new Alert(Alert.AlertType.INFORMATION);
-                a.setTitle(title);
-                a.setHeaderText(null);
-                a.setContentText(message);
-                a.showAndWait();
-            });
-        } catch (IllegalStateException ex) {
-            System.out.println("INFO: " + title + " - " + message);
-        }
+        Files.write(dbFile, GSON.toJson(arr).getBytes(StandardCharsets.UTF_8));
     }
 }

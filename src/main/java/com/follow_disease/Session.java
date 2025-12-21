@@ -1,4 +1,4 @@
-package com.follow_disease.service;
+package com.follow_disease;
 
 import com.follow_disease.User;
 

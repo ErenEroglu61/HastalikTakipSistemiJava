@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Patient extends User {
-    private String age;
-    private String gender;
-    private String phone;
+
     private int doctor_id;
     private String current_disease;
     private String appointmentDate;
     private List<String> medicines;
     private List<String> disease_history;
 
+    public Patient() {}
+
     public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age, String gender, int doctor_id, String current_disease, String appointmentDate, List<String> medicines) {
-        super(id, tc, name, surname, email, password, "hasta");
-        this.age = age;
-        this.gender = gender;
-        this.phone = phone;
+        super(id, tc, name, surname, age, gender, phone, email, password, "hasta");
         this.doctor_id = doctor_id;
         this.current_disease = current_disease;
         this.appointmentDate = appointmentDate;
@@ -31,12 +28,6 @@ public class Patient extends User {
     }
 
     // Getters and Setters
-    public String getAge() {
-        return age; }
-    public String getGender() {
-        return gender;}
-    public String getPhone() {
-        return phone;}
     public int getDoctor_id() {
         return doctor_id; }
     public String getCurrent_disease() {
@@ -49,12 +40,7 @@ public class Patient extends User {
         return disease_history; }
 
 
-    public void setAge(String age) {
-        this.age = age; }
-    public void setGender(String gender) {
-        this.gender = gender;}
-    public void setPhone(String phone) {
-        this.phone = phone;}
+
     public void setDoctor_id(int doctor_id) {
         this.doctor_id = doctor_id;}
     public void setCurrent_disease(String current_disease) {
@@ -74,7 +60,7 @@ public class Patient extends User {
 
     @Override
     public String getRoleDescription() { // doktor sayfasında açılan pop upta hasta bilgilerine erişmek için kullanabiliriz
-        return "Hasta (Yaş: " + age + ") - Tanı: " + current_disease;
+        return "Hasta  - Tanı: " + current_disease;
     }
 
     @Override

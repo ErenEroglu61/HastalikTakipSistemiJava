@@ -18,14 +18,16 @@ public class RegisterController {
     @FXML private TextField surnameField;
     @FXML private TextField ageField;
     @FXML private ComboBox<String> genderComboBox;
-    @FXML private TextField tcNoField;
+    @FXML private TextField tcField;
     @FXML private TextField phoneField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
+
+    
     public void initialize() {
         // TC No alanından odak çıktığında (Focus Lost) kontrol tetiklenir
-        tcNoField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        tcField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             // newValue false ise kullanıcı kutudan çıkmış demektir
             if (!newValue) {
                 handleAutoFill();
@@ -34,7 +36,7 @@ public class RegisterController {
     }
     @FXML
     private void handleAutoFill() {
-        String tc = tcNoField.getText();
+        String tc = tcField.getText();
 
         if (tc != null && tc.trim().length() == 11) {
             UserService.HospitalRecord record = UserService.getHospitalRecord(tc);
@@ -65,7 +67,7 @@ public class RegisterController {
         String surname = surnameField.getText();
         String age = ageField.getText();
         String gender = genderComboBox.getValue();
-        String tcNo = tcNoField.getText();
+        String tc = tcField.getText();
         String phone = phoneField.getText();
         String email = emailField.getText();
         String password = passwordField.getText();
@@ -75,7 +77,7 @@ public class RegisterController {
         String medical_title = "";
 
         boolean success = UserService.register_method(
-                name, surname, age, gender, tcNo, phone, email, password, branch, medical_title
+                name, surname, age, gender, tc, phone, email, password, branch, medical_title
         );
 
         if (success) {
