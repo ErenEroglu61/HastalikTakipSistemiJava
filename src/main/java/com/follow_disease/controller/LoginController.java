@@ -3,6 +3,8 @@ package com.follow_disease.controller;
 import com.follow_disease.service.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import com.follow_disease.User;
+import com.follow_disease.Session;
 
 public class LoginController {
 
@@ -16,12 +18,27 @@ public class LoginController {
         boolean isSuccess = UserService.login_method(email, password);
 
         if (isSuccess) {
-            System.out.println("Giriş Başarılı! Ana sayfaya yönlendiriliyorsunuz...");
-            // İleride buraya ana sayfa açma kodu gelecek
+            User u = Session.getCurrentUser(); // UserService login içinde setlendi
+            if (u == null) return;
+
+            try {
+                String fxml = u.getRole().equalsIgnoreCase("doktor")
+                        ? "/doctorPage.fxml"
+                        : "/patientPage.fxml";
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+                Parent root = loader.load();
+
+                Stage stage = (Stage) emailField.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             System.out.println("Hata: E-posta veya şifre yanlış!");
-            // İleride buraya kırmızı bir uyarı yazısı ekleriz
         }
+
     }
 
 

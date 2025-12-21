@@ -3,19 +3,20 @@ package com.follow_disease.controller;
 import com.follow_disease.Doctor;
 import com.follow_disease.Patient;
 import com.follow_disease.User;
+import com.follow_disease.service.JsonDb;
+import com.follow_disease.service.ProfileService;
+import com.follow_disease.service.Session;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.paint.Color;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.control.CustomMenuItem;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -27,22 +28,31 @@ import java.util.List;
 
 public class DoctorController {
 
-  @FXML private VBox patientListContainer;
-  @FXML private Label doctorNameLabel;
-  @FXML private Label doctorRoleLabel;
-  @FXML private Label emailLabel;
-  @FXML private Label branchLabel;
-  @FXML private Label titleLabel;
-  @FXML private MenuButton notificationMenuButton;
-  @FXML private Circle notificationBadge;
+    @FXML private VBox patientListContainer;
 
-  // Şimdilik test maili; login hazır olduğunda LoginController'dan gelecek
-  private String loggedInEmail = "erdem@hastane.com";
-  private int currentDoctorId;
+    // Üst kısım
+    @FXML private Label doctornameLabel;     // FXML’de senin id: doctornameLabel
+    @FXML private Label doctorRoleLabel;
 
-  @FXML
-  public void initialize() {
-        // 1. Bildirim ve Zil Ayarları
+    // Sol kartlar
+    @FXML private Label emailLabel;
+    @FXML private Label branchLabel;
+    @FXML private Label titleLabel;
+
+    // EKLEYECEĞİN kartlar
+    @FXML private Label ageLabel;
+    @FXML private Label genderLabel;
+    @FXML private Label phoneLabel;
+    @FXML private Label tcLabel;
+
+    // Bildirim
+    @FXML private MenuButton notificationMenuButton;
+    @FXML private Circle notificationBadge;
+
+    private int currentDoctorId = -1;
+
+    @FXML
+    public void initialize() {
         if (notificationMenuButton != null) {
             Label bellIcon = new Label("\uD83D\uDD14");
             bellIcon.setStyle("-fx-font-size: 18; -fx-text-fill: #1976D2;");
@@ -51,81 +61,110 @@ public class DoctorController {
         }
 
         loadNotifications();
-
-        // 2. Verileri Yükle
-        loadDataAndInitializeUI();
+        loadDoctorUIFromSession();
+        loadPatientsForDoctor();
     }
 
-    private void loadDataAndInitializeUI() {
+    private void loadDoctorUIFromSession() {
+        User u = Session.getCurrentUser();
+        if (u == null) {
+            System.err.println("Session currentUser null! Login sonrası Session.setCurrentUser() çağrılmalı.");
+            return;
+        }
+
+        // Sol panel: user.json’dan gelenler
+        doctornameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
+        doctorRoleLabel.setText("Doktor Profili");
+        emailLabel.setText(safe(u.getEmail()));
+
+        ageLabel.setText(safe(u.getAge()));
+        genderLabel.setText(safe(u.getGender()));
+        phoneLabel.setText(safe(u.getPhone()));
+        tcLabel.setText(safe(u.getTcNo())); // user.json alan adı tcNo
+
+        // doctors.json’dan branch/title
+        Doctor d = JsonDb.findDoctorByTc(u.getTcNo());
+        if (d != null) {
+            currentDoctorId = d.getId();
+            branchLabel.setText(safe(d.getBranch()));
+            titleLabel.setText(safe(d.getMedical_title()));
+        } else {
+            // Doktor TC doctors.json’da yoksa yine UI boş kalmasın
+            branchLabel.setText("-");
+            titleLabel.setText("-");
+            currentDoctorId = -1;
+        }
+    }
+
+    private void loadPatientsForDoctor() {
+        patientListContainer.getChildren().clear();
+        if (currentDoctorId == -1) return;
+
         Gson gson = new Gson();
-        patientListContainer.getChildren().clear(); // Listeyi her seferinde temizle
-        String doctorTc = "";
-
-        // user.json içinden giriş yapan e-postaya ait TC No'yu bulalım
-        try (FileReader reader = new FileReader("database/user.json")) {
-            Type listType = new TypeToken<List<com.google.gson.JsonObject>>(){}.getType();
-            List<com.google.gson.JsonObject> users = gson.fromJson(reader, listType);
-
-            if (users != null) {
-                for (com.google.gson.JsonObject userObj : users) {
-                    if (userObj.has("email") && userObj.get("email").getAsString().equals(loggedInEmail)) {
-                        doctorTc = userObj.get("tc").getAsString();
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("User dosyası okuma hatası: " + e.getMessage());
-        }
-
-        //  TC bulunduysa doctors.json'dan mesleki bilgileri alıyoruz
-        if (doctorTc != null && !doctorTc.isEmpty()) {
-            try (FileReader reader = new FileReader("database/doctors.json")) {
-                Type docListType = new TypeToken<List<Doctor>>(){}.getType();
-                List<Doctor> allDoctors = gson.fromJson(reader, docListType);
-
-                if (allDoctors != null) {
-                    for (Doctor doc : allDoctors) {
-                        if (doc.getTc() != null && doc.getTc().equals(doctorTc)) {
-                            this.currentDoctorId = doc.getId(); // Hastaları bulmak için lazım
-
-                            // Ekranı doldur
-                            doctorNameLabel.setText(doc.getWelcomeMessage());
-                            doctorRoleLabel.setText(doc.getRoleDescription());
-                            emailLabel.setText(loggedInEmail);
-                            branchLabel.setText(doc.getBranch());
-                            titleLabel.setText(doc.getMedical_title());
-                            break;
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Doctor dosyası okuma hatası.");
-            }
-        }
-
-        //  Hastaları patients.json içinden yükle
-
         try (FileReader reader = new FileReader("database/patients.json")) {
             Type patientListType = new TypeToken<List<Patient>>(){}.getType();
             List<Patient> allPatients = gson.fromJson(reader, patientListType);
 
             if (allPatients != null) {
                 for (Patient p : allPatients) {
-                    // Sadece bu doktorun ID'sine sahip hastaları ekle
-                    if (p.getDoctor_id() == this.currentDoctorId) {
+                    if (p.getDoctor_id() == currentDoctorId) {
                         addPatientCard(p);
                     }
                 }
             }
         } catch (IOException e) {
-            System.err.println("Patient dosyası okuma hatası.");
+            System.err.println("Patient dosyası okuma hatası: " + e.getMessage());
         }
+    }
+
+    // PROFİLİMİ GÜNCELLE butonu
+    @FXML
+    private void handleUpdateProfile(ActionEvent event) {
+        User u = Session.getCurrentUser();
+        if (u == null) return;
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Profil Güncelle (Doktor)");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextField age = new TextField(safe(u.getAge()));
+        TextField gender = new TextField(safe(u.getGender()));
+        TextField phone = new TextField(safe(u.getPhone()));
+        PasswordField pass = new PasswordField();
+        pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        int r = 0;
+        grid.addRow(r++, new Label("Yaş:"), age);
+        grid.addRow(r++, new Label("Cinsiyet:"), gender);
+        grid.addRow(r++, new Label("Tel No:"), phone);
+        grid.addRow(r++, new Label("Şifre:"), pass);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
+        if (res != ButtonType.OK) return;
+
+        boolean ok = ProfileService.updateDoctor(u, age.getText(), gender.getText(), phone.getText(), pass.getText());
+        if (!ok) {
+            new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        // UI refresh
+        User nu = Session.getCurrentUser();
+        ageLabel.setText(safe(nu.getAge()));
+        genderLabel.setText(safe(nu.getGender()));
+        phoneLabel.setText(safe(nu.getPhone()));
+
+        new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
     }
 
     private void addPatientCard(Patient patient) {
         HBox card = new HBox(20);
-        // Beyaz zemin, mavi kenarlık ve yuvarlatılmış köşeler
         card.setStyle("-fx-background-color: white; " +
                 "-fx-background-radius: 15; " +
                 "-fx-border-color: #1976D2; " +
@@ -135,18 +174,15 @@ public class DoctorController {
                 "-fx-alignment: center-left;");
 
         DropShadow blueShadow = new DropShadow();
-        blueShadow.setColor(Color.web("#1976D233")); // %20 şeffaf mavi
+        blueShadow.setColor(Color.web("#1976D233"));
         blueShadow.setRadius(15);
         blueShadow.setOffsetY(5);
         card.setEffect(blueShadow);
 
-        // Bilgi Bölümü
         VBox infoBox = new VBox(5);
         Label name = new Label(patient.getName() + " " + patient.getSurname());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #334155;");
 
-        // Belirttiğin yeni alanlar: appointment_date ve current_disease
-        // (Buradaki get metodlarının Patient sınıfındakilerle aynı olduğundan emin ol)
         String dateInfo = patient.getAppointmentDate() != null ? patient.getAppointmentDate() : "Tarih Belirtilmedi";
         String diseaseInfo = patient.getCurrent_disease() != null ? patient.getCurrent_disease() : "Tanı Konulmadı";
 
@@ -158,99 +194,72 @@ public class DoctorController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Detay Butonu
         Button btnDetails = new Button("Detayları Gör");
         btnDetails.setStyle("-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; " +
                 "-fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 8 18;");
-
         btnDetails.setOnAction(e -> openPatientPopup(patient));
 
         card.getChildren().addAll(infoBox, spacer, btnDetails);
         patientListContainer.getChildren().add(card);
     }
-  private void openPatientPopup(Patient patient) {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/patientDetailsPopup.fxml"));
-      Parent root = loader.load();
 
-      // Pop-up ekranına hastayı gönderen mantık buraya gelecek
+    private void openPatientPopup(Patient patient) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/patientDetailsPopup.fxml"));
+            Parent root = loader.load();
 
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.setTitle("Hasta Detay: " + patient.getName());
-      stage.setScene(new Scene(root));
-      stage.show();
-    } catch (IOException e) {
-      e.printStackTrace();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Hasta Detay: " + patient.getName());
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-  }
 
-  // Bildirim Sistemi Metodları
-  private void loadNotifications() {
-    notificationMenuButton.getItems().clear();
+    private void loadNotifications() {
+        notificationMenuButton.getItems().clear();
 
-    // Geçici bildirimler
-    CustomMenuItem item1 = createNotificationItem("Yeni hasta kaydı: Ahmet Demir", "5 dakika önce");
-    CustomMenuItem item2 = createNotificationItem("Randevu hatırlatması: Ayşe Yılmaz", "15 dakika önce");
-    CustomMenuItem item3 = createNotificationItem("Test sonucu hazır: Mehmet Kaya", "1 saat önce");
+        CustomMenuItem item1 = createNotificationItem("Yeni hasta kaydı: Ahmet Demir", "5 dakika önce");
+        CustomMenuItem item2 = createNotificationItem("Randevu hatırlatması: Ayşe Yılmaz", "15 dakika önce");
+        CustomMenuItem item3 = createNotificationItem("Test sonucu hazır: Mehmet Kaya", "1 saat önce");
 
-    notificationMenuButton.getItems().addAll(item1, item2, item3);
+        notificationMenuButton.getItems().addAll(item1, item2, item3);
+        notificationBadge.setVisible(notificationMenuButton.getItems().size() > 0);
+    }
 
-    // Bildirim sayısına göre gösterip göstermeyeceği
-    int notificationCount = notificationMenuButton.getItems().size();
-    notificationBadge.setVisible(notificationCount > 0);
-  }
+    private CustomMenuItem createNotificationItem(String title, String time) {
+        VBox content = new VBox(5);
+        content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
+        content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
+        content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
 
-  private CustomMenuItem createNotificationItem(String title, String time) {
-    VBox content = new VBox(5);
-    content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
-    content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
-    content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
+        titleLabel.setWrapText(true);
+        titleLabel.setMaxWidth(260);
 
-    Label titleLabel = new Label(title);
-    titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
-    titleLabel.setWrapText(true);
-    titleLabel.setMaxWidth(260);
+        Label timeLabel = new Label(time);
+        timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
 
-    Label timeLabel = new Label(time);
-    timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
+        content.getChildren().addAll(titleLabel, timeLabel);
 
-    content.getChildren().addAll(titleLabel, timeLabel);
+        CustomMenuItem item = new CustomMenuItem(content);
+        item.setHideOnClick(false);
 
-    CustomMenuItem item = new CustomMenuItem(content);
-    item.setHideOnClick(false);
+        content.setOnMouseClicked(e -> System.out.println("Bildirime tıklandı: " + title));
+        return item;
+    }
 
-    // Bildirime tıklandığında yapılacak işlem
-    content.setOnMouseClicked(e -> {
-      System.out.println("Bildirime tıklandı: " + title);
-      // Çalıştığını kontrol için
-    });
+    @FXML
+    private void handleLogout() {
+        System.out.println("Oturum kapatıldı.");
+        Session.clear();
+        // Login ekranına yönlendirme kodun sende nasıl ise aynı şekilde devam
+    }
 
-    return item;
-  }
-
-  // Bildirim sayısını güncelleme zorunlu değil
-  public void updateNotificationCount(int count) {
-    notificationBadge.setVisible(count > 0);
-  }
-
-  // Zorunlu değil yeni bildirim oluşturmak için
-  public void addNotification(String title, String time) {
-    CustomMenuItem newItem = createNotificationItem(title, time);
-    notificationMenuButton.getItems().add(0, newItem); // En üste ekle
-    notificationBadge.setVisible(true);
-  }
-
-  @FXML
-  private void handleLogout() {
-    System.out.println("Oturum kapatıldı.");
-    // Login ekranına yönlendirme kodu...
-  }
-
-  // JSON'dan nesne tipine göre parse eden yardımcı metot (Basitleştirilmiş)
-  private List<User> parseUsersFromJson(FileReader reader) {
-    // GSON kütüphanesi ile verileri uygun sınıflara (Doctor/Patient) eşleme mantığı
-    // Burayı projenin geri kalanındaki JSON okuma yapına göre doldurabilirsin.
-    return new java.util.ArrayList<>();
-  }
+    private String safe(String s) {
+        return s == null ? "" : s.trim();
+    }
 }

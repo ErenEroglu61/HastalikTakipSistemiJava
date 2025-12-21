@@ -9,6 +9,10 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
+import com.follow_disease.User;
+import com.follow_disease.Session;
+import com.follow_disease.service.ProfileService;
+
 public class PatientController {
 
   // Sol paneldeki Label'lar (FXML'deki fx:id'ler ile birebir aynı olmalı)
@@ -30,28 +34,74 @@ public class PatientController {
   public void initialize() {
     System.out.println("Hasta sayfası başarıyla yüklendi.");
 
-    // Şimdilik JSON'dan çekmediğimiz için varsayılan örnek veriler koyalım
-    // İleride UserService.getCurrentUser() ile buraları dolduracağız
-    nameLabel.setText("Ahmet Yılmaz");
-    emailLabel.setText("ahmet@mail.com");
-    ageLabel.setText("34");
-    genderLabel.setText("Erkek");
+    User u = Session.getCurrentUser();
+    if (u != null) {
+      nameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
+      emailLabel.setText(safe(u.getEmail()));
+      ageLabel.setText(safe(u.getAge()));
+      genderLabel.setText(safe(u.getGender()));
+    }
 
-    // Bildirimleri yükle
     loadNotifications();
   }
 
+  private String safe(String s) {
+    return s == null ? "" : s.trim();
+  }
+
   // Bilgileri Güncelle butonuna tıklandığında çalışacak olan metot
+
   @FXML
   public void handleUpdateAction(ActionEvent event) {
-    System.out.println("Bilgileri Güncelle butonuna tıklandı!");
-    // İleride buraya güncelleme formunun açılma kodlarını yazacağız
+    User u = Session.getCurrentUser();
+    if (u == null) return;
+
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Profil Güncelle");
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+    TextField age = new TextField(safe(u.getAge()));
+    TextField gender = new TextField(safe(u.getGender()));
+    TextField phone = new TextField(safe(u.getPhone()));
+    TextField email = new TextField(safe(u.getEmail()));
+    PasswordField pass = new PasswordField();
+    pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+
+    GridPane grid = new GridPane();
+    grid.setHgap(10); grid.setVgap(10);
+    int r = 0;
+    grid.addRow(r++, new Label("Yaş:"), age);
+    grid.addRow(r++, new Label("Cinsiyet:"), gender);
+    grid.addRow(r++, new Label("Tel:"), phone);
+    grid.addRow(r++, new Label("Mail:"), email);
+    grid.addRow(r++, new Label("Şifre:"), pass);
+
+    dialog.getDialogPane().setContent(grid);
+
+    ButtonType result = dialog.showAndWait().orElse(ButtonType.CANCEL);
+    if (result != ButtonType.OK) return;
+
+    boolean ok = ProfileService.updatePatient(u, age.getText(), gender.getText(), phone.getText(), email.getText(), pass.getText());
+    if (!ok) {
+      new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
+      return;
+    }
+
+    // UI refresh
+    User nu = Session.getCurrentUser();
+    nameLabel.setText(safe(nu.getName()) + " " + safe(nu.getSurname()));
+    emailLabel.setText(safe(nu.getEmail()));
+    ageLabel.setText(safe(nu.getAge()));
+    genderLabel.setText(safe(nu.getGender()));
+
+    new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
   }
 
   @FXML
   public void handleLogout(ActionEvent event) {
     // Burada giriş ekranına yönlendirme kodunu yazacağız
     System.out.println("Çıkış yapılıyor...");
+    Session.clear();
   }
 
   // Bildirim Sistemi

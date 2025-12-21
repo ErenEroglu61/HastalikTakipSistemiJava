@@ -1,6 +1,7 @@
 package com.follow_disease.service;
 
 import com.follow_disease.User;
+import com.follow_disease.Session;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -31,6 +32,12 @@ public class UserService {
             this.name = name;
             this.surname = surname;
         }
+    }
+
+    private static User currentUser;
+
+    public static User getCurrentUser() {
+        return currentUser;
     }
 
     public static HospitalRecord getHospitalRecord(String tcNo) {//Verilen TC numarasına göre hastane arşivinden
@@ -108,13 +115,10 @@ public class UserService {
             }
 
             // Rol belirleme
-            String role = email.toLowerCase().endsWith("@hastane.com") ? "doktor" : "hasta";
+            String role = (com.follow_disease.repository.DoctorJsonRepository.findByTc(tcNo) != null)
+                    ? "doktor"
+                    : "hasta";
 
-            //  Doktor kuralı kontrolü
-            if ("doktor".equals(role) && !email.toLowerCase().endsWith("@hastane.com")) {
-                showAlert("E-posta hatası", "Doktorlar yalnızca @hastane.com uzantılı e-posta kullanabilir.");
-                return false;
-            }
 
             // ID hesaplama
             int nextId = 1;
@@ -173,11 +177,20 @@ public class UserService {
                 showAlert("Giriş hatası", "E-posta veya şifre hatalı.");
                 return false;
             }
+            User u = new User();
+            u.setId(user.getId());
+            u.setName(user.getName());
+            u.setSurname(user.getSurname());
+            u.setAge(user.getAge());
+            u.setGender(user.getGender());
+            u.setTcNo(user.getTcNo());
+            u.setPhone(user.getPhone());
+            u.setEmail(user.getEmail());
+            u.setPassword(user.getPassword());
+            u.setRole(user.getRole());
 
-            if ("doktor".equalsIgnoreCase(user.getRole()) && !email.toLowerCase().endsWith("@hastane.com")) {
-                showAlert("Giriş hatası", "Doktorlar yalnızca @hastane.com uzantılı e-posta ile giriş yapabilir.");
-                return false;
-            }
+            currentUser = u;
+            Session.setCurrentUser(u);
 
             showInfo("Giriş başarılı", "Hoş geldiniz, " + user.getName() + " " + user.getSurname());
             return true;
