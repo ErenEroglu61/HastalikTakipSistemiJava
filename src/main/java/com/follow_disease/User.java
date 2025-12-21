@@ -2,6 +2,7 @@ package com.follow_disease;
 
 public abstract class User {
     private int id;
+    private String tc;
     private String name;
     private String surname;
     private String email;
@@ -10,8 +11,9 @@ public abstract class User {
     // bence rol değiştirilemese daha iyi olur kodun mantığı açısından doktorları sisteme biz giriyoruz çünkü
     // en azından şimdilik böyle yapalım dedik
 
-    public User(int id, String name, String surname, String email, String password, String role) {
+    public User(int id, String tc,String name, String surname, String email, String password, String role) {
         this.id = id;
+        this.tc = tc;
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -31,6 +33,8 @@ public abstract class User {
     // Getter ve Setter'lar
     public int getId() {
         return id; }
+    public String getTc() {
+        return tc;}
     public String getEmail() {
         return email; }
     public String getRole() {
@@ -44,6 +48,8 @@ public abstract class User {
     }
     public void setId(int id) {
         this.id = id; }
+    public void setTc(String tc) {
+        this.tc = tc;}
     public void setEmail(String email){
         this.email = email; } ;
     public void setName(String name) {

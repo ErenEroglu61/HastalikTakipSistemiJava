@@ -22,10 +22,30 @@
     "name": "Ayşe",
     "surname": "Demir",
     "age": "20",
-    "tcNo": "12345678903",
-    "phone": "05696547898",
     "email": "ayse@gmail.com",
     "password": "12345",
     "role": "hasta"
+  },
+  {
+    "id": 4,
+    "name": "Mehmet",
+    "surname": "Öztekin",
+    "age": "35",
+    "email": "mehmetoztekin@hastane.com",
+    "password": "123456",
+    "role": "doktor",
+    "gender": "Erkek"
+  },
+  {
+    "id": 5,
+    "name": "Zeynep",
+    "surname": "Çelik",
+    "age": "46",
+    "tcNo": "12345678912",
+    "phone": "05989635662",
+    "email": "zeynep@hastane.com",
+    "password": "123456",
+    "role": "doktor",
+    "gender": "Kadın"
   }
 ]

@@ -24,28 +24,27 @@
                                         <Label text="👤" textFill="WHITE" style="-fx-font-size: 50;" />
                                     </children>
                                 </StackPane>
+                                <StackPane alignment="TOP_RIGHT" prefWidth="45.0" prefHeight="45.0">
+                                    <children>
+                                        <MenuButton fx:id="notificationMenuButton" text="🔔"
+                                                    style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-size: 18; -fx-background-radius: 50; -fx-cursor: hand;"
+                                                    prefWidth="40" prefHeight="40"
+                                                    minWidth="40" minHeight="40"> <effect><DropShadow color="#00000033" radius="5.0" /></effect>
+                                        </MenuButton>
 
-                                <!-- Notification MenuButton -->
-                                <StackPane>
-                                    <MenuButton fx:id="notificationMenuButton" text="🔔"
-                                                style="-fx-background-color: #E3F2FD;
-                                                   -fx-text-fill: #1976D2;
-                                                   -fx-font-size: 18;
-                                                   -fx-background-radius: 50;
-                                                   -fx-cursor: hand;"
-                                                prefWidth="40" prefHeight="40"
-                                                popupSide="BOTTOM">
-                                        <effect><DropShadow color="#00000033" radius="5.0" /></effect>
-                                    </MenuButton>
-                                    <!-- Notification Badge -->
-                                    <Circle fx:id="notificationBadge" radius="7.0" fill="#D32F2F"
-                                            stroke="WHITE" strokeWidth="2.0"
-                                            translateX="12" translateY="-12" visible="false" />
+                                        <Circle fx:id="notificationBadge" radius="6.0" fill="#D32F2F"
+                                                stroke="WHITE" strokeWidth="2.0"
+                                                visible="false">
+                                            <StackPane.margin>
+                                                <Insets top="-2.0" right="-2.0" />
+                                            </StackPane.margin>
+                                        </Circle>
+                                    </children>
                                 </StackPane>
                             </children>
                         </HBox>
-                        <Label fx:id="nameLabel" text="Erdem Yılmaz" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
-                        <Label text="Doktor Profili" textFill="#64748B" style="-fx-font-size: 14;" />
+                        <Label fx:id="doctornameLabel" text="Erdem Yılmaz" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
+                        <Label fx:id="doctorRoleLabel" text="Doktor Profili" textFill="#64748B" style="-fx-font-size: 14;" />
                     </children>
                 </VBox>
 
@@ -104,6 +103,28 @@
                         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
                             <content>
                                 <VBox fx:id="patientListContainer" spacing="15.0" style="-fx-padding: 25;">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #00000033; -fx-border-width: 1; -fx-border-radius: 15;-fx-padding: 15;">
+                                            <effect>
+                                                <DropShadow color="#1976d233" radius="15.0" offsetX="0" offsetY="5" />
+                                            </effect>
+                                            <children>
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Ahmet Yılmaz" style="-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #334155;" />
+                                                        <HBox spacing="10.0">
+                                                            <children>
+                                                                <Label text="📅 20.12.2025" style="-fx-text-fill: #64748B; -fx-font-size: 13;" />
+                                                                <Label text="•" style="-fx-text-fill: #64748B;" />
+                                                                <Label text="Hastalık: Grip" style="-fx-text-fill: #64748B; -fx-font-size: 13;" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                                <Button text="Detayları Gör" style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;" />
+                                            </children>
+                                        </HBox>
+                                    </children>
                                 </VBox>
                             </content>
                         </ScrollPane>

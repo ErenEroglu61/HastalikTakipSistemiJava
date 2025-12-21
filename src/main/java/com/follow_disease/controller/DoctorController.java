@@ -28,6 +28,9 @@ public class DoctorController {
   @FXML private VBox patientListContainer;
   @FXML private Label doctorNameLabel;
   @FXML private Label doctorRoleLabel;
+  @FXML private Label emailLabel;
+  @FXML private Label branchLabel;
+  @FXML private Label titleLabel;
   @FXML private MenuButton notificationMenuButton;
   @FXML private Circle notificationBadge;
 
@@ -37,48 +40,86 @@ public class DoctorController {
 
   @FXML
   public void initialize() {
-    loadDataAndInitializeUI();
-    loadNotifications();
-  }
-
-  private void loadDataAndInitializeUI() {
-    try (FileReader reader = new FileReader("database/users.json")) {
-      Gson gson = new Gson();
-      Type listType = new TypeToken<List<Object>>(){}.getType(); // Ham liste olarak oku
-      // Not: Gerçek projede özel bir Deserializer yazmak daha iyidir
-      // ama şimdilik manuel eşleme ile ilerliyoruz.
-      List<User> allUsers = parseUsersFromJson(reader);
-
-      patientListContainer.getChildren().clear();
-
-      // 1. Önce giriş yapan doktoru bul
-      for (User user : allUsers) {
-        if (user instanceof Doctor && user.getEmail().equals(loggedInEmail)) {
-          Doctor currentDoc = (Doctor) user;
-          this.currentDoctorId = currentDoc.getId();
-
-          // Polimorfik Metotları Kullanma
-          doctorNameLabel.setText(currentDoc.getWelcomeMessage());
-          doctorRoleLabel.setText(currentDoc.getRoleDescription());
-          break;
+        // 1. Bildirim ve Zil Ayarları
+        if (notificationMenuButton != null) {
+            Label bellIcon = new Label("\uD83D\uDD14");
+            bellIcon.setStyle("-fx-font-size: 18; -fx-text-fill: #1976D2;");
+            notificationMenuButton.setGraphic(bellIcon);
+            notificationMenuButton.setText("");
         }
-      }
 
-      // 2. Bu doktora bağlı hastaları listele
-      for (User user : allUsers) {
-        if (user instanceof Patient) {
-          Patient p = (Patient) user;
-          if (p.getDoctor_id() == currentDoctorId) {
-            addPatientCard(p);
-          }
-        }
-      }
+        loadNotifications();
 
-    } catch (IOException e) {
-      e.printStackTrace();
+        // 2. Verileri Yükle
+        loadDataAndInitializeUI();
     }
-  }
 
+    private void loadDataAndInitializeUI() {
+        Gson gson = new Gson();
+        patientListContainer.getChildren().clear(); // Listeyi her seferinde temizle
+        String doctorTc = "";
+
+        // user.json içinden giriş yapan e-postaya ait TC No'yu bulalım
+        try (FileReader reader = new FileReader("database/user.json")) {
+            Type listType = new TypeToken<List<com.google.gson.JsonObject>>(){}.getType();
+            List<com.google.gson.JsonObject> users = gson.fromJson(reader, listType);
+
+            if (users != null) {
+                for (com.google.gson.JsonObject userObj : users) {
+                    if (userObj.has("email") && userObj.get("email").getAsString().equals(loggedInEmail)) {
+                        doctorTc = userObj.get("tc").getAsString();
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("User dosyası okuma hatası: " + e.getMessage());
+        }
+
+        //  TC bulunduysa doctors.json'dan mesleki bilgileri alıyoruz
+        if (doctorTc != null && !doctorTc.isEmpty()) {
+            try (FileReader reader = new FileReader("database/doctors.json")) {
+                Type docListType = new TypeToken<List<Doctor>>(){}.getType();
+                List<Doctor> allDoctors = gson.fromJson(reader, docListType);
+
+                if (allDoctors != null) {
+                    for (Doctor doc : allDoctors) {
+                        if (doc.getTc() != null && doc.getTc().equals(doctorTc)) {
+                            this.currentDoctorId = doc.getId(); // Hastaları bulmak için lazım
+
+                            // Ekranı doldur
+                            doctorNameLabel.setText(doc.getWelcomeMessage());
+                            doctorRoleLabel.setText(doc.getRoleDescription());
+                            emailLabel.setText(loggedInEmail);
+                            branchLabel.setText(doc.getBranch());
+                            titleLabel.setText(doc.getMedical_title());
+                            break;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Doctor dosyası okuma hatası.");
+            }
+        }
+
+        //  Hastaları patients.json içinden yükle
+
+        try (FileReader reader = new FileReader("database/patients.json")) {
+            Type patientListType = new TypeToken<List<Patient>>(){}.getType();
+            List<Patient> allPatients = gson.fromJson(reader, patientListType);
+
+            if (allPatients != null) {
+                for (Patient p : allPatients) {
+                    // Sadece bu doktorun ID'sine sahip hastaları ekle
+                    if (p.getDoctor_id() == this.currentDoctorId) {
+                        addPatientCard(p);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Patient dosyası okuma hatası.");
+        }
+    }
   private void addPatientCard(Patient patient) {
     HBox card = new HBox(20);
     card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; " +

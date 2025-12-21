@@ -4,9 +4,9 @@ public class Doctor extends User {
     private final String branch;
     private final String  medical_title; //doktorun unvanı ve branşı değiştirilemeyecek sistemde tanımlı olduğu için
 
-    public Doctor(int id, String name, String surname, String email, String password, String branch, String medical_title) {
+    public Doctor(int id,String tc, String name, String surname, String email, String password, String branch, String medical_title) {
         // Üst sınıf olan User'ın constructor'ına ortak bilgileri gönderiyoruz
-        super(id, name, surname, email, password, "doktor");
+        super(id, tc, name, surname, email, password, "doktor");
         this.branch = branch;
         this.medical_title = medical_title;
     }

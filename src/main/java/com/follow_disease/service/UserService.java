@@ -18,8 +18,8 @@ import java.util.Optional;
 public class UserService {
 
     private static final Path DB_DIR = Paths.get(System.getProperty("user.dir"), "database");
-    private static final Path HOSPITAL_RECORDS = DB_DIR.resolve("hospital_records.jason");
-    private static final String[] DB_FILENAMES = {"user.jason"};
+    private static final Path HOSPITAL_RECORDS = DB_DIR.resolve("hospital_records.json");
+    private static final String[] DB_FILENAMES = {"user.json"};
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 

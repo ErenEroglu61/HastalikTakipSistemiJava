@@ -5,7 +5,7 @@
       "name": "Test",
       "surname": "Kullanıcısı",
       "role": "hasta",
-      "doctor_id": 3,
+      "doctor_id": 2,
       "disease": "Grip",
       "appointmentDate": "2025-12-02"
    },
@@ -15,7 +15,7 @@
     "name": "Ahmet",
     "surname": "Yılmaz",
     "role": "hasta",
-    "doctor_id": 3,
+    "doctor_id": 1,
     "disease_name": "Grip",
     "appointmentDate": "2025-12-10"
   },
