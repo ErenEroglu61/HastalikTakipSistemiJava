@@ -6,8 +6,9 @@
       "surname": "Kullanıcısı",
       "role": "hasta",
       "doctor_id": 2,
-      "disease": "Grip",
-      "appointmentDate": "2025-12-02"
+      "current_disease": "Grip",
+      "appointmentDate": "2025-12-02",
+      "medicines": ["Parol", "Majezik"]
    },
   {
     "id": 2,
@@ -16,8 +17,9 @@
     "surname": "Yılmaz",
     "role": "hasta",
     "doctor_id": 1,
-    "disease_name": "Grip",
-    "appointmentDate": "2025-12-10"
+    "current_disease": "Grip",
+    "appointmentDate": "2025-12-10",
+    "medicines": ["Parol", "Majezik"]
   },
   {
     "id": 3,
@@ -26,7 +28,8 @@
     "surname": "Demir",
     "role": "hasta",
     "doctor_id": 2,
-    "disease_name": "Migren",
-    "appointmentDate": "2023-12-19"
+    "current_disease": "Migren",
+    "appointmentDate": "2023-12-19",
+    "medicines": ["Parol", "Majezik"]
   }
   ]

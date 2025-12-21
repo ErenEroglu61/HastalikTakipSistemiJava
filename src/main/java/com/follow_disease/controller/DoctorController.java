@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
@@ -120,30 +122,52 @@ public class DoctorController {
             System.err.println("Patient dosyası okuma hatası.");
         }
     }
-  private void addPatientCard(Patient patient) {
-    HBox card = new HBox(20);
-    card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; " +
-      "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 4); -fx-alignment: center-left;");
 
-    VBox infoBox = new VBox(5);
-    Label nameLabel = new Label(patient.getName() + " " + patient.getSurname());
-    nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
-    Label detailLabel = new Label(patient.getRoleDescription()); // Yaş ve Tanı bilgisi
-    detailLabel.setStyle("-fx-text-fill: #7f8c8d;");
-    infoBox.getChildren().addAll(nameLabel, detailLabel);
+    private void addPatientCard(Patient patient) {
+        HBox card = new HBox(20);
+        // Beyaz zemin, mavi kenarlık ve yuvarlatılmış köşeler
+        card.setStyle("-fx-background-color: white; " +
+                "-fx-background-radius: 15; " +
+                "-fx-border-color: #1976D2; " +
+                "-fx-border-width: 1.5; " +
+                "-fx-border-radius: 15; " +
+                "-fx-padding: 15; " +
+                "-fx-alignment: center-left;");
 
-    Region spacer = new Region();
-    HBox.setHgrow(spacer, Priority.ALWAYS);
+        DropShadow blueShadow = new DropShadow();
+        blueShadow.setColor(Color.web("#1976D233")); // %20 şeffaf mavi
+        blueShadow.setRadius(15);
+        blueShadow.setOffsetY(5);
+        card.setEffect(blueShadow);
 
-    Button btnDetails = new Button("Detayları Gör");
-    btnDetails.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 18; -fx-background-radius: 5;");
+        // Bilgi Bölümü
+        VBox infoBox = new VBox(5);
+        Label name = new Label(patient.getName() + " " + patient.getSurname());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #334155;");
 
-    btnDetails.setOnAction(e -> openPatientPopup(patient));
+        // Belirttiğin yeni alanlar: appointment_date ve current_disease
+        // (Buradaki get metodlarının Patient sınıfındakilerle aynı olduğundan emin ol)
+        String dateInfo = patient.getAppointmentDate() != null ? patient.getAppointmentDate() : "Tarih Belirtilmedi";
+        String diseaseInfo = patient.getCurrent_disease() != null ? patient.getCurrent_disease() : "Tanı Konulmadı";
 
-    card.getChildren().addAll(infoBox, spacer, btnDetails);
-    patientListContainer.getChildren().add(card);
-  }
+        Label details = new Label("📅 " + dateInfo + "  •  Durum: " + diseaseInfo);
+        details.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
 
+        infoBox.getChildren().addAll(name, details);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Detay Butonu
+        Button btnDetails = new Button("Detayları Gör");
+        btnDetails.setStyle("-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 8 18;");
+
+        btnDetails.setOnAction(e -> openPatientPopup(patient));
+
+        card.getChildren().addAll(infoBox, spacer, btnDetails);
+        patientListContainer.getChildren().add(card);
+    }
   private void openPatientPopup(Patient patient) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/patientDetailsPopup.fxml"));

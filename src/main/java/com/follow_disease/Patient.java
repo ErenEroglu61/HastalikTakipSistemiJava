@@ -9,16 +9,18 @@ public class Patient extends User {
     private String phone;
     private int doctor_id;
     private String current_disease;
+    private String appointmentDate;
     private List<String> medicines;
     private List<String> disease_history;
 
-    public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age, String gender, int doctor_id, String current_disease, List<String> medicines) {
+    public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age, String gender, int doctor_id, String current_disease, String appointmentDate, List<String> medicines) {
         super(id, tc, name, surname, email, password, "hasta");
         this.age = age;
         this.gender = gender;
         this.phone = phone;
         this.doctor_id = doctor_id;
         this.current_disease = current_disease;
+        this.appointmentDate = appointmentDate;
         this.medicines = medicines;
 
         if (disease_history == null) {
@@ -39,6 +41,8 @@ public class Patient extends User {
         return doctor_id; }
     public String getCurrent_disease() {
         return current_disease; }
+    public String getAppointmentDate() {
+        return appointmentDate;}
     public List<String> getMedicines() {
         return medicines; }
     public List<String> getDisease_history() {
@@ -55,6 +59,8 @@ public class Patient extends User {
         this.doctor_id = doctor_id;}
     public void setCurrent_disease(String current_disease) {
         this.current_disease = current_disease;}
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;}
     public void setMedicines(List<String> medicines) {
         this.medicines = medicines;}
     public void setDisease_history(List<String> disease_history) {
