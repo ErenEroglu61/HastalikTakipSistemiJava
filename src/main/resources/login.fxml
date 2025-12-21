@@ -50,7 +50,7 @@
                 </font>
             </PasswordField>
 
-            <Button fx:id="loginButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRegisterRedirect" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;" text="GİRİŞ YAP">
+            <Button fx:id="loginButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogin" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;" text="GİRİŞ YAP">
                 <padding>
                     <Insets bottom="10.0" top="10.0" />
                 </padding>

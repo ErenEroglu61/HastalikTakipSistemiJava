@@ -6,18 +6,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class App extends Application {
 
     private static Scene scene;
 
     @Override
-    public void start(Stage stage) throws IOException {
-        // Hangi ekranı görmek istiyorsanız başındaki açıklama kısmını kaldırın şimdilik sayfları bağlamadığımız için boyle olsun
-        //showLogin(stage);         // Giriş ekranını açar
-        //showPatientPage(stage); // Hasta panelini açar
-       showDoctorPage(stage); //>doktor sayfasını çalıştırır
-
+    public void start(Stage stage) throws Exception {
+        // Sadece login sayfasını yüklüyoruz
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/login.fxml")));
+        stage.setTitle("Hastalık Takip Sistemi");
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     // GİRİŞ EKRANINI AÇAN METOT

@@ -9,6 +9,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import java.io.IOException;
 
 public class LoginController {
 
@@ -16,35 +23,40 @@ public class LoginController {
     @FXML private PasswordField passwordField;
 
     @FXML
-    public void handleLogin() {
+    public void handleLogin(ActionEvent event) {
         String email = emailField.getText();
         String password = passwordField.getText();
-        boolean isSuccess = UserService.login_method(email, password);
 
-        if (isSuccess) {
-            User u = Session.getCurrentUser(); // UserService login içinde setlendi
-            if (u == null) return;
+        if (UserService.login_method(email, password)) {
+            User user = Session.getCurrentUser();
+            String fxmlPath;
 
+            // Nesnenin "Doctor" sınıfından olup olmadığını kontrol ediyoruz
+            if (user instanceof com.follow_disease.Doctor) {
+                System.out.println("Sistem: Bir Doktor nesnesi tespit edildi.");
+                fxmlPath = "/doctorPage.fxml";
+            } else {
+                System.out.println("Sistem: Bir Patient nesnesi tespit edildi.");
+                fxmlPath = "/patientPage.fxml";
+            }
             try {
-                String fxml = u.getRole().equalsIgnoreCase("doktor")
-                        ? "/doctorPage.fxml"
-                        : "/patientPage.fxml";
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Parent root = loader.load();
 
-                Stage stage = (Stage) emailField.getScene().getWindow();
+                // 4. Mevcut pencereyi (Stage) alıp yeni sayfayı içine koyuyoruz
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
-            } catch (Exception e) {
+
+            } catch (IOException e) {
+                System.err.println("HATA: FXML dosyası yüklenemedi. Yol: " + fxmlPath);
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Hata: E-posta veya şifre yanlış!");
+            // Giriş başarısızsa uyarı ver
+            new Alert(Alert.AlertType.ERROR, "E-posta veya şifre hatalı!").showAndWait();
         }
-
     }
-
 
     @FXML
     public void handleRegisterRedirect(javafx.event.ActionEvent event) { //event hangi buton olduğu anlaşılsın diye

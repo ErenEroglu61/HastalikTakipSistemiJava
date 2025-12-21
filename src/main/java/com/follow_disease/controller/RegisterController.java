@@ -1,7 +1,6 @@
 package com.follow_disease.controller;
 
 import com.follow_disease.service.UserService;
-import com.follow_disease.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,17 +22,16 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
-
-    
+    @FXML
     public void initialize() {
         // TC No alanından odak çıktığında (Focus Lost) kontrol tetiklenir
         tcField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            // newValue false ise kullanıcı kutudan çıkmış demektir
-            if (!newValue) {
+            if (!newValue) { // Odak kaybolduğunda
                 handleAutoFill();
             }
         });
     }
+
     @FXML
     private void handleAutoFill() {
         String tc = tcField.getText();
@@ -42,21 +40,21 @@ public class RegisterController {
             UserService.HospitalRecord record = UserService.getHospitalRecord(tc);
 
             if (record != null) {
-
                 nameField.setText(record.name);
                 surnameField.setText(record.surname);
-
-                // Kutucukları kilitliyoruz
                 nameField.setEditable(false);
                 surnameField.setEditable(false);
-
-                System.out.println("Resmi kayıt bulundu: " + record.name + " " + record.surname);
             } else {
-
                 nameField.clear();
                 surnameField.clear();
                 nameField.setEditable(true);
                 surnameField.setEditable(true);
+
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Kayıt Sorgulama");
+                alert.setHeaderText("TC Kimlik No Geçersiz");
+                alert.setContentText("Hastanemizin kayıtlarında bu TC bulunamadı. Lütfen kontrol edin.");
+                alert.showAndWait();
             }
         }
     }
@@ -72,32 +70,29 @@ public class RegisterController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        // Branş ve Ünvan alanları kayıt ekranında yoksa boş gönderiyoruz
-        String branch = "";
-        String medical_title = "";
-
         boolean success = UserService.register_method(
-                name, surname, age, gender, tc, phone, email, password, branch, medical_title
+                name, surname, age, gender, tc, phone, email, password, "", ""
         );
 
         if (success) {
-            redirectToLogin(event);
+            goToLogin(event);
         }
     }
 
     @FXML
     public void handleLoginRedirect(ActionEvent event) {
-        redirectToLogin(event);
+        goToLogin(event);
     }
 
-    private void redirectToLogin(ActionEvent event) {
+    private void goToLogin(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/view/login.fxml")); // Dosya yolunu kontrol et
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
+            System.err.println("Giriş sayfası yüklenemedi: " + e.getMessage());
             e.printStackTrace();
         }
     }

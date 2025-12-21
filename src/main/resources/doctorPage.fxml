@@ -69,6 +69,32 @@
                         </VBox>
                         <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
                             <children>
+                                <Label text="YAŞ" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="ageLabel" text="-" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="TC KİMLİK NO" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="tcLabel" text="-" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="CİNSİYET" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="genderLabel" text="-" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
+                                <Label text="TELEFON" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
+                                <Label fx:id="phoneLabel" text="-" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                            <children>
                                 <Label text="UNVAN" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
                                 <Label fx:id="titleLabel" text="Uzman Doktor" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
                             </children>

@@ -34,7 +34,6 @@ public class DoctorController {
     @FXML private Label doctornameLabel;     // FXML’de senin id: doctornameLabel
     @FXML private Label doctorRoleLabel;
 
-    // Sol kartlar
     @FXML private Label emailLabel;
     @FXML private Label branchLabel;
     @FXML private Label titleLabel;
@@ -80,7 +79,7 @@ public class DoctorController {
         ageLabel.setText(safe(u.getAge()));
         genderLabel.setText(safe(u.getGender()));
         phoneLabel.setText(safe(u.getPhone()));
-        tcLabel.setText(safe(u.getTc())); // user.json alan adı tcNo
+        tcLabel.setText(safe(u.getTc()));
 
         // doctors.json’dan branch/title
         Doctor d = JsonDb.findDoctorByTc(u.getTc());

@@ -30,14 +30,4 @@ public class Doctor extends User {
         return branch + " Bölümü - " + medical_title;
     }
 
-    @Override
-    public void setEmail(String email) {
-        if (email != null && email.toLowerCase().endsWith("@hastane.com")) {
-            super.setEmail(email);
-        } else {
-            // şimdilik ekrana yazdırdım sonra message box ile ekrana yazdırabiliriz
-            System.out.println("HATA: Doktorlar sadece kurumsal (@hastane.com) mail kullanabilir.");
-        }
-    }
-
 }
