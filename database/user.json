@@ -5,9 +5,11 @@
     "name": "Test",
     "surname": "Kullanicisi",
     "age": "20",
+    "phone": "05636544512",
     "email": "test@gmail.com",
     "password": "1234",
-    "role": "hasta"
+    "role": "hasta",
+    "gender": "Kadın"
   },
   {
     "id": 2,
@@ -15,9 +17,11 @@
     "name": "Ahmet",
     "surname": "Yılmaz",
     "age": "35",
+    "phone": "05424565251",
     "email": "ahmet@gmail.com",
     "password": "12345",
-    "role": "hasta"
+    "role": "hasta",
+    "gender": "Erkek"
   },
   {
     "id": 3,
@@ -25,9 +29,11 @@
     "name": "Ayşe",
     "surname": "Demir",
     "age": "20",
+    "phone": "05899875665",
     "email": "ayse@gmail.com",
     "password": "12345",
-    "role": "hasta"
+    "role": "hasta",
+    "gender": "Kadın"
   },
   {
     "id": 4,
@@ -35,6 +41,7 @@
     "name": "Mehmet",
     "surname": "Öztekin",
     "age": "35",
+    "phone": "05414562123",
     "email": "mehmetoztekin@gmail.com",
     "password": "123456",
     "role": "doktor",
@@ -42,10 +49,10 @@
   },
   {
     "id": 5,
+    "tc": "12345678912",
     "name": "Zeynep",
     "surname": "Çelik",
     "age": "46",
-    "tc": "12345678912",
     "phone": "05989635662",
     "email": "zeynep@gmail.com",
     "password": "123456",
@@ -58,6 +65,7 @@
     "name": "Erdem",
     "surname": "Yılmaz",
     "age": "30",
+    "phone": "05459876365",
     "email": "erdem@gmail.com",
     "password": "123456",
     "role": "doktor",

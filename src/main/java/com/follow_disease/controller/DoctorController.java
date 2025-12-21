@@ -166,7 +166,7 @@ public class DoctorController {
         HBox card = new HBox(20);
         card.setStyle("-fx-background-color: white; " +
                 "-fx-background-radius: 15; " +
-                "-fx-border-color: #1976D2; " +
+                "-fx-border-color: #D1D5DB; " +
                 "-fx-border-width: 1.5; " +
                 "-fx-border-radius: 15; " +
                 "-fx-padding: 15; " +

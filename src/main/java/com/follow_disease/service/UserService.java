@@ -189,6 +189,9 @@ public class UserService {
                 u.setTc(ru.getTc());
                 u.setEmail(ru.getEmail());
                 u.setPassword(ru.getPassword());
+                u.setAge(ru.getAge());
+                u.setGender(ru.getGender());
+                u.setPhone(ru.getPhone());
 
 
                 currentUser = u;
