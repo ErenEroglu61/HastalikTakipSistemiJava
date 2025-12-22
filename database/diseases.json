@@ -6,7 +6,7 @@
   },
   {
     "disease_name": "Migren",
-    "disease_symptoms": ["Baş Ağrısı", "Işığa Hassasiyet", "Mide Bulantısı"],
+    "disease_symptoms": ["Baş Ağrısı", "Işık Hassasiyeti", "Mide Bulantısı"],
     "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi"]
   }
 ]

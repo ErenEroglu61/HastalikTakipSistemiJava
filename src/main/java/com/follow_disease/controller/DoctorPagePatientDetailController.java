@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class DoctorPagePatientDetailController {
     @FXML private TableColumn<VitalSign, String> colDate, colPressure;
     @FXML private TableColumn<VitalSign, Double> colSugar;
     @FXML private TableColumn<VitalSign, Integer> colPulse;
-    @FXML private ListView<String> lstSymptoms;
+    @FXML private FlowPane flowSymptoms;
     @FXML private TextArea txtAdditionalComplaints;
     @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
     @FXML private ComboBox<String> cbDiseaseCourse;
@@ -68,7 +69,7 @@ public class DoctorPagePatientDetailController {
         }
 
         // --- Semptomlar ve Notlar ---
-        lstSymptoms.setItems(FXCollections.observableArrayList(patient.getSelectedSymptoms()));
+        loadDiseaseSymptoms(patient.getCurrent_disease());
         txtAdditionalComplaints.setText(patient.getAdditionalNote());
 
         // --- Dinamik ComboBox Yükleme ---
@@ -81,10 +82,65 @@ public class DoctorPagePatientDetailController {
     }
 
     private void loadCourseOptions(String diseaseName) {
-        // Burada diseases.json dosyasını tarayıp ilgili hastalığın
-        // "disease_course" listesini çekip cbDiseaseCourse içine atmalısın.
-        // Örn: cbDiseaseCourse.setItems(FXCollections.observableArrayList(jsonVerisi));
+        cbDiseaseCourse.getItems().clear();
+
+        try {
+            String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("database/diseases.json")));
+            org.json.JSONArray diseasesArray = new org.json.JSONArray(content);
+
+            for (int i = 0; i < diseasesArray.length(); i++) {
+                org.json.JSONObject disease = diseasesArray.getJSONObject(i);
+
+                if (disease.getString("disease_name").equalsIgnoreCase(diseaseName)) {
+                    org.json.JSONArray courseArray = disease.getJSONArray("disease_course");
+
+                    for (int j = 0; j < courseArray.length(); j++) {
+                        // Seçenekleri ComboBox'a ekle
+                        cbDiseaseCourse.getItems().add(courseArray.getString(j));
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("ComboBox Yükleme Hatası: " + e.getMessage());
+            cbDiseaseCourse.setPromptText("Seçenekler yüklenemedi");
+        }
     }
+
+    private void loadDiseaseSymptoms(String diseaseName) {
+        flowSymptoms.getChildren().clear();
+
+        try {
+            String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("database/diseases.json")));
+            org.json.JSONArray diseasesArray = new org.json.JSONArray(content);
+
+            for (int i = 0; i < diseasesArray.length(); i++) {
+                org.json.JSONObject disease = diseasesArray.getJSONObject(i);
+
+                // Hastalık adını bulduğumuzda semptomları çekiyoruz
+                if (disease.getString("disease_name").equalsIgnoreCase(diseaseName)) {
+                    org.json.JSONArray symptomsArray = disease.getJSONArray("disease_symptoms");
+
+                    for (int j = 0; j < symptomsArray.length(); j++) {
+                        String symptom = symptomsArray.getString(j);
+
+                        Label item = new Label("• " + symptom);
+                        item.setStyle("-fx-text-fill: #333333; -fx-font-size: 12px;");
+                        item.setMinWidth(90);
+                        item.setPrefWidth(90);
+                        item.setWrapText(true);
+
+                        flowSymptoms.getChildren().add(item);
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("JSON Okuma Hatası: " + e.getMessage());
+            flowSymptoms.getChildren().add(new Label("Semptomlar yüklenemedi."));
+        }
+    }
+
 
     @FXML
     private void handleSave() {
