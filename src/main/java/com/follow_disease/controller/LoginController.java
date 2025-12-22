@@ -2,7 +2,6 @@ package com.follow_disease.controller;
 
 import com.follow_disease.service.UserService;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import com.follow_disease.User;
 import com.follow_disease.Session;
 import javafx.scene.Scene;
@@ -12,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import java.io.IOException;
@@ -34,10 +32,10 @@ public class LoginController {
             // Nesnenin "Doctor" sınıfından olup olmadığını kontrol ediyoruz
             if (user instanceof com.follow_disease.Doctor) {
                 System.out.println("Sistem: Bir Doktor nesnesi tespit edildi.");
-                fxmlPath = "/doctorPage.fxml";
+                fxmlPath = "/com/follow_disease/doctorPage.fxml";
             } else {
                 System.out.println("Sistem: Bir Patient nesnesi tespit edildi.");
-                fxmlPath = "/patientPage.fxml";
+                fxmlPath = "/com/follow_disease/patientPage.fxml";
             }
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -62,7 +60,7 @@ public class LoginController {
     public void handleRegisterRedirect(javafx.event.ActionEvent event) { //event hangi buton olduğu anlaşılsın diye
         try {
 
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/register.fxml"));
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/follow_disease/register.fxml"));
             javafx.scene.Parent root = loader.load();
 
             javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();

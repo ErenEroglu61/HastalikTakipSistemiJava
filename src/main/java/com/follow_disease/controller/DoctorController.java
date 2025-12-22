@@ -29,7 +29,7 @@ import java.util.List;
 public class DoctorController {
 
     @FXML private VBox patientListContainer;
-
+    @FXML private TableView<Patient> patientTable;
     // Üst kısım
     @FXML private Label doctornameLabel;     // FXML’de senin id: doctornameLabel
     @FXML private Label doctorRoleLabel;
@@ -202,17 +202,35 @@ public class DoctorController {
         patientListContainer.getChildren().add(card);
     }
 
-    private void openPatientPopup(Patient patient) {
+    @FXML
+    private void openPatientPopup(Patient selectedPatient) {
+
+        String path = "/com/follow_disease/DoctorPagePatientDetail.fxml";
+
+        java.net.URL resource = getClass().getResource(path);
+
+        if (resource == null) {
+            resource = getClass().getClassLoader().getResource("com/follow_disease/DoctorPagePatientDetail.fxml");
+        }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/patientDetailsPopup.fxml"));
+            FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
 
+            // Controller'a veriyi gönder
+            DoctorPagePatientDetailController controller = loader.getController();
+            if (controller != null) {
+                controller.initData(selectedPatient);
+            }
+
             Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Hasta Detay: " + patient.getName());
             stage.setScene(new Scene(root));
+            stage.setTitle("Hasta Detayı"); // Başlık eklemek iyidir
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
+
         } catch (IOException e) {
+            System.err.println("HATA: FXML bulundu ama yüklenemedi!");
+            System.err.println("Sebep: FXML içindeki 'fx:controller' yolu yanlış olabilir veya dosya bozuk.");
             e.printStackTrace();
         }
     }
@@ -251,6 +269,43 @@ public class DoctorController {
         return item;
     }
 
+    @FXML
+    private void handleOpenPatientDetails() {
+        // 1. Tablodan seçili hastayı al (patientTable senin TableView değişken ismin olmalı)
+        Patient selectedPatient = patientTable.getSelectionModel().getSelectedItem();
+
+        if (selectedPatient != null) {
+            try {
+                // 2. Pop-up FXML dosyasını yükle
+                // Not: Dosya yolunun doğruluğundan emin ol (Örn: /com/follow_disease/view/...)
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/DoctorPagePatientDetail.fxml"));
+                Parent root = loader.load();
+
+                // 3. Pop-up Controller'ına ulaş ve veriyi gönder
+                DoctorPagePatientDetailController detailController = loader.getController();
+                detailController.initData(selectedPatient);
+
+                // 4. Yeni bir pencere (Stage) oluştur
+                Stage stage = new Stage();
+                stage.setTitle("Hasta Tıbbi Kaydı: " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+                stage.setScene(new Scene(root));
+
+                // 5. Modality Ayarı: Pop-up kapanmadan ana sayfa tıklanamaz hale gelir
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait(); // Pencere kapanana kadar burada bekler
+
+                // 6. Pencere kapandıktan sonra (isteğe bağlı) ana tabloyu yenile
+                patientTable.refresh();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("HATA:DoctorPagePatientDetail.fxml dosyası yüklenemedi!");
+            }
+        } else {
+            // Kullanıcıya bir hasta seçmesi gerektiğini belirten bir uyarı penceresi gösterebilirsin
+            System.out.println("Lütfen detaylarını görmek istediğiniz hastayı listeden seçin.");
+        }
+    }
     @FXML
     private void handleLogout() {
         System.out.println("Oturum kapatıldı.");

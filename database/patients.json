@@ -7,8 +7,14 @@
       "role": "hasta",
       "doctor_id": 2,
       "current_disease": "Grip",
+      "disease_history": ["Yüksek tansiyon", "Kas Ağrısı"],
       "appointmentDate": "2025-12-02",
-      "medicines": ["Parol", "Majezik"]
+      "medicines": ["Parol", "Majezik"],
+      "bloodType": "",
+      "additional_disease_course": "",
+      "additionalNote": "",
+      "selectedSymptoms": [],
+      "vitalSignsHistory": []
    },
   {
     "id": 2,
@@ -18,8 +24,14 @@
     "role": "hasta",
     "doctor_id": 1,
     "current_disease": "Grip",
+    "disease_history": ["Yüksek tansiyon", "Kusma ve Bulantı"],
     "appointmentDate": "2025-12-10",
-    "medicines": ["Parol", "Majezik"]
+    "medicines": ["Parol", "Majezik"],
+    "bloodType": "",
+    "additional_disease_course": "",
+    "additionalNote": "",
+    "selectedSymptoms": [],
+    "vitalSignsHistory": []
   },
   {
     "id": 3,
@@ -29,7 +41,13 @@
     "role": "hasta",
     "doctor_id": 2,
     "current_disease": "Migren",
+    "disease_history": [],
     "appointmentDate": "2023-12-19",
-    "medicines": ["Parol", "Majezik"]
+    "medicines": ["Parol", "Majezik"],
+    "bloodType": "",
+    "additional_disease_course": "",
+    "additionalNote": "",
+    "selectedSymptoms": [],
+    "vitalSignsHistory": []
   }
   ]

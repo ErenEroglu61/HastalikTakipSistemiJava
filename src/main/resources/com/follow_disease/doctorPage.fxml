@@ -143,7 +143,7 @@
                                                         </HBox>
                                                     </children>
                                                 </VBox>
-                                                <Button text="Detayları Gör" style="-fx-background-color: #F8FAFC; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 6 12; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
+                                                <Button text="Detayları Gör" onAction="#handleOpenPatientDetails"  style="-fx-background-color: #F8FAFC; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 6 12; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
                                             </children>
                                         </HBox>
                                     </children>

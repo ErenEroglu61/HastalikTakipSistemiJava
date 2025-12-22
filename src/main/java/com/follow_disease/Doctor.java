@@ -30,4 +30,5 @@ public class Doctor extends User {
         return branch + " Bölümü - " + medical_title;
     }
 
+
 }
