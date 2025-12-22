@@ -1,56 +1,94 @@
 [
-  {
-      "id": 1,
-      "tc": "12345678901",
-      "name": "Test",
-      "surname": "Kullanıcısı",
-      "role": "hasta",
-      "doctor_id": 2,
-      "current_disease": "Grip",
-      "disease_history": ["Yüksek tansiyon", "Kas Ağrısı"],
-      "appointmentDate": "2025-12-02",
-      "current_medicine": ["Calpol"],
-      "medicines": ["Parol", "Majezik", "D Vitamini Takviye "],
-      "bloodType": "",
-      "additional_disease_course": "",
-      "additionalNote": "",
-      "selectedSymptoms": [],
-      "vitalSignsHistory": []
-   },
-  {
-    "id": 2,
-    "tc": "12345678902",
-    "name": "Ahmet",
-    "surname": "Yılmaz",
-    "role": "hasta",
-    "doctor_id": 1,
-    "current_disease": "Grip",
-    "disease_history": ["Yüksek tansiyon", "Kusma ve Bulantı"],
-    "appointmentDate": "2025-12-10",
-    "current_medicine": ["Iburamin Cold"],
-    "medicines": ["Parol", "Majezik"],
-    "bloodType": "",
-    "additional_disease_course": "",
-    "additionalNote": "",
-    "selectedSymptoms": [],
-    "vitalSignsHistory": []
-  },
-  {
-    "id": 3,
-    "tc": "12345678903",
-    "name": "Ayşe",
-    "surname": "Demir",
-    "role": "hasta",
-    "doctor_id": 2,
-    "current_disease": "Migren",
-    "disease_history": [],
-    "appointmentDate": "2023-12-19",
-    "current_medicine": ["Dideral"],
-    "medicines": ["Parol", "Majezik"],
-    "bloodType": "",
-    "additional_disease_course": "",
-    "additionalNote": "",
-    "selectedSymptoms": [],
-    "vitalSignsHistory": []
-  }
-  ]
+    {
+        "role": "hasta",
+        "medicines": [
+            "Parol",
+            "Majezik",
+            "D Vitamini Takviye "
+        ],
+        "current_medicine": ["Calpol"],
+        "disease_history": [
+            "Yüksek tansiyon",
+            "Kas Ağrısı"
+        ],
+        "bloodType": "",
+        "additional_disease_course": "Tekrar randevu almanız gerekiyor",
+        "additionalPatientNote": "",
+        "tc": "12345678901",
+        "current_disease": "Grip",
+        "doctor_id": 2,
+        "selectedSymptoms": [],
+        "additionalDoctorNote": "Titreme yapabilir",
+        "surname": "Kullanıcısı",
+        "name": "Test",
+        "id": 1,
+        "additional_medicines": ["Iburamin Cold"],
+        "vitalSignsHistory": [],
+        "appointmentDate": "2025-12-02",
+        "prescriptions": ["TZ5698KL"]
+    },
+    {
+        "role": "hasta",
+        "medicines": [
+            "Parol",
+            "Majezik"
+        ],
+        "current_medicine": ["Iburamin Cold"],
+        "disease_history": [
+            "Yüksek tansiyon",
+            "Kusma ve Bulantı"
+        ],
+        "bloodType": "",
+        "additional_disease_course": "",
+        "additionalPatientNote": "",
+        "tc": "12345678902",
+        "current_disease": "Grip",
+        "doctor_id": 1,
+        "selectedSymptoms": [],
+        "additionalDoctorNote": "",
+        "surname": "Yılmaz",
+        "name": "Ahmet",
+        "id": 2,
+        "additional_medicines": [],
+        "vitalSignsHistory": [],
+        "appointmentDate": "2025-12-10",
+        "prescriptions": []
+    },
+    {
+        "role": "hasta",
+        "medicines": [
+            "Parol",
+            "Majezik"
+        ],
+        "current_medicine": ["Dideral"],
+        "disease_history": [],
+        "bloodType": "",
+        "additional_disease_course": "Atak dönemi",
+        "additionalPatientNote": "",
+        "tc": "12345678903",
+        "current_disease": "Migren",
+        "doctor_id": 2,
+        "selectedSymptoms": [],
+        "additionalDoctorNote": "Bulanık görme yapabilir.",
+        "surname": "Demir",
+        "name": "Ayşe",
+        "id": 3,
+        "additional_medicines": ["Topamax"],
+        "vitalSignsHistory": [
+            {
+                "date": "2025-12-22",
+                "bloodPressure": "12/8",
+                "pulse": 75,
+                "sugar": 120
+            },
+            {
+                "date": "2025-12-23",
+                "bloodPressure": "11/7",
+                "pulse": 72,
+                "sugar": 115
+            }
+        ],
+        "appointmentDate": "2023-12-19",
+        "prescriptions": ["X15T96"]
+    }
+]

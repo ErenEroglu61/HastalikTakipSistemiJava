@@ -31,10 +31,8 @@ public class LoginController {
 
             // Nesnenin "Doctor" sınıfından olup olmadığını kontrol ediyoruz
             if (user instanceof com.follow_disease.Doctor) {
-                System.out.println("Sistem: Bir Doktor nesnesi tespit edildi.");
                 fxmlPath = "/com/follow_disease/doctorPage.fxml";
             } else {
-                System.out.println("Sistem: Bir Patient nesnesi tespit edildi.");
                 fxmlPath = "/com/follow_disease/patientPage.fxml";
             }
             try {

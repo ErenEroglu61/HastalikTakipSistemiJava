@@ -8,12 +8,15 @@ public class Patient extends User {
     private int doctor_id;
     private String current_disease;
     private String appointmentDate;
+    private String additionalPatientNote;
     private List<String> current_medicine;
+    private List<String> additional_medicines;
+    private List<String> prescriptions;
     private List<String> medicines;
     private List<String> disease_history;
     private String bloodType;
     private String additional_disease_course;
-    private String additionalNote;
+    private String additionalDoctorNote;
     private List<String> selectedSymptoms;
     private List<VitalSign> vitalSignsHistory;
     private String prescriptionCode;
@@ -21,21 +24,24 @@ public class Patient extends User {
     public Patient() {}
 
     public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age,
-                   String gender, int doctor_id, String current_disease, String appointmentDate, List<String> medicines, List<String> current_medicine,
-                   List<String> disease_history, String bloodType, String additional_disease_course,
-                   String additionalNote, List<String> selectedSymptoms, List<VitalSign> vitalSignsHistory, String prescriptionCode) {
+                   String gender, int doctor_id, String current_disease, String appointmentDate, String additionalPatientNote, List<String> medicines, List<String> current_medicine,
+                   List<String> additional_medicines, List<String> prescriptions, List<String> disease_history, String bloodType, String additional_disease_course,
+                   String additionalDoctorNote, List<String> selectedSymptoms, List<VitalSign> vitalSignsHistory, String prescriptionCode) {
 
         super(id, tc, name, surname, age, gender, phone, email, password, "hasta");
         this.doctor_id = doctor_id;
         this.current_disease = current_disease;
         this.appointmentDate = appointmentDate;
 
+        this.additionalPatientNote = additionalPatientNote;
         this.bloodType = (bloodType == null) ? "" : bloodType;
         this.additional_disease_course = (additional_disease_course == null) ? "" : additional_disease_course;
-        this.additionalNote = (additionalNote == null) ? "" : additionalNote;
+        this.additionalDoctorNote = (additionalDoctorNote == null) ? "" : additionalDoctorNote;
         this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
 
-        this.current_medicine = (current_medicine == null) ? new ArrayList<>() : medicines;
+        this.current_medicine = (current_medicine == null) ? new ArrayList<>() : current_medicine;
+        this.additional_medicines = (additional_medicines == null) ? new ArrayList<>() : additional_medicines;
+        this.prescriptions = (prescriptions == null) ? new ArrayList<>() : prescriptions;
         this.medicines = (medicines == null) ? new ArrayList<>() : medicines;
         this.disease_history = (disease_history == null) ? new ArrayList<>() : disease_history;
         this.selectedSymptoms = (selectedSymptoms == null) ? new ArrayList<>() : selectedSymptoms;
@@ -53,8 +59,17 @@ public class Patient extends User {
     public String getAppointmentDate() { return appointmentDate; }
     public void setAppointmentDate(String appointmentDate) { this.appointmentDate = appointmentDate; }
 
+    public String getAdditionalPatientNote() { return additionalPatientNote; }
+    public void setAdditionalPatientNote(String additionalPatientNote) { this.additionalPatientNote = additionalPatientNote; }
+
     public List<String> getCurrent_medicine() { return current_medicine; }
     public void setCurrent_medicine(List<String> current_medicine) { this.current_medicine = current_medicine;}
+
+    public List<String> getAdditional_medicines() { return additional_medicines; }
+    public void setAdditional_medicines(List<String> additional_medicines) {this.additional_medicines = additional_medicines;}
+
+    public List<String> getPrescriptions() { return prescriptions; }
+    public void setPrescriptions(List<String> prescriptions) {this.prescriptions = prescriptions;}
 
     public List<String> getMedicines() { return medicines; }
     public void setMedicines(List<String> medicines) { this.medicines = medicines; }
@@ -68,8 +83,8 @@ public class Patient extends User {
     public String getAdditional_disease_course() { return additional_disease_course; }
     public void setAdditional_disease_course(String additional_disease_course) { this.additional_disease_course = additional_disease_course; }
 
-    public String getAdditionalNote() { return additionalNote; }
-    public void setAdditionalNote(String additionalNote) { this.additionalNote = additionalNote; }
+    public String getAdditionalDoctorNote() { return additionalDoctorNote; }
+    public void setAdditionalDoctorNote(String additionalNote) { this.additionalDoctorNote = additionalNote; }
 
     public List<String> getSelectedSymptoms() { return selectedSymptoms; }
     public void setSelectedSymptoms(List<String> selectedSymptoms) { this.selectedSymptoms = selectedSymptoms; }

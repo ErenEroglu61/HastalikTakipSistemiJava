@@ -15,9 +15,10 @@ public class DoctorPagePatientDetailController {
     // FXML Bağlantıları
     @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
     @FXML private TableView<VitalSign> tblVitalSigns;
-    @FXML private TableColumn<VitalSign, String> colDate, colPressure;
-    @FXML private TableColumn<VitalSign, Double> colSugar;
+    @FXML private TableColumn<VitalSign, String> colDate, colBloodPressure;
+    @FXML private TableColumn<VitalSign, Double> colSugar, colFever;
     @FXML private TableColumn<VitalSign, Integer> colPulse;
+
     @FXML private FlowPane flowSymptoms;
     @FXML private TextArea txtAdditionalComplaints;
     @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
@@ -30,8 +31,9 @@ public class DoctorPagePatientDetailController {
         // 1. Tablo Sütunlarını VitalSign sınıfındaki değişkenlerle bağlıyoruz
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colSugar.setCellValueFactory(new PropertyValueFactory<>("sugar"));
-        colPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
+        colBloodPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
         colPulse.setCellValueFactory(new PropertyValueFactory<>("pulse"));
+        colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
     }
 
     // Bu metodu ana sayfadan çağıracağız
@@ -44,12 +46,16 @@ public class DoctorPagePatientDetailController {
         lblActiveDisease.setText(patient.getCurrent_disease());
         lblAppointmentDate.setText("Teşhis Tarihi: " + patient.getAppointmentDate());
 
-        // --- Vital Bulgular Tablosu ---
-        if (patient.getVitalSignsHistory() != null) {
+        // vital bulgular tablosu
+
+        if (patient.getVitalSignsHistory() != null && !patient.getVitalSignsHistory().isEmpty()) {
             tblVitalSigns.setItems(FXCollections.observableArrayList(patient.getVitalSignsHistory()));
+        } else {
+            tblVitalSigns.setItems(FXCollections.observableArrayList());
+            tblVitalSigns.setPlaceholder(new Label("Hastaya ait ölçüm kaydı bulunmamaktadır."));
         }
 
-        // 1. Aktif İlaç (current_medicine)
+        //  Aktif İlaç
         // Listeyi virgülle ayrılmış bir String'e çeviriyoruz
         List<String> activeMedList = patient.getCurrent_medicine();
 
@@ -68,17 +74,31 @@ public class DoctorPagePatientDetailController {
             lblOtherMedicines.setText("• " + medsText);
         }
 
-        // --- Semptomlar ve Notlar ---
-        loadDiseaseSymptoms(patient.getCurrent_disease());
-        txtAdditionalComplaints.setText(patient.getAdditionalNote());
+        // Semptomlar ve Notlar
+        displaySelectedSymptoms(patient.getSelectedSymptoms());
+        txtAdditionalComplaints.setText(patient.getAdditionalPatientNote());
 
-        // --- Dinamik ComboBox Yükleme ---
+        // doktoru  yazdığı ilaç
+        if (patient.getAdditional_medicines() != null && !patient.getAdditional_medicines().isEmpty()) {
+            // Listenin son elemanını alıyoruz
+            String sonIlac = patient.getAdditional_medicines().get(patient.getAdditional_medicines().size() - 1);
+            txtMedicineName.setText(sonIlac);
+        }
+
+        // Yazılan recete kodu
+        if (patient.getPrescriptions() != null && !patient.getPrescriptions().isEmpty()) {
+            // Listenin son elemanını alıyoruz
+            String sonRecete = patient.getPrescriptions().get(patient.getPrescriptions().size() - 1);
+            txtPrescriptionCode.setText(sonRecete);
+        }
+        // Dinamik ComboBox Yükleme
         loadCourseOptions(patient.getCurrent_disease());
 
         // Eğer daha önce bir gidişat kaydedilmişse onu ComboBox'ta göster
         if (patient.getAdditional_disease_course() != null && !patient.getAdditional_disease_course().isEmpty()) {
             cbDiseaseCourse.setValue(patient.getAdditional_disease_course());
         }
+        txtSideEffect.setText(patient.getAdditionalDoctorNote());
     }
 
     private void loadCourseOptions(String diseaseName) {
@@ -107,69 +127,91 @@ public class DoctorPagePatientDetailController {
         }
     }
 
-    private void loadDiseaseSymptoms(String diseaseName) {
+    private void displaySelectedSymptoms(List<String> selectedSymptoms) {
+
         flowSymptoms.getChildren().clear();
 
-        try {
-            String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("database/diseases.json")));
-            org.json.JSONArray diseasesArray = new org.json.JSONArray(content);
+        if (selectedSymptoms == null || selectedSymptoms.isEmpty()) {
+            Label emptyLabel = new Label("Hasta herhangi bir semptom seçmedi.");
+            emptyLabel.setStyle("-fx-text-fill: #757575; -fx-font-style: italic;");
+            flowSymptoms.getChildren().add(emptyLabel);
+            return;
+        }
 
-            for (int i = 0; i < diseasesArray.length(); i++) {
-                org.json.JSONObject disease = diseasesArray.getJSONObject(i);
+        // Sadece hastanın seçtiği semptomları dönüyoruz
+        for (String symptom : selectedSymptoms) {
+            Label item = new Label("• " + symptom);
 
-                // Hastalık adını bulduğumuzda semptomları çekiyoruz
-                if (disease.getString("disease_name").equalsIgnoreCase(diseaseName)) {
-                    org.json.JSONArray symptomsArray = disease.getJSONArray("disease_symptoms");
+            item.setStyle("-fx-text-fill: #333333; -fx-font-size: 11px;");
 
-                    for (int j = 0; j < symptomsArray.length(); j++) {
-                        String symptom = symptomsArray.getString(j);
+            item.setMinWidth(90);
+            item.setPrefWidth(90);
+            item.setWrapText(true);
 
-                        Label item = new Label("• " + symptom);
-                        item.setStyle("-fx-text-fill: #333333; -fx-font-size: 12px;");
-                        item.setMinWidth(90);
-                        item.setPrefWidth(90);
-                        item.setWrapText(true);
-
-                        flowSymptoms.getChildren().add(item);
-                    }
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("JSON Okuma Hatası: " + e.getMessage());
-            flowSymptoms.getChildren().add(new Label("Semptomlar yüklenemedi."));
+            flowSymptoms.getChildren().add(item);
         }
     }
 
 
     @FXML
     private void handleSave() {
-        // 1. Doktorun girdiği verileri al
-        String medicineName = txtMedicineName.getText();
-        String medicineCode = txtPrescriptionCode.getText(); // Kod ayrı alınıyor
 
-        // Custom gidişat alanı doluysa onu kullan, değilse ComboBox'ı kullan
-        String finalCourse = (txtCustomCourse.getText() != null && !txtCustomCourse.getText().isEmpty())
-                ? txtCustomCourse.getText()
-                : cbDiseaseCourse.getValue();
+        String newMedicine = txtMedicineName.getText();
+        String newPrescription = txtPrescriptionCode.getText();
+        String sideEffects = txtSideEffect.getText();
+        String feedback = txtCustomCourse.getText();
+        String courseFromCombo = cbDiseaseCourse.getValue();
 
-        // 2. Patient nesnesini güncelle (Bellekteki veriyi güncelliyoruz)
-        if (medicineName != null && !medicineName.isEmpty()) {
-            currentPatient.getMedicines().add(medicineName); // Sadece adı listeye ekle
+        //öncelik doktorun yazdığında
+        String finalCourse = (feedback != null && !feedback.isEmpty()) ? feedback : courseFromCombo;
+        currentPatient.setAdditional_disease_course(finalCourse);
+
+        currentPatient.setAdditionalDoctorNote(sideEffects);
+
+        // İlaç ve reçete için liste boşsa veya son eklenen reçete kodu şimdikinden farklıysa ekliyoruz
+        if (newMedicine != null && !newMedicine.isEmpty()) {
+            List<String> meds = currentPatient.getAdditional_medicines();
+            if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(newMedicine.trim())) {
+                meds.add(newMedicine.trim());
+            }
         }
 
-        if (medicineCode != null && !medicineCode.isEmpty()) {
-            currentPatient.setPrescriptionCode(medicineCode); // Kodu ayrı alana set et
+        if (newPrescription != null && !newPrescription.isEmpty()) {
+            List<String> prescriptions = currentPatient.getPrescriptions();
+            if (prescriptions.isEmpty() || !prescriptions.get(prescriptions.size() - 1).equalsIgnoreCase(newPrescription.trim())) {
+                prescriptions.add(newPrescription.trim());
+            }
         }
 
-        if (finalCourse != null) {
-            currentPatient.setAdditional_disease_course(finalCourse);
-        }
-
-        System.out.println("Kayıt başarılı: " + currentPatient.getName() + " için veriler güncellendi.");
-
-        // Pencereyi kapat (Kaydetme işlemini ana sayfadaki metodun tetiklemesi daha sağlıklıdır)
+        savePatientDataToJson(currentPatient);
         handleClose();
+    }
+    private void savePatientDataToJson(Patient patient) {
+        try {
+            //  Tüm hastaları okuyup ilgili hastayı buluyoruz
+            String pathString = "database/patients.json";
+            java.nio.file.Path filePath = java.nio.file.Paths.get(pathString);
+            String content = new String(java.nio.file.Files.readAllBytes(filePath));
+            org.json.JSONArray patientsArray = new org.json.JSONArray(content);
+
+            for (int i = 0; i < patientsArray.length(); i++) {
+                org.json.JSONObject pJson = patientsArray.getJSONObject(i);
+
+                if (pJson.getString("tc").equals(patient.getTc())) {
+
+                    pJson.put("additional_disease_course", patient.getAdditional_disease_course());
+                    pJson.put("additionalPatientNote", patient.getAdditionalPatientNote());
+                    pJson.put("additional_medicines", patient.getAdditional_medicines());
+                    pJson.put("prescriptions", patient.getPrescriptions());
+                    pJson.put("additionalDoctorNote", patient.getAdditionalDoctorNote());
+                    break;
+                }
+            }
+            java.nio.file.Files.write(filePath, patientsArray.toString(4).getBytes());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
