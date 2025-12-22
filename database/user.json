@@ -5,11 +5,13 @@
     "name": "Test",
     "surname": "Kullanicisi",
     "age": "20",
+    "gender": "Kadın",
     "phone": "05636544512",
     "email": "test@gmail.com",
     "password": "1234",
     "role": "hasta",
-    "gender": "Kadın"
+    "branch": "",
+    "medical_title": ""
   },
   {
     "id": 2,
@@ -17,11 +19,13 @@
     "name": "Ahmet",
     "surname": "Yılmaz",
     "age": "35",
+    "gender": "Erkek",
     "phone": "05424565251",
     "email": "ahmet@gmail.com",
     "password": "12345",
     "role": "hasta",
-    "gender": "Erkek"
+    "branch": "",
+    "medical_title": ""
   },
   {
     "id": 3,
@@ -29,11 +33,13 @@
     "name": "Ayşe",
     "surname": "Demir",
     "age": "20",
+    "gender": "Kadın",
     "phone": "05899875665",
     "email": "ayse@gmail.com",
     "password": "12345",
     "role": "hasta",
-    "gender": "Kadın"
+    "branch": "",
+    "medical_title": ""
   },
   {
     "id": 4,
@@ -41,11 +47,13 @@
     "name": "Mehmet",
     "surname": "Öztekin",
     "age": "35",
+    "gender": "Erkek",
     "phone": "05414562123",
     "email": "mehmetoztekin@gmail.com",
     "password": "123456",
     "role": "doktor",
-    "gender": "Erkek"
+    "branch": "",
+    "medical_title": ""
   },
   {
     "id": 5,
@@ -53,11 +61,13 @@
     "name": "Zeynep",
     "surname": "Çelik",
     "age": "46",
+    "gender": "Kadın",
     "phone": "05989635662",
     "email": "zeynep@gmail.com",
     "password": "123456",
     "role": "doktor",
-    "gender": "Kadın"
+    "branch": "",
+    "medical_title": ""
   },
   {
     "id": 6,
@@ -65,10 +75,26 @@
     "name": "Erdem",
     "surname": "Yılmaz",
     "age": "30",
+    "gender": "Erkek",
     "phone": "05459876365",
     "email": "erdem@gmail.com",
     "password": "123456",
     "role": "doktor",
-    "gender": "Erkek"
+    "branch": "",
+    "medical_title": ""
+  },
+  {
+    "id": 7,
+    "tc": "12345678904",
+    "name": "Meryem Kübra",
+    "surname": "Bugur",
+    "age": "20",
+    "gender": "Kadın",
+    "phone": "05654568921",
+    "email": "meryem@gmail.com",
+    "password": "12345",
+    "role": "hasta",
+    "branch": "",
+    "medical_title": ""
   }
 ]

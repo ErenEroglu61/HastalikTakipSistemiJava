@@ -8,6 +8,7 @@ public class Patient extends User {
     private int doctor_id;
     private String current_disease;
     private String appointmentDate;
+    private List<String> current_medicine;
     private List<String> medicines;
     private List<String> disease_history;
     private String bloodType;
@@ -20,7 +21,7 @@ public class Patient extends User {
     public Patient() {}
 
     public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age,
-                   String gender, int doctor_id, String current_disease, String appointmentDate, List<String> medicines,
+                   String gender, int doctor_id, String current_disease, String appointmentDate, List<String> medicines, List<String> current_medicine,
                    List<String> disease_history, String bloodType, String additional_disease_course,
                    String additionalNote, List<String> selectedSymptoms, List<VitalSign> vitalSignsHistory, String prescriptionCode) {
 
@@ -34,6 +35,7 @@ public class Patient extends User {
         this.additionalNote = (additionalNote == null) ? "" : additionalNote;
         this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
 
+        this.current_medicine = (current_medicine == null) ? new ArrayList<>() : medicines;
         this.medicines = (medicines == null) ? new ArrayList<>() : medicines;
         this.disease_history = (disease_history == null) ? new ArrayList<>() : disease_history;
         this.selectedSymptoms = (selectedSymptoms == null) ? new ArrayList<>() : selectedSymptoms;
@@ -50,6 +52,9 @@ public class Patient extends User {
 
     public String getAppointmentDate() { return appointmentDate; }
     public void setAppointmentDate(String appointmentDate) { this.appointmentDate = appointmentDate; }
+
+    public List<String> getCurrent_medicine() { return current_medicine; }
+    public void setCurrent_medicine(List<String> current_medicine) { this.current_medicine = current_medicine;}
 
     public List<String> getMedicines() { return medicines; }
     public void setMedicines(List<String> medicines) { this.medicines = medicines; }

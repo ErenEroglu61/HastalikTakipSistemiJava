@@ -3,6 +3,7 @@
   { "tc": "12345678902", "name": "Ahmet", "surname": "Yılmaz"},
   { "tc": "12345678903", "name": "Ayşe", "surname": "Demir"},
   { "tc": "12345678911", "name": "Mehmet", "surname": "Öztekin" },
-  { "tc": "12345678912", "name": "Zeynep", "surname": "Çelik"}
+  { "tc": "12345678912", "name": "Zeynep", "surname": "Çelik"},
+  { "tc": "12345678904", "name":  "Meryem Kübra", "surname":  "Bugur"}
 
 ]

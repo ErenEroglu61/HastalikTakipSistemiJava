@@ -12,14 +12,14 @@ import java.util.List;
 public class DoctorPagePatientDetailController {
 
     // FXML Bağlantıları
-    @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate;
+    @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
     @FXML private TableView<VitalSign> tblVitalSigns;
     @FXML private TableColumn<VitalSign, String> colDate, colPressure;
     @FXML private TableColumn<VitalSign, Double> colSugar;
     @FXML private TableColumn<VitalSign, Integer> colPulse;
     @FXML private ListView<String> lstSymptoms;
     @FXML private TextArea txtAdditionalComplaints;
-    @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse;
+    @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
     @FXML private ComboBox<String> cbDiseaseCourse;
 
     private Patient currentPatient;
@@ -46,6 +46,25 @@ public class DoctorPagePatientDetailController {
         // --- Vital Bulgular Tablosu ---
         if (patient.getVitalSignsHistory() != null) {
             tblVitalSigns.setItems(FXCollections.observableArrayList(patient.getVitalSignsHistory()));
+        }
+
+        // 1. Aktif İlaç (current_medicine)
+        // Listeyi virgülle ayrılmış bir String'e çeviriyoruz
+        List<String> activeMedList = patient.getCurrent_medicine();
+
+        if (activeMedList == null || activeMedList.isEmpty()) {
+            lblCurrentMedicine.setText("Yok");
+        } else {
+            // Listenin tamamını virgülle ayırıp yazar (Örn: "Parol, Aspirin")
+            String text = String.join(", ", activeMedList);
+            lblCurrentMedicine.setText(text);
+        }
+
+        // 2. Diğer İlaçlar Listesi (medicines [])
+        List<String> otherMeds = patient.getMedicines();
+        if (otherMeds != null && !otherMeds.isEmpty()) {
+            String medsText = String.join("\n• ", otherMeds); // Her ilacı yeni satıra ve madde işaretiyle ekler
+            lblOtherMedicines.setText("• " + medsText);
         }
 
         // --- Semptomlar ve Notlar ---
