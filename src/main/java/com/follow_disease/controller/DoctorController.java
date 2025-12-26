@@ -22,7 +22,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -30,303 +29,295 @@ import java.util.List;
 
 public class DoctorController {
 
-    @FXML private VBox patientListContainer;
-    @FXML private TableView<Patient> patientTable;
+  @FXML private VBox patientListContainer;
+  @FXML private TableView<Patient> patientTable;
 
-    @FXML private Label doctornameLabel;
-    @FXML private Label doctorRoleLabel;
+  @FXML private Label doctornameLabel;
+  @FXML private Label doctorRoleLabel;
 
-    @FXML private Label emailLabel;
-    @FXML private Label branchLabel;
-    @FXML private Label titleLabel;
-    @FXML private Label ageLabel;
-    @FXML private Label genderLabel;
-    @FXML private Label phoneLabel;
-    @FXML private Label tcLabel;
-    @FXML private Label passwordLabel;
+  @FXML private Label emailLabel;
+  @FXML private Label branchLabel;
+  @FXML private Label titleLabel;
+  @FXML private Label ageLabel;
+  @FXML private Label genderLabel;
+  @FXML private Label phoneLabel;
+  @FXML private Label tcLabel;
+  @FXML private Label passwordLabel;
 
-    // Bildirim
-    @FXML private MenuButton notificationMenuButton;
-    @FXML private Circle notificationBadge;
+  // Bildirim
+  @FXML private MenuButton notificationMenuButton;
+  @FXML private Circle notificationBadge;
 
-    private int currentDoctorId = -1;
+  private int currentDoctorId = -1;
 
-    @FXML
-    public void initialize() {
-        if (notificationMenuButton != null) {
-            Label bellIcon = new Label("\uD83D\uDD14");
-            bellIcon.setStyle("-fx-font-size: 18; -fx-text-fill: #1976D2;");
-            notificationMenuButton.setGraphic(bellIcon);
-            notificationMenuButton.setText("");
+  @FXML
+  public void initialize() {
+    if (notificationMenuButton != null) {
+      Label bellIcon = new Label("\uD83D\uDD14");
+      bellIcon.setStyle("-fx-font-size: 18; -fx-text-fill: #1976D2;");
+      notificationMenuButton.setGraphic(bellIcon);
+      notificationMenuButton.setText("");
+    }
+
+    loadNotifications();
+    loadDoctorUIFromSession();
+    loadPatientsForDoctor();
+  }
+
+  private void loadDoctorUIFromSession() {
+    User u = Session.getCurrentUser();
+    if (u == null) {
+      System.err.println("Session currentUser null! Login sonrası Session.setCurrentUser() çağrılmalı.");
+      return;
+    }
+
+    // Sol panel: user.json'dan gelenler
+    doctornameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
+    doctorRoleLabel.setText("Doktor Profili");
+    emailLabel.setText(safe(u.getEmail()));
+
+    ageLabel.setText(safe(u.getAge()));
+    genderLabel.setText(safe(u.getGender()));
+    phoneLabel.setText(safe(u.getPhone()));
+    tcLabel.setText(safe(u.getTc()));
+    passwordLabel.setText(safe(u.getPassword()));
+
+    // doctors.json'dan branch/title
+    Doctor d = JsonDb.findDoctorByTc(u.getTc());
+    if (d != null) {
+      currentDoctorId = d.getId();
+      branchLabel.setText(safe(d.getBranch()));
+      titleLabel.setText(safe(d.getMedical_title()));
+    } else {
+      // Doktor TC doctors.json'da yoksa yine UI boş kalmasın
+      branchLabel.setText("-");
+      titleLabel.setText("-");
+      currentDoctorId = -1;
+    }
+  }
+
+  private void loadPatientsForDoctor() {
+    patientListContainer.getChildren().clear();
+    if (currentDoctorId == -1) return;
+
+    Gson gson = new Gson();
+    try (FileReader reader = new FileReader("database/patients.json")) {
+      Type patientListType = new TypeToken<List<Patient>>(){}.getType();
+      List<Patient> allPatients = gson.fromJson(reader, patientListType);
+
+      if (allPatients != null) {
+        for (Patient p : allPatients) {
+          if (p.getDoctor_id() == currentDoctorId) {
+            addPatientCard(p);
+          }
         }
+      }
+    } catch (IOException e) {
+      System.err.println("Patient dosyası okuma hatası: " + e.getMessage());
+    }
+  }
 
-        loadNotifications();
-        loadDoctorUIFromSession();
-        loadPatientsForDoctor();
+  // PROFİLİMİ GÜNCELLE butonu
+  @FXML
+  private void handleUpdateProfile(ActionEvent event) {
+    User u = Session.getCurrentUser();
+    if (u == null) return;
+
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Profil Güncelle (Doktor)");
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+    TextField age = new TextField(safe(u.getAge()));
+    TextField gender = new TextField(safe(u.getGender()));
+    TextField phone = new TextField(safe(u.getPhone()));
+    PasswordField pass = new PasswordField();
+    pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+
+    int r = 0;
+    grid.addRow(r++, new Label("Yaş:"), age);
+    grid.addRow(r++, new Label("Cinsiyet:"), gender);
+    grid.addRow(r++, new Label("Tel No:"), phone);
+    grid.addRow(r++, new Label("Şifre:"), pass);
+
+    dialog.getDialogPane().setContent(grid);
+
+    ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
+    if (res != ButtonType.OK) return;
+
+    boolean ok = ProfileService.updateDoctor(u, age.getText(), gender.getText(), phone.getText(), pass.getText());
+    if (!ok) {
+      new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
+      return;
     }
 
-    private void loadDoctorUIFromSession() {
-        User u = Session.getCurrentUser();
-        if (u == null) {
-            System.err.println("Session currentUser null! Login sonrası Session.setCurrentUser() çağrılmalı.");
-            return;
-        }
+    // UI refresh
+    User nu = Session.getCurrentUser();
+    ageLabel.setText(safe(nu.getAge()));
+    genderLabel.setText(safe(nu.getGender()));
+    phoneLabel.setText(safe(nu.getPhone()));
 
-        // Sol panel: user.json’dan gelenler
-        doctornameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
-        doctorRoleLabel.setText("Doktor Profili");
-        emailLabel.setText(safe(u.getEmail()));
+    new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
+  }
 
-        ageLabel.setText(safe(u.getAge()));
-        genderLabel.setText(safe(u.getGender()));
-        phoneLabel.setText(safe(u.getPhone()));
-        tcLabel.setText(safe(u.getTc()));
-        passwordLabel.setText(safe(u.getPassword()));
+  private void addPatientCard(Patient patient) {
+    HBox card = new HBox(20);
+    card.setStyle("-fx-background-color: white; " +
+      "-fx-background-radius: 15; " +
+      "-fx-border-color: #D1D5DB; " +
+      "-fx-border-width: 1.5; " +
+      "-fx-border-radius: 15; " +
+      "-fx-padding: 15; " +
+      "-fx-alignment: center-left;");
 
-        // doctors.json’dan branch/title
-        Doctor d = JsonDb.findDoctorByTc(u.getTc());
-        if (d != null) {
-            currentDoctorId = d.getId();
-            branchLabel.setText(safe(d.getBranch()));
-            titleLabel.setText(safe(d.getMedical_title()));
-        } else {
-            // Doktor TC doctors.json’da yoksa yine UI boş kalmasın
-            branchLabel.setText("-");
-            titleLabel.setText("-");
-            currentDoctorId = -1;
-        }
+    DropShadow blueShadow = new DropShadow();
+    blueShadow.setColor(Color.web("#1976D233"));
+    blueShadow.setRadius(15);
+    blueShadow.setOffsetY(5);
+    card.setEffect(blueShadow);
+
+    VBox infoBox = new VBox(5);
+    Label name = new Label(patient.getName() + " " + patient.getSurname());
+    name.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #334155;");
+
+    String dateInfo = patient.getAppointmentDate() != null ? patient.getAppointmentDate() : "Tarih Belirtilmedi";
+    String diseaseInfo = patient.getCurrent_disease() != null ? patient.getCurrent_disease() : "Tanı Konulmadı";
+
+    Label details = new Label("📅 " + dateInfo + "  •  Durum: " + diseaseInfo);
+    details.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
+
+    infoBox.getChildren().addAll(name, details);
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    Button btnDetails = new Button("Detayları Gör");
+    btnDetails.setStyle("-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; " +
+      "-fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 8 18;");
+    btnDetails.setOnAction(e -> openPatientPopup(patient));
+
+    card.getChildren().addAll(infoBox, spacer, btnDetails);
+    patientListContainer.getChildren().add(card);
+  }
+
+  @FXML
+  private void openPatientPopup(Patient selectedPatient) {
+    String path = "/com/follow_disease/DoctorPagePatientDetail.fxml";
+
+    java.net.URL resource = getClass().getResource(path);
+
+    if (resource == null) {
+      resource = getClass().getClassLoader().getResource("com/follow_disease/DoctorPagePatientDetail.fxml");
     }
+    try {
+      FXMLLoader loader = new FXMLLoader(resource);
+      Parent root = loader.load();
 
-    private void loadPatientsForDoctor() {
-        patientListContainer.getChildren().clear();
-        if (currentDoctorId == -1) return;
+      DoctorPagePatientDetailController controller = loader.getController();
+      if (controller != null) {
+        controller.initData(selectedPatient);
+      }
 
-        Gson gson = new Gson();
-        try (FileReader reader = new FileReader("database/patients.json")) {
-            Type patientListType = new TypeToken<List<Patient>>(){}.getType();
-            List<Patient> allPatients = gson.fromJson(reader, patientListType);
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Hasta Detayı");
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.show();
 
-            if (allPatients != null) {
-                for (Patient p : allPatients) {
-                    if (p.getDoctor_id() == currentDoctorId) {
-                        addPatientCard(p);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Patient dosyası okuma hatası: " + e.getMessage());
-        }
+    } catch (IOException e) {
+      System.err.println("HATA: FXML bulundu ama yüklenemedi!");
+      System.err.println("Sebep: FXML içindeki 'fx:controller' yolu yanlış olabilir veya dosya bozuk.");
+      e.printStackTrace();
     }
+  }
 
-    // PROFİLİMİ GÜNCELLE butonu
-    @FXML
-    private void handleUpdateProfile(ActionEvent event) {
-        User u = Session.getCurrentUser();
-        if (u == null) return;
+  private void loadNotifications() {
+    notificationMenuButton.getItems().clear();
 
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Profil Güncelle (Doktor)");
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    CustomMenuItem item1 = createNotificationItem("Yeni hasta kaydı: Ahmet Demir", "5 dakika önce");
+    CustomMenuItem item2 = createNotificationItem("Randevu hatırlatması: Ayşe Yılmaz", "15 dakika önce");
+    CustomMenuItem item3 = createNotificationItem("Test sonucu hazır: Mehmet Kaya", "1 saat önce");
 
-        TextField age = new TextField(safe(u.getAge()));
-        TextField gender = new TextField(safe(u.getGender()));
-        TextField phone = new TextField(safe(u.getPhone()));
-        PasswordField pass = new PasswordField();
-        pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+    notificationMenuButton.getItems().addAll(item1, item2, item3);
+    notificationBadge.setVisible(notificationMenuButton.getItems().size() > 0);
+  }
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
+  private CustomMenuItem createNotificationItem(String title, String time) {
+    VBox content = new VBox(5);
+    content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
+    content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
+    content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
 
-        int r = 0;
-        grid.addRow(r++, new Label("Yaş:"), age);
-        grid.addRow(r++, new Label("Cinsiyet:"), gender);
-        grid.addRow(r++, new Label("Tel No:"), phone);
-        grid.addRow(r++, new Label("Şifre:"), pass);
+    Label titleLabel = new Label(title);
+    titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
+    titleLabel.setWrapText(true);
+    titleLabel.setMaxWidth(260);
 
-        dialog.getDialogPane().setContent(grid);
+    Label timeLabel = new Label(time);
+    timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
 
-        ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
-        if (res != ButtonType.OK) return;
+    content.getChildren().addAll(titleLabel, timeLabel);
 
-        boolean ok = ProfileService.updateDoctor(u, age.getText(), gender.getText(), phone.getText(), pass.getText());
-        if (!ok) {
-            new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
-            return;
-        }
+    CustomMenuItem item = new CustomMenuItem(content);
+    item.setHideOnClick(false);
 
-        // UI refresh
-        User nu = Session.getCurrentUser();
-        ageLabel.setText(safe(nu.getAge()));
-        genderLabel.setText(safe(nu.getGender()));
-        phoneLabel.setText(safe(nu.getPhone()));
+    content.setOnMouseClicked(e -> System.out.println("Bildirime tıklandı: " + title));
+    return item;
+  }
 
-        new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
+  @FXML
+  private void handleOpenPatientDetails() {
+    Patient selectedPatient = patientTable.getSelectionModel().getSelectedItem();
+
+    if (selectedPatient != null) {
+      try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/DoctorPagePatientDetail.fxml"));
+        Parent root = loader.load();
+
+        DoctorPagePatientDetailController detailController = loader.getController();
+        detailController.initData(selectedPatient);
+
+        Stage stage = new Stage();
+        stage.setTitle("Hasta Tıbbi Kaydı: " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+        stage.setScene(new Scene(root));
+
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        patientTable.refresh();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+        System.err.println("HATA:DoctorPagePatientDetail.fxml dosyası yüklenemedi!");
+      }
+    } else {
+      System.out.println("Lütfen detaylarını görmek istediğiniz hastayı listeden seçin.");
     }
+  }
 
-    private void addPatientCard(Patient patient) {
-        HBox card = new HBox(20);
-        card.setStyle("-fx-background-color: white; " +
-                "-fx-background-radius: 15; " +
-                "-fx-border-color: #D1D5DB; " +
-                "-fx-border-width: 1.5; " +
-                "-fx-border-radius: 15; " +
-                "-fx-padding: 15; " +
-                "-fx-alignment: center-left;");
+  @FXML
+  private void handleLogout(ActionEvent event) {
+    System.out.println("Oturum kapatıldı.");
+    Session.clear();
 
-        DropShadow blueShadow = new DropShadow();
-        blueShadow.setColor(Color.web("#1976D233"));
-        blueShadow.setRadius(15);
-        blueShadow.setOffsetY(5);
-        card.setEffect(blueShadow);
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
+      Parent root = loader.load();
 
-        VBox infoBox = new VBox(5);
-        Label name = new Label(patient.getName() + " " + patient.getSurname());
-        name.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #334155;");
-
-        String dateInfo = patient.getAppointmentDate() != null ? patient.getAppointmentDate() : "Tarih Belirtilmedi";
-        String diseaseInfo = patient.getCurrent_disease() != null ? patient.getCurrent_disease() : "Tanı Konulmadı";
-
-        Label details = new Label("📅 " + dateInfo + "  •  Durum: " + diseaseInfo);
-        details.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
-
-        infoBox.getChildren().addAll(name, details);
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Button btnDetails = new Button("Detayları Gör");
-        btnDetails.setStyle("-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; " +
-                "-fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 8 18;");
-        btnDetails.setOnAction(e -> openPatientPopup(patient));
-
-        card.getChildren().addAll(infoBox, spacer, btnDetails);
-        patientListContainer.getChildren().add(card);
+      Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Hastalık Takip Sistemi - Giriş");
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+      new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı: " + e.getMessage(), ButtonType.OK).showAndWait();
     }
+  }
 
-    @FXML
-    private void openPatientPopup(Patient selectedPatient) {
-
-        String path = "/com/follow_disease/DoctorPagePatientDetail.fxml";
-
-        java.net.URL resource = getClass().getResource(path);
-
-        if (resource == null) {
-            resource = getClass().getClassLoader().getResource("com/follow_disease/DoctorPagePatientDetail.fxml");
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent root = loader.load();
-
-            DoctorPagePatientDetailController controller = loader.getController();
-            if (controller != null) {
-                controller.initData(selectedPatient);
-            }
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Hasta Detayı"); // Başlık eklemek iyidir
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("HATA: FXML bulundu ama yüklenemedi!");
-            System.err.println("Sebep: FXML içindeki 'fx:controller' yolu yanlış olabilir veya dosya bozuk.");
-            e.printStackTrace();
-        }
-    }
-
-    private void loadNotifications() {
-        notificationMenuButton.getItems().clear();
-
-        CustomMenuItem item1 = createNotificationItem("Yeni hasta kaydı: Ahmet Demir", "5 dakika önce");
-        CustomMenuItem item2 = createNotificationItem("Randevu hatırlatması: Ayşe Yılmaz", "15 dakika önce");
-        CustomMenuItem item3 = createNotificationItem("Test sonucu hazır: Mehmet Kaya", "1 saat önce");
-
-        notificationMenuButton.getItems().addAll(item1, item2, item3);
-        notificationBadge.setVisible(notificationMenuButton.getItems().size() > 0);
-    }
-
-    private CustomMenuItem createNotificationItem(String title, String time) {
-        VBox content = new VBox(5);
-        content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
-        content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
-        content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
-
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
-        titleLabel.setWrapText(true);
-        titleLabel.setMaxWidth(260);
-
-        Label timeLabel = new Label(time);
-        timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
-
-        content.getChildren().addAll(titleLabel, timeLabel);
-
-        CustomMenuItem item = new CustomMenuItem(content);
-        item.setHideOnClick(false);
-
-        content.setOnMouseClicked(e -> System.out.println("Bildirime tıklandı: " + title));
-        return item;
-    }
-
-    @FXML
-    private void handleOpenPatientDetails() {
-        // 1. Tablodan seçili hastayı al (patientTable senin TableView değişken ismin olmalı)
-        Patient selectedPatient = patientTable.getSelectionModel().getSelectedItem();
-
-        if (selectedPatient != null) {
-            try {
-                // 2. Pop-up FXML dosyasını yükle
-                // Not: Dosya yolunun doğruluğundan emin ol (Örn: /com/follow_disease/view/...)
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/DoctorPagePatientDetail.fxml"));
-                Parent root = loader.load();
-
-                // 3. Pop-up Controller'ına ulaş ve veriyi gönder
-                DoctorPagePatientDetailController detailController = loader.getController();
-                detailController.initData(selectedPatient);
-
-                // 4. Yeni bir pencere (Stage) oluştur
-                Stage stage = new Stage();
-                stage.setTitle("Hasta Tıbbi Kaydı: " + selectedPatient.getName() + " " + selectedPatient.getSurname());
-                stage.setScene(new Scene(root));
-
-                // 5. Modality Ayarı: Pop-up kapanmadan ana sayfa tıklanamaz hale gelir
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait(); // Pencere kapanana kadar burada bekler
-
-                // 6. Pencere kapandıktan sonra (isteğe bağlı) ana tabloyu yenile
-                patientTable.refresh();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("HATA:DoctorPagePatientDetail.fxml dosyası yüklenemedi!");
-            }
-        } else {
-            // Kullanıcıya bir hasta seçmesi gerektiğini belirten bir uyarı penceresi gösterebilirsin
-            System.out.println("Lütfen detaylarını görmek istediğiniz hastayı listeden seçin.");
-        }
-    }
-    @FXML
-    private void handleLogout(ActionEvent event) {
-        System.out.println("Oturum kapatıldı.");
-        Session.clear();
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Hastalık Takip Sistemi - Giriş");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı: " + e.getMessage(), ButtonType.OK).showAndWait();
-        }
-    }
-
-    private String safe(String s) {
-        return s == null ? "" : s.trim();
-    }
+  private String safe(String s) {
+    return s == null ? "" : s.trim();
+  }
 }

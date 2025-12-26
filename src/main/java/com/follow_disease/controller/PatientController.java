@@ -52,7 +52,6 @@ public class PatientController {
 
   @FXML
   public void initialize() {
-
     User u = Session.getCurrentUser();
     if (u != null) {
       nameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
@@ -64,9 +63,9 @@ public class PatientController {
       passwordLabel.setText(safe(u.getPassword()));
 
       Patient patient = findPatientByTc(u.getTc());
-        if (patient != null) {
-            loadMedicalData(patient);
-        }
+      if (patient != null) {
+        loadMedicalData(patient);
+      }
     }
     loadNotifications();
   }
@@ -74,8 +73,6 @@ public class PatientController {
   private String safe(String s) {
     return s == null ? "" : s.trim();
   }
-
-  // Bilgileri Güncelle butonuna tıklandığında çalışacak olan metot
 
   @FXML
   public void handleUpdateAction(ActionEvent event) {
@@ -123,125 +120,116 @@ public class PatientController {
     new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
   }
 
-    @FXML
-    public void handleLogout(ActionEvent event) {
-        // Oturumu temizle
-        Session.clear();
+  @FXML
+  public void handleLogout(ActionEvent event) {
+    Session.clear();
 
-        // Login sayfasına geri dön
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Hastalık Takip Sistemi - Giriş");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Login sayfası yüklenemedi: " + e.getMessage());
-            e.printStackTrace();
-            // Hata durumunda kullanıcıya bilgilendirme gösterebiliriz
-            new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı.", ButtonType.OK).showAndWait();
-        }
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
+      Parent root = loader.load();
+      Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Hastalık Takip Sistemi - Giriş");
+      stage.show();
+    } catch (IOException e) {
+      System.err.println("Login sayfası yüklenemedi: " + e.getMessage());
+      e.printStackTrace();
+      new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı.", ButtonType.OK).showAndWait();
     }
-
-
-  private Patient findPatientByTc(String tc) {
-        if (tc == null || tc.isEmpty()) return null;
-
-        com.google.gson.Gson gson = new com.google.gson.Gson();
-
-        try (java.io.FileReader reader = new java.io.FileReader("database/patients.json")) {
-
-            java.lang.reflect.Type patientListType = new com.google.gson.reflect.TypeToken<java.util.List<Patient>>(){}.getType();
-            java.util.List<Patient> allPatients = gson.fromJson(reader, patientListType);
-
-            if (allPatients != null) {
-                for (Patient p : allPatients) {
-                    if (tc.equals(p.getTc())) {
-                        return p;
-                    }
-                }
-            }
-        } catch (java.io.IOException e) {
-            System.err.println("patients.json okunurken hata oluştu: " + e.getMessage());
-        }
-
-        return null;
   }
 
-    private void loadMedicalData(Patient patient) {
+  private Patient findPatientByTc(String tc) {
+    if (tc == null || tc.isEmpty()) return null;
 
-        vboxActiveDiseases.getChildren().clear();
-        vboxDiseasesHistory.getChildren().clear();
+    com.google.gson.Gson gson = new com.google.gson.Gson();
 
-        if (patient.getCurrent_disease() != null && !patient.getCurrent_disease().isEmpty()) {
-            vboxActiveDiseases.getChildren().add(createSimpleCard(patient.getCurrent_disease(), "#D32F2F"));
-        }
+    try (java.io.FileReader reader = new java.io.FileReader("database/patients.json")) {
+      java.lang.reflect.Type patientListType = new com.google.gson.reflect.TypeToken<java.util.List<Patient>>(){}.getType();
+      java.util.List<Patient> allPatients = gson.fromJson(reader, patientListType);
 
-        if (patient.getDisease_history() != null) {
-            for (String disease : patient.getDisease_history()) {
-                vboxDiseasesHistory.getChildren().add(createSimpleCard(disease, "#64748B"));
-            }
+      if (allPatients != null) {
+        for (Patient p : allPatients) {
+          if (tc.equals(p.getTc())) {
+            return p;
+          }
         }
-        if (patient.getAdditional_medicines() != null) {
-            for (String medicine : patient.getAdditional_medicines()) {
-                // vboxActiveMedicines.getChildren().add(createSimpleCard(medicine, "#1976D2"));
-            }
-        }
+      }
+    } catch (java.io.IOException e) {
+      System.err.println("patients.json okunurken hata oluştu: " + e.getMessage());
     }
 
-    // kutuları oluşturma fonksiyonu hem ilaç hem de hastalıklar için
-    private VBox createSimpleCard(String text, String color) {
-        VBox card = new VBox();
-        card.setSpacing(5);
-        card.setStyle("-fx-background-color: white; " +
-                "-fx-border-color: #E2E8F0; " +
-                "-fx-border-width: 1; " +
-                "-fx-background-radius: 10; " +
-                "-fx-border-radius: 10; " +
-                "-fx-padding: 15;");
+    return null;
+  }
 
-        Label title = new Label(text.toUpperCase());
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: " + color + ";");
+  private void loadMedicalData(Patient patient) {
+    vboxActiveDiseases.getChildren().clear();
+    vboxDiseasesHistory.getChildren().clear();
 
-        card.getChildren().add(title);
-        DropShadow shadow = new DropShadow(10, 0, 2, Color.rgb(0, 0, 0, 0.1));
-        card.setEffect(shadow);
-
-        return card;
+    if (patient.getCurrent_disease() != null && !patient.getCurrent_disease().isEmpty()) {
+      vboxActiveDiseases.getChildren().add(createSimpleCard(patient.getCurrent_disease(), "#D32F2F"));
     }
 
-    public void handleContactDoctor(ActionEvent event) {
-        try {
-            java.net.URL fxmlLocation = getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml");
-
-            System.out.println("Yükleniyor: " + fxmlLocation);
-
-            Parent root = FXMLLoader.load(fxmlLocation);
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Doktor Bilgilendirme Formu");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.show();
-
-        } catch (Exception e) {
-            System.err.println("Yükleme sırasında teknik bir hata oluştu: " + e.getMessage());
-            e.printStackTrace();
-        }
+    if (patient.getDisease_history() != null) {
+      for (String disease : patient.getDisease_history()) {
+        vboxDiseasesHistory.getChildren().add(createSimpleCard(disease, "#64748B"));
+      }
     }
-  // Bildirim Sistemi
+
+    if (patient.getAdditional_medicines() != null) {
+      for (String medicine : patient.getAdditional_medicines()) {
+        // vboxActiveMedicines.getChildren().add(createSimpleCard(medicine, "#1976D2"));
+      }
+    }
+  }
+
+  private VBox createSimpleCard(String text, String color) {
+    VBox card = new VBox();
+    card.setSpacing(5);
+    card.setStyle("-fx-background-color: white; " +
+      "-fx-border-color: #E2E8F0; " +
+      "-fx-border-width: 1; " +
+      "-fx-background-radius: 10; " +
+      "-fx-border-radius: 10; " +
+      "-fx-padding: 15;");
+
+    Label title = new Label(text.toUpperCase());
+    title.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: " + color + ";");
+
+    card.getChildren().add(title);
+    DropShadow shadow = new DropShadow(10, 0, 2, Color.rgb(0, 0, 0, 0.1));
+    card.setEffect(shadow);
+
+    return card;
+  }
+
+  public void handleContactDoctor(ActionEvent event) {
+    try {
+      java.net.URL fxmlLocation = getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml");
+      System.out.println("Yükleniyor: " + fxmlLocation);
+
+      Parent root = FXMLLoader.load(fxmlLocation);
+
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Doktor Bilgilendirme Formu");
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.show();
+
+    } catch (Exception e) {
+      System.err.println("Yükleme sırasında teknik bir hata oluştu: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
   private void loadNotifications() {
     notificationMenuButton.getItems().clear();
 
-    // Örnek bildirimler - gerçek veritabanı verilerinizle değiştirilecek
     CustomMenuItem item1 = createNotificationItem("İlaç hatırlatması: Lisinopril", "2 saat önce");
     CustomMenuItem item2 = createNotificationItem("Doktor randevusu yarın saat 14:00", "5 saat önce");
     CustomMenuItem item3 = createNotificationItem("Yeni test sonuçlarınız hazır", "1 gün önce");
 
     notificationMenuButton.getItems().addAll(item1, item2, item3);
 
-    // Bildirim sayısına göre gösterebip gösterilmeyeceği seçecek
     int notificationCount = notificationMenuButton.getItems().size();
     notificationBadge.setVisible(notificationCount > 0);
   }
@@ -265,7 +253,6 @@ public class PatientController {
     CustomMenuItem item = new CustomMenuItem(content);
     item.setHideOnClick(false);
 
-    // Bildirime tıklandığında ne yapılacak
     content.setOnMouseClicked(e -> {
       System.out.println("Bildirime tıklandı: " + title);
     });
@@ -273,19 +260,16 @@ public class PatientController {
     return item;
   }
 
-  // Bildirim sayısını güncelleme metodu zorunlu değil
   public void updateNotificationCount(int count) {
     notificationBadge.setVisible(count > 0);
   }
 
-  // Dinamik olarak yeni bildirim ekleme metodu zorunlu değil
   public void addNotification(String title, String time) {
     CustomMenuItem newItem = createNotificationItem(title, time);
-    notificationMenuButton.getItems().add(0, newItem); // En üste ekle
+    notificationMenuButton.getItems().add(0, newItem);
     notificationBadge.setVisible(true);
   }
 
-  // Tüm bildirimleri temizleme metodu zorunlu değil
   public void clearNotifications() {
     notificationMenuButton.getItems().clear();
     notificationBadge.setVisible(false);

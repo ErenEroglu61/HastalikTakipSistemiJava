@@ -12,206 +12,203 @@ import java.util.List;
 
 public class DoctorPagePatientDetailController {
 
-    // FXML Bağlantıları
-    @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
-    @FXML private TableView<VitalSign> tblVitalSigns;
-    @FXML private TableColumn<VitalSign, String> colDate, colBloodPressure;
-    @FXML private TableColumn<VitalSign, Double> colSugar, colFever;
-    @FXML private TableColumn<VitalSign, Integer> colPulse;
+  // FXML Bağlantıları
+  @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
+  @FXML private TableView<VitalSign> tblVitalSigns;
+  @FXML private TableColumn<VitalSign, String> colDate, colBloodPressure;
+  @FXML private TableColumn<VitalSign, Double> colSugar, colFever;
+  @FXML private TableColumn<VitalSign, Integer> colPulse;
 
-    @FXML private FlowPane flowSymptoms;
-    @FXML private TextArea txtAdditionalComplaints;
-    @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
-    @FXML private ComboBox<String> cbDiseaseCourse;
+  @FXML private FlowPane flowSymptoms;
+  @FXML private TextArea txtAdditionalComplaints;
+  @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
+  @FXML private ComboBox<String> cbDiseaseCourse;
 
-    private Patient currentPatient;
+  private Patient currentPatient;
 
-    @FXML
-    public void initialize() {
-        // 1. Tablo Sütunlarını VitalSign sınıfındaki değişkenlerle bağlıyoruz
-        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colSugar.setCellValueFactory(new PropertyValueFactory<>("sugar"));
-        colBloodPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
-        colPulse.setCellValueFactory(new PropertyValueFactory<>("pulse"));
-        colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
+  @FXML
+  public void initialize() {
+    // Tablo Sütunlarını VitalSign sınıfındaki değişkenlerle bağlıyoruz
+    colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+    colSugar.setCellValueFactory(new PropertyValueFactory<>("sugar"));
+    colBloodPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
+    colPulse.setCellValueFactory(new PropertyValueFactory<>("pulse"));
+    colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
+  }
+
+  public void initData(Patient patient) {
+    this.currentPatient = patient;
+
+    // Kimlik Bilgileri
+    lblFullName.setText(patient.getName() + " " + patient.getSurname());
+    lblBloodType.setText(patient.getBloodType().isEmpty() ? "Bilinmiyor" : patient.getBloodType());
+    lblActiveDisease.setText(patient.getCurrent_disease());
+    lblAppointmentDate.setText("Teşhis Tarihi: " + patient.getAppointmentDate());
+
+    // Vital bulgular tablosu
+    if (patient.getVitalSignsHistory() != null && !patient.getVitalSignsHistory().isEmpty()) {
+      tblVitalSigns.setItems(FXCollections.observableArrayList(patient.getVitalSignsHistory()));
+    } else {
+      tblVitalSigns.setItems(FXCollections.observableArrayList());
+      tblVitalSigns.setPlaceholder(new Label("Hastaya ait ölçüm kaydı bulunmamaktadır."));
     }
 
-    public void initData(Patient patient) {
-        this.currentPatient = patient;
+    // Aktif İlaç
+    List<String> activeMedList = patient.getCurrent_medicine();
 
-        lblFullName.setText(patient.getName() + " " + patient.getSurname());
-        lblBloodType.setText(patient.getBloodType().isEmpty() ? "Bilinmiyor" : patient.getBloodType());
-        lblActiveDisease.setText(patient.getCurrent_disease());
-        lblAppointmentDate.setText("Teşhis Tarihi: " + patient.getAppointmentDate());
-
-
-        if (patient.getVitalSignsHistory() != null && !patient.getVitalSignsHistory().isEmpty()) {
-            tblVitalSigns.setItems(FXCollections.observableArrayList(patient.getVitalSignsHistory()));
-        } else {
-            tblVitalSigns.setItems(FXCollections.observableArrayList());
-            tblVitalSigns.setPlaceholder(new Label("Hastaya ait ölçüm kaydı bulunmamaktadır."));
-        }
-
-
-        List<String> activeMedList = patient.getCurrent_medicine();
-
-        if (activeMedList == null || activeMedList.isEmpty()) {
-            lblCurrentMedicine.setText("Yok");
-        } else {
-
-            String text = String.join(", ", activeMedList);
-            lblCurrentMedicine.setText(text);
-        }
-
-        List<String> otherMeds = patient.getMedicines();
-        if (otherMeds != null && !otherMeds.isEmpty()) {
-            String medsText = String.join("\n• ", otherMeds);
-            lblOtherMedicines.setText("• " + medsText);
-        }
-
-        displaySelectedSymptoms(patient.getSelectedSymptoms());
-        txtAdditionalComplaints.setText(patient.getAdditionalPatientNote());
-
-        if (patient.getAdditional_medicines() != null && !patient.getAdditional_medicines().isEmpty()) {
-            String sonIlac = patient.getAdditional_medicines().get(patient.getAdditional_medicines().size() - 1);
-            txtMedicineName.setText(sonIlac);
-        }
-
-        if (patient.getPrescriptions() != null && !patient.getPrescriptions().isEmpty()) {
-
-            String sonRecete = patient.getPrescriptions().get(patient.getPrescriptions().size() - 1);
-            txtPrescriptionCode.setText(sonRecete);
-        }
-
-        loadCourseOptions(patient.getCurrent_disease());
-
-        if (patient.getAdditional_disease_course() != null && !patient.getAdditional_disease_course().isEmpty()) {
-            cbDiseaseCourse.setValue(patient.getAdditional_disease_course());
-        }
-        txtSideEffect.setText(patient.getAdditionalDoctorNote());
+    if (activeMedList == null || activeMedList.isEmpty()) {
+      lblCurrentMedicine.setText("Yok");
+    } else {
+      String text = String.join(", ", activeMedList);
+      lblCurrentMedicine.setText(text);
     }
 
-    private void loadCourseOptions(String diseaseName) {
-        cbDiseaseCourse.getItems().clear();
-
-        try {
-            String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("database/diseases.json")));
-            org.json.JSONArray diseasesArray = new org.json.JSONArray(content);
-
-            for (int i = 0; i < diseasesArray.length(); i++) {
-                org.json.JSONObject disease = diseasesArray.getJSONObject(i);
-
-                if (disease.getString("disease_name").equalsIgnoreCase(diseaseName)) {
-                    org.json.JSONArray courseArray = disease.getJSONArray("disease_course");
-
-                    for (int j = 0; j < courseArray.length(); j++) {
-                        // Seçenekleri ComboBox'a ekle
-                        cbDiseaseCourse.getItems().add(courseArray.getString(j));
-                    }
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("ComboBox Yükleme Hatası: " + e.getMessage());
-            cbDiseaseCourse.setPromptText("Seçenekler yüklenemedi");
-        }
+    // Diğer İlaçlar Listesi
+    List<String> otherMeds = patient.getMedicines();
+    if (otherMeds != null && !otherMeds.isEmpty()) {
+      String medsText = String.join("\n• ", otherMeds);
+      lblOtherMedicines.setText("• " + medsText);
     }
 
-    private void displaySelectedSymptoms(List<String> selectedSymptoms) {
+    // Semptomlar ve Notlar
+    displaySelectedSymptoms(patient.getSelectedSymptoms());
+    txtAdditionalComplaints.setText(patient.getAdditionalPatientNote());
 
-        flowSymptoms.getChildren().clear();
-
-        if (selectedSymptoms == null || selectedSymptoms.isEmpty()) {
-            Label emptyLabel = new Label("Hasta herhangi bir semptom seçmedi.");
-            emptyLabel.setStyle("-fx-text-fill: #757575; -fx-font-style: italic;");
-            flowSymptoms.getChildren().add(emptyLabel);
-            return;
-        }
-
-        // Sadece hastanın seçtiği semptomları dönüyoruz
-        for (String symptom : selectedSymptoms) {
-            Label item = new Label("• " + symptom);
-
-            item.setStyle("-fx-text-fill: #333333; -fx-font-size: 11px;");
-
-            item.setMinWidth(90);
-            item.setPrefWidth(90);
-            item.setWrapText(true);
-
-            flowSymptoms.getChildren().add(item);
-        }
+    // Doktorun yazdığı ilaç
+    if (patient.getAdditional_medicines() != null && !patient.getAdditional_medicines().isEmpty()) {
+      String sonIlac = patient.getAdditional_medicines().get(patient.getAdditional_medicines().size() - 1);
+      txtMedicineName.setText(sonIlac);
     }
 
-
-    @FXML
-    private void handleSave() {
-
-        String newMedicine = txtMedicineName.getText();
-        String newPrescription = txtPrescriptionCode.getText();
-        String sideEffects = txtSideEffect.getText();
-        String feedback = txtCustomCourse.getText();
-        String courseFromCombo = cbDiseaseCourse.getValue();
-
-        //öncelik doktorun yazdığında
-        String finalCourse = (feedback != null && !feedback.isEmpty()) ? feedback : courseFromCombo;
-        currentPatient.setAdditional_disease_course(finalCourse);
-
-        currentPatient.setAdditionalDoctorNote(sideEffects);
-
-        // İlaç ve reçete için liste boşsa veya son eklenen reçete kodu şimdikinden farklıysa ekliyoruz
-        if (newMedicine != null && !newMedicine.isEmpty()) {
-            List<String> meds = currentPatient.getAdditional_medicines();
-            if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(newMedicine.trim())) {
-                meds.add(newMedicine.trim());
-            }
-        }
-
-        if (newPrescription != null && !newPrescription.isEmpty()) {
-            List<String> prescriptions = currentPatient.getPrescriptions();
-            if (prescriptions.isEmpty() || !prescriptions.get(prescriptions.size() - 1).equalsIgnoreCase(newPrescription.trim())) {
-                prescriptions.add(newPrescription.trim());
-            }
-        }
-
-        savePatientDataToJson(currentPatient);
-        handleClose();
-    }
-    private void savePatientDataToJson(Patient patient) {
-        try {
-            String pathString = "database/patients.json";
-            java.nio.file.Path filePath = java.nio.file.Paths.get(pathString);
-            String content = new String(java.nio.file.Files.readAllBytes(filePath));
-            org.json.JSONArray patientsArray = new org.json.JSONArray(content);
-
-            for (int i = 0; i < patientsArray.length(); i++) {
-                org.json.JSONObject pJson = patientsArray.getJSONObject(i);
-
-                if (pJson.getString("tc").equals(patient.getTc())) {
-
-                    pJson.put("additional_disease_course", patient.getAdditional_disease_course());
-                    pJson.put("additionalPatientNote", patient.getAdditionalPatientNote());
-                    pJson.put("additional_medicines", patient.getAdditional_medicines());
-                    pJson.put("prescriptions", patient.getPrescriptions());
-                    pJson.put("additionalDoctorNote", patient.getAdditionalDoctorNote());
-                    break;
-                }
-            }
-            java.nio.file.Files.write(filePath, patientsArray.toString(4).getBytes());
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Başarılı");
-            alert.setHeaderText(null);
-            alert.setContentText("Yaptığınız işlemler hastanıza iletildi.");
-            alert.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // Yazılan reçete kodu
+    if (patient.getPrescriptions() != null && !patient.getPrescriptions().isEmpty()) {
+      String sonRecete = patient.getPrescriptions().get(patient.getPrescriptions().size() - 1);
+      txtPrescriptionCode.setText(sonRecete);
     }
 
-    @FXML
-    private void handleClose() {
-        Stage stage = (Stage) lblFullName.getScene().getWindow();
-        stage.close();
+    // Dinamik ComboBox Yükleme
+    loadCourseOptions(patient.getCurrent_disease());
+
+    // Eğer daha önce bir gidişat kaydedilmişse onu ComboBox'ta göster
+    if (patient.getAdditional_disease_course() != null && !patient.getAdditional_disease_course().isEmpty()) {
+      cbDiseaseCourse.setValue(patient.getAdditional_disease_course());
     }
+    txtSideEffect.setText(patient.getAdditionalDoctorNote());
+  }
+
+  private void loadCourseOptions(String diseaseName) {
+    cbDiseaseCourse.getItems().clear();
+
+    try {
+      String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("database/diseases.json")));
+      org.json.JSONArray diseasesArray = new org.json.JSONArray(content);
+
+      for (int i = 0; i < diseasesArray.length(); i++) {
+        org.json.JSONObject disease = diseasesArray.getJSONObject(i);
+
+        if (disease.getString("disease_name").equalsIgnoreCase(diseaseName)) {
+          org.json.JSONArray courseArray = disease.getJSONArray("disease_course");
+
+          for (int j = 0; j < courseArray.length(); j++) {
+            cbDiseaseCourse.getItems().add(courseArray.getString(j));
+          }
+          break;
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("ComboBox Yükleme Hatası: " + e.getMessage());
+      cbDiseaseCourse.setPromptText("Seçenekler yüklenemedi");
+    }
+  }
+
+  private void displaySelectedSymptoms(List<String> selectedSymptoms) {
+    flowSymptoms.getChildren().clear();
+
+    if (selectedSymptoms == null || selectedSymptoms.isEmpty()) {
+      Label emptyLabel = new Label("Hasta herhangi bir semptom seçmedi.");
+      emptyLabel.setStyle("-fx-text-fill: #757575; -fx-font-style: italic;");
+      flowSymptoms.getChildren().add(emptyLabel);
+      return;
+    }
+
+    for (String symptom : selectedSymptoms) {
+      Label item = new Label("• " + symptom);
+      item.setStyle("-fx-text-fill: #333333; -fx-font-size: 11px;");
+      item.setMinWidth(90);
+      item.setPrefWidth(90);
+      item.setWrapText(true);
+      flowSymptoms.getChildren().add(item);
+    }
+  }
+
+  @FXML
+  private void handleSave() {
+    String newMedicine = txtMedicineName.getText();
+    String newPrescription = txtPrescriptionCode.getText();
+    String sideEffects = txtSideEffect.getText();
+    String feedback = txtCustomCourse.getText();
+    String courseFromCombo = cbDiseaseCourse.getValue();
+
+    // Öncelik doktorun yazdığında
+    String finalCourse = (feedback != null && !feedback.isEmpty()) ? feedback : courseFromCombo;
+    currentPatient.setAdditional_disease_course(finalCourse);
+
+    currentPatient.setAdditionalDoctorNote(sideEffects);
+
+    // İlaç ve reçete için liste boşsa veya son eklenen reçete kodu şimdikinden farklıysa ekliyoruz
+    if (newMedicine != null && !newMedicine.isEmpty()) {
+      List<String> meds = currentPatient.getAdditional_medicines();
+      if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(newMedicine.trim())) {
+        meds.add(newMedicine.trim());
+      }
+    }
+
+    if (newPrescription != null && !newPrescription.isEmpty()) {
+      List<String> prescriptions = currentPatient.getPrescriptions();
+      if (prescriptions.isEmpty() || !prescriptions.get(prescriptions.size() - 1).equalsIgnoreCase(newPrescription.trim())) {
+        prescriptions.add(newPrescription.trim());
+      }
+    }
+
+    savePatientDataToJson(currentPatient);
+    handleClose();
+  }
+
+  private void savePatientDataToJson(Patient patient) {
+    try {
+      String pathString = "database/patients.json";
+      java.nio.file.Path filePath = java.nio.file.Paths.get(pathString);
+      String content = new String(java.nio.file.Files.readAllBytes(filePath));
+      org.json.JSONArray patientsArray = new org.json.JSONArray(content);
+
+      for (int i = 0; i < patientsArray.length(); i++) {
+        org.json.JSONObject pJson = patientsArray.getJSONObject(i);
+
+        if (pJson.getString("tc").equals(patient.getTc())) {
+          pJson.put("additional_disease_course", patient.getAdditional_disease_course());
+          pJson.put("additionalPatientNote", patient.getAdditionalPatientNote());
+          pJson.put("additional_medicines", patient.getAdditional_medicines());
+          pJson.put("prescriptions", patient.getPrescriptions());
+          pJson.put("additionalDoctorNote", patient.getAdditionalDoctorNote());
+          break;
+        }
+      }
+      java.nio.file.Files.write(filePath, patientsArray.toString(4).getBytes());
+
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("Başarılı");
+      alert.setHeaderText(null);
+      alert.setContentText("Yaptığınız işlemler hastanıza iletildi.");
+      alert.showAndWait();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @FXML
+  private void handleClose() {
+    Stage stage = (Stage) lblFullName.getScene().getWindow();
+    stage.close();
+  }
 }
