@@ -36,17 +36,14 @@ public class DoctorPagePatientDetailController {
         colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
     }
 
-    // Bu metodu ana sayfadan çağıracağız
     public void initData(Patient patient) {
         this.currentPatient = patient;
 
-        // Kimlik Bilgileri
         lblFullName.setText(patient.getName() + " " + patient.getSurname());
         lblBloodType.setText(patient.getBloodType().isEmpty() ? "Bilinmiyor" : patient.getBloodType());
         lblActiveDisease.setText(patient.getCurrent_disease());
         lblAppointmentDate.setText("Teşhis Tarihi: " + patient.getAppointmentDate());
 
-        // vital bulgular tablosu
 
         if (patient.getVitalSignsHistory() != null && !patient.getVitalSignsHistory().isEmpty()) {
             tblVitalSigns.setItems(FXCollections.observableArrayList(patient.getVitalSignsHistory()));
@@ -55,46 +52,39 @@ public class DoctorPagePatientDetailController {
             tblVitalSigns.setPlaceholder(new Label("Hastaya ait ölçüm kaydı bulunmamaktadır."));
         }
 
-        //  Aktif İlaç
-        // Listeyi virgülle ayrılmış bir String'e çeviriyoruz
+
         List<String> activeMedList = patient.getCurrent_medicine();
 
         if (activeMedList == null || activeMedList.isEmpty()) {
             lblCurrentMedicine.setText("Yok");
         } else {
-            // Listenin tamamını virgülle ayırıp yazar (Örn: "Parol, Aspirin")
+
             String text = String.join(", ", activeMedList);
             lblCurrentMedicine.setText(text);
         }
 
-        // 2. Diğer İlaçlar Listesi (medicines [])
         List<String> otherMeds = patient.getMedicines();
         if (otherMeds != null && !otherMeds.isEmpty()) {
-            String medsText = String.join("\n• ", otherMeds); // Her ilacı yeni satıra ve madde işaretiyle ekler
+            String medsText = String.join("\n• ", otherMeds);
             lblOtherMedicines.setText("• " + medsText);
         }
 
-        // Semptomlar ve Notlar
         displaySelectedSymptoms(patient.getSelectedSymptoms());
         txtAdditionalComplaints.setText(patient.getAdditionalPatientNote());
 
-        // doktoru  yazdığı ilaç
         if (patient.getAdditional_medicines() != null && !patient.getAdditional_medicines().isEmpty()) {
-            // Listenin son elemanını alıyoruz
             String sonIlac = patient.getAdditional_medicines().get(patient.getAdditional_medicines().size() - 1);
             txtMedicineName.setText(sonIlac);
         }
 
-        // Yazılan recete kodu
         if (patient.getPrescriptions() != null && !patient.getPrescriptions().isEmpty()) {
-            // Listenin son elemanını alıyoruz
+
             String sonRecete = patient.getPrescriptions().get(patient.getPrescriptions().size() - 1);
             txtPrescriptionCode.setText(sonRecete);
         }
-        // Dinamik ComboBox Yükleme
+
         loadCourseOptions(patient.getCurrent_disease());
 
-        // Eğer daha önce bir gidişat kaydedilmişse onu ComboBox'ta göster
         if (patient.getAdditional_disease_course() != null && !patient.getAdditional_disease_course().isEmpty()) {
             cbDiseaseCourse.setValue(patient.getAdditional_disease_course());
         }
@@ -188,7 +178,6 @@ public class DoctorPagePatientDetailController {
     }
     private void savePatientDataToJson(Patient patient) {
         try {
-            //  Tüm hastaları okuyup ilgili hastayı buluyoruz
             String pathString = "database/patients.json";
             java.nio.file.Path filePath = java.nio.file.Paths.get(pathString);
             String content = new String(java.nio.file.Files.readAllBytes(filePath));
@@ -208,6 +197,12 @@ public class DoctorPagePatientDetailController {
                 }
             }
             java.nio.file.Files.write(filePath, patientsArray.toString(4).getBytes());
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Başarılı");
+            alert.setHeaderText(null);
+            alert.setContentText("Yaptığınız işlemler hastanıza iletildi.");
+            alert.showAndWait();
 
         } catch (Exception e) {
             e.printStackTrace();

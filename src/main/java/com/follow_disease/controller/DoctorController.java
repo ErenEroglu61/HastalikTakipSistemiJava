@@ -30,19 +30,18 @@ public class DoctorController {
 
     @FXML private VBox patientListContainer;
     @FXML private TableView<Patient> patientTable;
-    // Üst kısım
-    @FXML private Label doctornameLabel;     // FXML’de senin id: doctornameLabel
+
+    @FXML private Label doctornameLabel;
     @FXML private Label doctorRoleLabel;
 
     @FXML private Label emailLabel;
     @FXML private Label branchLabel;
     @FXML private Label titleLabel;
-
-    // EKLEYECEĞİN kartlar
     @FXML private Label ageLabel;
     @FXML private Label genderLabel;
     @FXML private Label phoneLabel;
     @FXML private Label tcLabel;
+    @FXML private Label passwordLabel;
 
     // Bildirim
     @FXML private MenuButton notificationMenuButton;
@@ -80,6 +79,7 @@ public class DoctorController {
         genderLabel.setText(safe(u.getGender()));
         phoneLabel.setText(safe(u.getPhone()));
         tcLabel.setText(safe(u.getTc()));
+        passwordLabel.setText(safe(u.getPassword()));
 
         // doctors.json’dan branch/title
         Doctor d = JsonDb.findDoctorByTc(u.getTc());
@@ -216,7 +216,6 @@ public class DoctorController {
             FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
 
-            // Controller'a veriyi gönder
             DoctorPagePatientDetailController controller = loader.getController();
             if (controller != null) {
                 controller.initData(selectedPatient);

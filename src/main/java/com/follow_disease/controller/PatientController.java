@@ -1,5 +1,6 @@
 package com.follow_disease.controller;
 
+import com.follow_disease.Patient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,6 +15,14 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import java.io.IOException;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
@@ -28,8 +37,11 @@ public class PatientController {
   @FXML private Label emailLabel;
   @FXML private Label ageLabel;
   @FXML private Label genderLabel;
-
-  // Profil ikonu ve Güncelle butonu (Gerektiğinde renk vs. değiştirmek için)
+  @FXML private Label phoneLabel;
+  @FXML private Label tcLabel;
+  @FXML private Label passwordLabel;
+  @FXML private VBox vboxActiveDiseases;
+  @FXML private VBox vboxDiseasesHistory;
   @FXML private Circle profileCircle;
   @FXML private Button updateButton;
 
@@ -37,10 +49,8 @@ public class PatientController {
   @FXML private MenuButton notificationMenuButton;
   @FXML private Circle notificationBadge;
 
-  // Bu metot FXML dosyası yüklendiğinde otomatik olarak çalışır.
   @FXML
   public void initialize() {
-    System.out.println("Hasta sayfası başarıyla yüklendi.");
 
     User u = Session.getCurrentUser();
     if (u != null) {
@@ -48,8 +58,15 @@ public class PatientController {
       emailLabel.setText(safe(u.getEmail()));
       ageLabel.setText(safe(u.getAge()));
       genderLabel.setText(safe(u.getGender()));
-    }
+      tcLabel.setText(safe(u.getTc()));
+      phoneLabel.setText(safe(u.getPhone()));
+      passwordLabel.setText(safe(u.getPassword()));
 
+      Patient patient = findPatientByTc(u.getTc());
+        if (patient != null) {
+            loadMedicalData(patient);
+        }
+    }
     loadNotifications();
   }
 
@@ -112,6 +129,91 @@ public class PatientController {
     Session.clear();
   }
 
+  private Patient findPatientByTc(String tc) {
+        if (tc == null || tc.isEmpty()) return null;
+
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+
+        try (java.io.FileReader reader = new java.io.FileReader("database/patients.json")) {
+
+            java.lang.reflect.Type patientListType = new com.google.gson.reflect.TypeToken<java.util.List<Patient>>(){}.getType();
+            java.util.List<Patient> allPatients = gson.fromJson(reader, patientListType);
+
+            if (allPatients != null) {
+                for (Patient p : allPatients) {
+                    if (tc.equals(p.getTc())) {
+                        return p;
+                    }
+                }
+            }
+        } catch (java.io.IOException e) {
+            System.err.println("patients.json okunurken hata oluştu: " + e.getMessage());
+        }
+
+        return null;
+  }
+
+    private void loadMedicalData(Patient patient) {
+
+        vboxActiveDiseases.getChildren().clear();
+        vboxDiseasesHistory.getChildren().clear();
+
+        if (patient.getCurrent_disease() != null && !patient.getCurrent_disease().isEmpty()) {
+            vboxActiveDiseases.getChildren().add(createSimpleCard(patient.getCurrent_disease(), "#D32F2F"));
+        }
+
+        if (patient.getDisease_history() != null) {
+            for (String disease : patient.getDisease_history()) {
+                vboxDiseasesHistory.getChildren().add(createSimpleCard(disease, "#64748B"));
+            }
+        }
+        if (patient.getAdditional_medicines() != null) {
+            for (String medicine : patient.getAdditional_medicines()) {
+                // vboxActiveMedicines.getChildren().add(createSimpleCard(medicine, "#1976D2"));
+            }
+        }
+    }
+
+    // kutuları oluşturma fonksiyonu hem ilaç hem de hastalıklar için
+    private VBox createSimpleCard(String text, String color) {
+        VBox card = new VBox();
+        card.setSpacing(5);
+        card.setStyle("-fx-background-color: white; " +
+                "-fx-border-color: #E2E8F0; " +
+                "-fx-border-width: 1; " +
+                "-fx-background-radius: 10; " +
+                "-fx-border-radius: 10; " +
+                "-fx-padding: 15;");
+
+        Label title = new Label(text.toUpperCase());
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: " + color + ";");
+
+        card.getChildren().add(title);
+        DropShadow shadow = new DropShadow(10, 0, 2, Color.rgb(0, 0, 0, 0.1));
+        card.setEffect(shadow);
+
+        return card;
+    }
+
+    public void handleContactDoctor(ActionEvent event) {
+        try {
+            java.net.URL fxmlLocation = getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml");
+
+            System.out.println("Yükleniyor: " + fxmlLocation);
+
+            Parent root = FXMLLoader.load(fxmlLocation);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Doktor Bilgilendirme Formu");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (Exception e) {
+            System.err.println("Yükleme sırasında teknik bir hata oluştu: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
   // Bildirim Sistemi
   private void loadNotifications() {
     notificationMenuButton.getItems().clear();

@@ -1,38 +1,115 @@
 [
     {
-        "role": "hasta",
         "medicines": [
             "Parol",
             "Majezik",
             "D Vitamini Takviye "
         ],
+        "role": "hasta",
         "current_medicine": ["Calpol"],
         "disease_history": [
             "Yüksek tansiyon",
             "Kas Ağrısı"
         ],
         "bloodType": "",
-        "additional_disease_course": "Tekrar randevu almanız gerekiyor",
-        "additionalPatientNote": "",
+        "additional_disease_course": "İlaç tedavisine başlandı",
+        "additionalPatientNote": "Boyun bölgemde çok şiddetli bir ağrı yaşıyorum.",
         "tc": "12345678901",
         "current_disease": "Grip",
         "doctor_id": 2,
-        "selectedSymptoms": [],
+        "selectedSymptoms": [
+            "Öksürük",
+            "Boğaz Ağrısı"
+        ],
         "additionalDoctorNote": "Titreme yapabilir",
         "surname": "Kullanıcısı",
         "name": "Test",
         "id": 1,
         "additional_medicines": ["Iburamin Cold"],
-        "vitalSignsHistory": [],
+        "vitalSignsHistory": [
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            },
+            {
+                "date": "",
+                "bloodPressure": "",
+                "pulse": 0,
+                "fever": 0,
+                "sugar": 0
+            }
+        ],
         "appointmentDate": "2025-12-02",
-        "prescriptions": ["TZ5698KL"]
+        "prescriptions": [
+            "TZ5698KL",
+            "TZ5698KZ"
+        ]
     },
     {
-        "role": "hasta",
         "medicines": [
             "Parol",
             "Majezik"
         ],
+        "role": "hasta",
         "current_medicine": ["Iburamin Cold"],
         "disease_history": [
             "Yüksek tansiyon",
@@ -55,36 +132,42 @@
         "prescriptions": []
     },
     {
-        "role": "hasta",
         "medicines": [
             "Parol",
             "Majezik"
         ],
+        "role": "hasta",
         "current_medicine": ["Dideral"],
         "disease_history": [],
         "bloodType": "",
-        "additional_disease_course": "Atak dönemi",
+        "additional_disease_course": "Stabil",
         "additionalPatientNote": "",
         "tc": "12345678903",
         "current_disease": "Migren",
         "doctor_id": 2,
         "selectedSymptoms": [],
-        "additionalDoctorNote": "Bulanık görme yapabilir.",
+        "additionalDoctorNote": "Sinir yapabilir",
         "surname": "Demir",
         "name": "Ayşe",
         "id": 3,
-        "additional_medicines": ["Topamax"],
+        "additional_medicines": [
+            "Topamax",
+            "iburhamin cold",
+            "Thamax"
+        ],
         "vitalSignsHistory": [
             {
                 "date": "2025-12-22",
                 "bloodPressure": "12/8",
                 "pulse": 75,
+                "fever": 0,
                 "sugar": 120
             },
             {
                 "date": "2025-12-23",
                 "bloodPressure": "11/7",
                 "pulse": 72,
+                "fever": 0,
                 "sugar": 115
             }
         ],

@@ -29,7 +29,6 @@ public class LoginController {
             User user = Session.getCurrentUser();
             String fxmlPath;
 
-            // Nesnenin "Doctor" sınıfından olup olmadığını kontrol ediyoruz
             if (user instanceof com.follow_disease.Doctor) {
                 fxmlPath = "/com/follow_disease/doctorPage.fxml";
             } else {
@@ -39,7 +38,7 @@ public class LoginController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Parent root = loader.load();
 
-                // 4. Mevcut pencereyi (Stage) alıp yeni sayfayı içine koyuyoruz
+                //  Mevcut pencereyi (Stage) alıp yeni sayfayı içine koyuyoruz
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();

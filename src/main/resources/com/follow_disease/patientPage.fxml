@@ -24,66 +24,60 @@
                                         <Label text="👤" textFill="WHITE" style="-fx-font-size: 50;" />
                                     </children>
                                 </StackPane>
-
-                                <!-- Notification MenuButton -->
                                 <StackPane>
-                                    <MenuButton fx:id="notificationMenuButton" text="🔔"
-                                                style="-fx-background-color: #E3F2FD;
-                                                   -fx-text-fill: #1976D2;
-                                                   -fx-font-size: 18;
-                                                   -fx-background-radius: 50;
-                                                   -fx-cursor: hand;"
-                                                prefWidth="40" prefHeight="40"
-                                                popupSide="BOTTOM">
+                                    <MenuButton fx:id="notificationMenuButton" prefHeight="40" prefWidth="40" popupSide="BOTTOM" style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-size: 18; -fx-background-radius: 50; -fx-cursor: hand;" text="🔔">
                                         <effect><DropShadow color="#00000033" radius="5.0" /></effect>
                                     </MenuButton>
-                                    <!-- Notification Badge -->
-                                    <Circle fx:id="notificationBadge" radius="7.0" fill="#D32F2F"
-                                            stroke="WHITE" strokeWidth="2.0"
-                                            translateX="12" translateY="-12" visible="false" />
+                                    <Circle fx:id="notificationBadge" fill="#D32F2F" radius="7.0" stroke="WHITE" strokeWidth="2.0" translateX="12" translateY="-12" visible="false" />
                                 </StackPane>
                             </children>
                         </HBox>
-                        <Label fx:id="nameLabel" text="Ahmet Özçelik" textFill="#334155" style="-fx-font-weight: bold; -fx-font-size: 20;" />
-                        <Label text="Hasta Profili" textFill="#64748B" style="-fx-font-size: 14;" />
+                        <Label fx:id="nameLabel" style="-fx-font-weight: bold; -fx-font-size: 20;" text="-" textFill="#334155" />
+                        <Label style="-fx-font-size: 14;" text="Hasta Profili" textFill="#64748B" />
                     </children>
                 </VBox>
 
                 <Separator prefWidth="200.0" style="-fx-opacity: 0.5;">
-                    <VBox.margin><Insets left="40.0" right="40.0" bottom="20.0" /></VBox.margin>
+                    <VBox.margin><Insets bottom="20.0" left="40.0" right="40.0" /></VBox.margin>
                 </Separator>
 
-                <VBox spacing="15.0">
+                <VBox spacing="10.0">
                     <padding><Insets left="30.0" right="30.0" /></padding>
                     <children>
-                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
                             <children>
-                                <Label text="E-POSTA" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
-                                <Label fx:id="emailLabel" text="ahmet@mail.com" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="E-POSTA" textFill="#1976D2" />
+                                <Label fx:id="emailLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="..." textFill="#0D47A1" />
                             </children>
                         </VBox>
-                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
                             <children>
-                                <Label text="YAŞ" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
-                                <Label fx:id="ageLabel" text="34" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="TC KİMLİK NO" textFill="#1976D2" />
+                                <Label fx:id="tcLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="-" textFill="#0D47A1" />
                             </children>
                         </VBox>
-                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
                             <children>
-                                <Label text="CİNSİYET" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
-                                <Label fx:id="genderLabel" text="Erkek" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="YAŞ" textFill="#1976D2" />
+                                <Label fx:id="ageLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="-" textFill="#0D47A1" />
                             </children>
                         </VBox>
-                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
                             <children>
-                                <Label text="TC KİMLİK NO" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
-                                <Label fx:id="tcnumberLabel" text="45685622286" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="CİNSİYET" textFill="#1976D2" />
+                                <Label fx:id="genderLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="-" textFill="#0D47A1" />
                             </children>
                         </VBox>
-                        <VBox spacing="5.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 12; -fx-padding: 10;">
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
                             <children>
-                                <Label text="TEL NO" textFill="#1976D2" style="-fx-font-weight: bold; -fx-font-size: 9;" />
-                                <Label fx:id="phonenumberLabel" text="05986659451" textFill="#0D47A1" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="TELEFON" textFill="#1976D2" />
+                                <Label fx:id="phoneLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="-" textFill="#0D47A1" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0" style="-fx-background-color: #E3F2FD; -fx-background-radius: 10; -fx-padding: 7 12;">
+                            <children>
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 8;" text="ŞİFRE" textFill="#1976D2" />
+                                <Label fx:id="passwordLabel" style="-fx-font-weight: bold; -fx-font-size: 11;" text="-" textFill="#0D47A1" />
                             </children>
                         </VBox>
                     </children>
@@ -94,12 +88,8 @@
                 <VBox alignment="CENTER" spacing="10.0">
                     <padding><Insets bottom="30.0" left="30.0" right="30.0" /></padding>
                     <children>
-                        <Button fx:id="updateButton" maxWidth="Infinity" onAction="#handleUpdateAction"
-                                style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"
-                                text="PROFİLİMİ GÜNCELLE" prefHeight="40" />
-                        <Button fx:id="logoutButton" maxWidth="Infinity" onAction="#handleLogout"
-                                style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"
-                                text="ÇIKIŞ YAP" prefHeight="40" />
+                        <Button fx:id="updateButton" maxWidth="Infinity" onAction="#handleUpdateAction" prefHeight="40" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="PROFİLİMİ GÜNCELLE" />
+                        <Button fx:id="logoutButton" maxWidth="Infinity" onAction="#handleLogout" prefHeight="40" style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="ÇIKIŞ YAP" />
                     </children>
                 </VBox>
             </children>
@@ -107,72 +97,80 @@
 
         <VBox layoutX="320.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
             <children>
-                <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 25;">
+                <VBox style="-fx-background-color: white; -fx-background-radius: 25;" VBox.vgrow="ALWAYS">
                     <effect><DropShadow color="#0000001a" radius="15.0" /></effect>
                     <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #D32F2F; -fx-background-radius: 25 25 0 0;">
                             <padding><Insets left="30.0" /></padding>
                             <children>
-                                <Label text="Sağlık Durumu Takip Paneli" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 18;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 18;" text="Sağlık Durumu Takip Paneli" textFill="WHITE" />
                             </children>
                         </HBox>
 
-                        <GridPane VBox.vgrow="ALWAYS" hgap="20.0" vgap="20.0">
-                            <padding><Insets bottom="25.0" left="25.0" right="25.0" top="25.0" /></padding>
+                        <GridPane hgap="20.0" vgap="20.0" VBox.vgrow="ALWAYS">
+                            <padding><Insets bottom="20.0" left="25.0" right="25.0" top="20.0" /></padding>
                             <columnConstraints>
                                 <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
                                 <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints vgrow="ALWAYS" percentHeight="50" />
-                                <RowConstraints vgrow="ALWAYS" percentHeight="50" />
+                                <RowConstraints percentHeight="50" vgrow="ALWAYS" />
+                                <RowConstraints percentHeight="50" vgrow="ALWAYS" />
                             </rowConstraints>
-
                             <children>
                                 <VBox spacing="10" style="-fx-border-color: #E2E8F0; -fx-border-width: 0 1 1 0; -fx-padding: 0 15 15 0;">
                                     <children>
-                                        <Label text="✓ Aktif Hastalıklarım" textFill="#1E293B" style="-fx-font-weight: bold; -fx-font-size: 16;" />
-                                        <ScrollPane fitToHeight="true" minHeight="120" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="✓ Aktif Hastalıklarım" textFill="#1E293B" />
+
+                                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
                                             <content>
-                                                <HBox spacing="10" style="-fx-padding: 5;">
-                                                    <children>
-                                                        <VBox minWidth="220" prefWidth="220" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 15;">
-                                                            <children>
-                                                                <Label text="HİPERTANSİYON" alignment="CENTER" maxWidth="Infinity" textFill="#1E293B" style="-fx-font-weight: bold; -fx-font-size: 14;" />
-                                                                <Separator style="-fx-padding: 8 0 8 0;" />
-                                                                <Label text="Kategori: Kronik" textFill="#64748B" style="-fx-font-size: 12;" />
-                                                                <Label text="Teşhis: 12.10.2025" textFill="#64748B" style="-fx-font-size: 12;" />
-                                                            </children>
-                                                            <effect>
-                                                                <DropShadow color="#0000001a" radius="5.0" />
-                                                            </effect>
-                                                        </VBox>
-                                                    </children>
-                                                </HBox>
+                                                <VBox fx:id="vboxActiveDiseases" spacing="10" />
+                                            </content>
+                                        </ScrollPane>
+
+                                        <Button fx:id="btnContactDoctor" onAction="#handleContactDoctor"
+                                                maxWidth="Infinity" prefHeight="35.0"
+                                                style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-background-radius: 10; -fx-cursor: hand;"
+                                                text="️ DOKTORLA İLETİŞİM KUR ">
+                                            <VBox.margin>
+                                                <Insets top="10.0" />
+                                            </VBox.margin>
+                                            <effect><DropShadow color="#00000033" radius="5.0" /></effect>
+                                        </Button>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="10" style="-fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 15 15;" GridPane.columnIndex="1">
+                                    <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="⌛ Geçmiş Hastalıklarım" textFill="#64748B" />
+                                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                                            <content>
+                                                <VBox fx:id="vboxDiseasesHistory" spacing="10" />
                                             </content>
                                         </ScrollPane>
                                     </children>
                                 </VBox>
 
-                                <VBox spacing="10" style="-fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 15 15;" GridPane.columnIndex="1">
-                                    <Label text="⌛ Geçmiş Hastalıklarım" textFill="#64748B" style="-fx-font-weight: bold; -fx-font-size: 16;" />
-                                </VBox>
-
                                 <VBox spacing="10" style="-fx-border-color: #E2E8F0; -fx-border-width: 0 1 0 0; -fx-padding: 15 15 0 0;" GridPane.rowIndex="1">
-                                    <Label text="💊 Aktif İlaçlarım" textFill="#1E293B" style="-fx-font-weight: bold; -fx-font-size: 16;" />
-                                    <VBox minWidth="210" maxWidth="250" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 12;">
-                                        <children>
-                                            <Label text="LISINOPRIL" alignment="CENTER" maxWidth="Infinity" textFill="#1E293B" style="-fx-font-weight: bold; -fx-font-size: 13;" />
-                                            <Separator style="-fx-padding: 5 0 5 0;" />
-                                            <Label text="Günde 1 kez (Sabah)" style="-fx-font-size: 11;" textFill="#64748B" />
-                                            <Label text="Dozaj: 10mg" style="-fx-font-size: 11; -fx-font-weight: bold;" textFill="#D32F2F" />
-                                        </children>
-                                        <effect><DropShadow color="#0000000a" radius="5.0" /></effect>
-                                    </VBox>
+                                    <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="💊 Aktif İlaçlarım" textFill="#1E293B" />
+                                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                                            <content>
+                                                <VBox fx:id="vboxActiveMedicines" spacing="10" />
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
                                 </VBox>
 
                                 <VBox spacing="10" style="-fx-padding: 15 0 0 15;" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                    <Label text="⌛ Geçmiş İlaçlarım" textFill="#64748B" style="-fx-font-weight: bold; -fx-font-size: 16;" />
+                                    <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="⌛ Geçmiş İlaçlarım" textFill="#64748B" />
+                                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                                            <content>
+                                                <VBox fx:id="vboxPastMedicines" spacing="10" />
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
                                 </VBox>
                             </children>
                         </GridPane>
