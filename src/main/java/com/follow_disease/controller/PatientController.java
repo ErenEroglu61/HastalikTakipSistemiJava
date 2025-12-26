@@ -22,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 import java.io.IOException;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -122,12 +123,27 @@ public class PatientController {
     new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
   }
 
-  @FXML
-  public void handleLogout(ActionEvent event) {
-    // Burada giriş ekranına yönlendirme kodunu yazacağız
-    System.out.println("Çıkış yapılıyor...");
-    Session.clear();
-  }
+    @FXML
+    public void handleLogout(ActionEvent event) {
+        // Oturumu temizle
+        Session.clear();
+
+        // Login sayfasına geri dön
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Hastalık Takip Sistemi - Giriş");
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Login sayfası yüklenemedi: " + e.getMessage());
+            e.printStackTrace();
+            // Hata durumunda kullanıcıya bilgilendirme gösterebiliriz
+            new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı.", ButtonType.OK).showAndWait();
+        }
+    }
+
 
   private Patient findPatientByTc(String tc) {
         if (tc == null || tc.isEmpty()) return null;

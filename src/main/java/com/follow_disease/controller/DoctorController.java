@@ -20,6 +20,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.Node;
+
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -306,10 +308,22 @@ public class DoctorController {
         }
     }
     @FXML
-    private void handleLogout() {
+    private void handleLogout(ActionEvent event) {
         System.out.println("Oturum kapatıldı.");
         Session.clear();
-        // Login ekranına yönlendirme kodun sende nasıl ise aynı şekilde devam
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Hastalık Takip Sistemi - Giriş");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı: " + e.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 
     private String safe(String s) {

@@ -3,18 +3,17 @@ package com.follow_disease.service;
 import com.follow_disease.User;
 import com.follow_disease.Session;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class UserService {
 
@@ -127,14 +126,53 @@ public class UserService {
                                                        String email, String password,
                                                        String branch, String medical_title) {
 
-        if (isNullOrEmpty(name) || isNullOrEmpty(surname) || isNullOrEmpty(tc) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            showAlert("Eksik alan", "Lütfen zorunlu alanları doldurun.");
+        // Temel zorunluluklar: TC, e-posta ve şifre mutlaka olmalı.
+        if (isNullOrEmpty(tc) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
+            showAlert("Eksik alan", "Lütfen TC, e-posta ve şifre alanlarını doldurun.");
             return false;
         }
 
+        // Yaş numeric kontrolü (boş bırakılabilir ama eğer doldurulmuşsa sadece rakamlardan oluşmalı)
+        if (!isNullOrEmpty(age) && !age.matches("\\d+")) {
+            showAlert("Hatalı yaş", "Yaş sadece rakamlardan oluşmalıdır.");
+            return false;
+        }
+
+        // E-posta doğrulama (basit ama güçlü bir regex)
+        Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+        if (!emailPattern.matcher(email.trim()).matches()) {
+            showAlert("Hatalı e-posta", "Lütfen geçerli bir e-posta adresi girin.");
+            return false;
+        }
+
+        // Telefon doğrulama:
+        if (!isNullOrEmpty(phone)) {
+            String normalized = phone.replaceAll("\\s+", "");      // boşlukları kaldır
+            normalized = normalized.replaceAll("[^\\d]", "");     // rakam olmayanları temizle
+            if (!normalized.matches("\\d{11}")) {
+                showAlert("Hatalı telefon", "Lütfen 11 haneli bir telefon numarası girin.");
+                return false;
+            }
+            phone = normalized; // kaydederken 11 haneli rakam dizisi olarak sakla
+        } else {
+            // Telefon alanı boşsa isteniyorsa izin ver, istenmiyorsa hata verilebilir.
+            // Şu an boş telefon kabul ediliyor; eğer zorunlu olacaksa aşağıdaki satırı kullan:
+            showAlert("Eksik alan", "Lütfen telefon numarası girin.");
+            return false;
+        }
+
+        // Hastane kayıtlarında TC olmalı (otomatik doldurma için)
         if (!isTcInHospitalRecords(tc)) {
             showAlert("Erişim Engellendi", "Hastanede bu TC numarasına ait kayıt bulunamadı.");
             return false;
+        }
+
+        // TC güvenlik / otomatik doldurma: name ve surname'i hastane kaydından alıp üzerine yazıyoruz.
+        HospitalRecord hr = getHospitalRecord(tc);
+        if (hr != null) {
+            name = hr.name;
+            surname = hr.surname;
+            // NOT: UI tarafında da bu alanları düzenlenemez yapmalısınız (setEditable(false) / setDisable(true))
         }
 
         try {
@@ -146,7 +184,6 @@ public class UserService {
                 return false;
             }
 
-            // HATA VEREN KISIM BURADA DÜZELTİLDİ:
             String role = isDoctor(tc) ? "doktor" : "hasta";
 
             int nextId = users.stream().max(Comparator.comparingInt(RegisteredUser::getId)).map(u -> u.getId() + 1).orElse(1);

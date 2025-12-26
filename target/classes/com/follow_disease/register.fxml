@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<StackPane prefHeight="650.0" prefWidth="800.0" style="-fx-background-color: #F5F7FA;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.follow_disease.controller.RegisterController">
+    <children>
+        <VBox alignment="CENTER" maxWidth="450.0" spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 10;">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="0.0" />
+            </padding>
+
+            <children>
+                <Rectangle fill="#d32f2f" height="5.0" width="450.0" />
+
+                <Label text="Yeni Kayıt Oluştur" textFill="#333333">
+                    <font><Font name="Segoe UI Bold" size="22.0" /></font>
+                    <VBox.margin> <Insets top="10.0" /> </VBox.margin>
+                </Label>
+
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="tcField" maxWidth="Infinity" promptText="TC Kimlik No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="phoneField" maxWidth="Infinity" promptText="Telefon No" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <TextField fx:id="nameField" promptText="Adınız" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
+                <TextField fx:id="surnameField" promptText="Soyadınız" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
+
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="ageField" prefWidth="150.0" promptText="Yaşınız" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
+                        <ComboBox fx:id="genderComboBox" maxWidth="Infinity" promptText="Cinsiyet Seçiniz" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" HBox.hgrow="ALWAYS">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Kadın" />
+                                    <String fx:value="Erkek" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </children>
+                </HBox>
+
+                <TextField fx:id="emailField" promptText="E-Posta Adresi" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
+                <PasswordField fx:id="passwordField" promptText="Şifre" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-pref-height: 40;" />
+
+                <Button fx:id="registerButton" maxWidth="Infinity" onAction="#handleRegister" style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;" text="KAYIT OL">
+                    <padding><Insets bottom="10.0" top="10.0" /></padding>
+                </Button>
+
+                <Hyperlink onAction="#handleLoginRedirect" text="Zaten hesabınız var mı? Giriş Yapın" textFill="#1976d2" />
+            </children>
+            <effect><DropShadow color="#0000001a" radius="10.0" /></effect>
+        </VBox>
+    </children>
+</StackPane>

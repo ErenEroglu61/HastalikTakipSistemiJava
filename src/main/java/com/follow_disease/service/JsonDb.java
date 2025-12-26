@@ -72,15 +72,16 @@ public final class JsonDb {
     }
 
     public static boolean updateUser(User updated) {
+        if (updated == null || updated.getTc() == null) return false;
+
         List<User> users = readUsers();
+
         for (int i = 0; i < users.size(); i++) {
             User u = users.get(i);
-            // id varsa id ile, yoksa email ile yakala
-            boolean matchById = (u.getId() == updated.getId() && updated.getId() != 0);
-            boolean matchByEmail = (u.getEmail() != null && updated.getEmail() != null
-                    && u.getEmail().equalsIgnoreCase(updated.getEmail()));
 
-            if (matchById || matchByEmail) {
+            if (u.getTc() != null &&
+                    u.getTc().trim().equals(updated.getTc().trim())) {
+
                 users.set(i, updated);
                 writeUsers(users);
                 return true;
@@ -88,4 +89,6 @@ public final class JsonDb {
         }
         return false;
     }
+
+
 }
