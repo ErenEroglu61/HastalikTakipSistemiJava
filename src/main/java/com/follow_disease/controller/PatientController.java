@@ -60,7 +60,12 @@ public class PatientController {
       genderLabel.setText(safe(u.getGender()));
       tcLabel.setText(safe(u.getTc()));
       phoneLabel.setText(safe(u.getPhone()));
-      passwordLabel.setText(safe(u.getPassword()));
+
+      if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+            passwordLabel.setText("*".repeat(u.getPassword().length()));
+        } else {
+            passwordLabel.setText("");
+        }
 
       Patient patient = findPatientByTc(u.getTc());
       if (patient != null) {
@@ -76,50 +81,55 @@ public class PatientController {
 
   @FXML
   public void handleUpdateAction(ActionEvent event) {
-    User u = Session.getCurrentUser();
-    if (u == null) return;
+        User u = Session.getCurrentUser();
+        if (u == null) return;
 
-    Dialog<ButtonType> dialog = new Dialog<>();
-    dialog.setTitle("Profil Güncelle");
-    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Profil Güncelle");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    TextField age = new TextField(safe(u.getAge()));
-    TextField gender = new TextField(safe(u.getGender()));
-    TextField phone = new TextField(safe(u.getPhone()));
-    TextField email = new TextField(safe(u.getEmail()));
-    PasswordField pass = new PasswordField();
-    pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+        TextField age = new TextField(safe(u.getAge()));
+        TextField gender = new TextField(safe(u.getGender()));
+        TextField phone = new TextField(safe(u.getPhone()));
+        TextField email = new TextField(safe(u.getEmail()));
 
-    GridPane grid = new GridPane();
-    grid.setHgap(10); grid.setVgap(10);
-    int r = 0;
-    grid.addRow(r++, new Label("Yaş:"), age);
-    grid.addRow(r++, new Label("Cinsiyet:"), gender);
-    grid.addRow(r++, new Label("Tel:"), phone);
-    grid.addRow(r++, new Label("Mail:"), email);
-    grid.addRow(r++, new Label("Şifre:"), pass);
+        // 1. DEĞİŞİKLİK: Pencere içinde de şifre gizli yazılmalı
+        PasswordField passwordField = new PasswordField();
+        passwordField.setText(safe(u.getPassword()));
 
-    dialog.getDialogPane().setContent(grid);
+        GridPane grid = new GridPane();
+        grid.setHgap(10); grid.setVgap(10);
+        int r = 0;
+        grid.addRow(r++, new Label("Yaş:"), age);
+        grid.addRow(r++, new Label("Cinsiyet:"), gender);
+        grid.addRow(r++, new Label("Tel:"), phone);
+        grid.addRow(r++, new Label("Mail:"), email);
+        grid.addRow(r++, new Label("Şifre:"), passwordField); // passwordField kullanıldı
 
-    ButtonType result = dialog.showAndWait().orElse(ButtonType.CANCEL);
-    if (result != ButtonType.OK) return;
+        dialog.getDialogPane().setContent(grid);
 
-    boolean ok = ProfileService.updatePatient(u, age.getText(), gender.getText(), phone.getText(), email.getText(), pass.getText());
-    if (!ok) {
-      new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
-      return;
-    }
+        ButtonType result = dialog.showAndWait().orElse(ButtonType.CANCEL);
+        if (result != ButtonType.OK) return;
 
-    // UI refresh
-    User nu = Session.getCurrentUser();
-    nameLabel.setText(safe(nu.getName()) + " " + safe(nu.getSurname()));
-    emailLabel.setText(safe(nu.getEmail()));
-    ageLabel.setText(safe(nu.getAge()));
-    genderLabel.setText(safe(nu.getGender()));
+        // Sıralama: email -> passwordField.getText()
+        boolean ok = ProfileService.updatePatient(u, age.getText(), gender.getText(), phone.getText(), email.getText(), passwordField.getText());
 
-    new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
+        if(ok) {
+            User nu = Session.getCurrentUser();
+
+            ageLabel.setText(safe(nu.getAge()));
+            genderLabel.setText(safe(nu.getGender()));
+            phoneLabel.setText(safe(nu.getPhone()));
+            emailLabel.setText(safe(nu.getEmail()));
+
+            // 2. DEĞİŞİKLİK: Yıldızlı gösterme kısmı sadece başarılıysa çalışmalı
+            if (nu.getPassword() != null && !nu.getPassword().isEmpty()) {
+                passwordLabel.setText("*".repeat(nu.getPassword().length()));
+            } else {
+                passwordLabel.setText("");
+            }
+        }
   }
-
   @FXML
   public void handleLogout(ActionEvent event) {
     Session.clear();

@@ -7,7 +7,6 @@ public class Doctor extends User {
     public Doctor(){
     }
     public Doctor(int id,String tc, String name, String surname, String age, String gender, String phone, String email, String password, String branch, String medical_title) {
-        // Üst sınıf olan User'ın constructor'ına ortak bilgileri gönderiyoruz
         super(id, tc, name, surname, age, gender, phone, email, password, "doktor");
         this.branch = branch;
         this.medical_title = medical_title;

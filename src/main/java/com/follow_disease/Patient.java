@@ -105,17 +105,6 @@ public class Patient extends User {
         return "Hasta - Tanı: " + current_disease;
     }
 
-    @Override
-    public void setEmail(String email) {
-        if (email != null) {
-            String lowerEmail = email.toLowerCase();
-            if (lowerEmail.endsWith("@gmail.com") || lowerEmail.endsWith("@hotmail.com") || lowerEmail.endsWith("@outlook.com")) {
-                super.setEmail(email);
-            } else {
-                System.out.println("HATA: Geçersiz e-posta formatı.");
-            }
-        }
-    }
 
     public void completeTreatment() {
         if (this.current_disease != null && !this.current_disease.isEmpty()) {

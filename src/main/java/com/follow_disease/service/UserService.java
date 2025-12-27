@@ -201,42 +201,13 @@ public class UserService {
     }
 
     public static boolean login_method(String email, String password) {
-        try {
-            Path dbFile = getDbFile();
-            List<RegisteredUser> users = readUsers(dbFile);
+        // Doğrudan JsonDb kullanarak kullanıcıyı ara
+        com.follow_disease.User foundUser = com.follow_disease.service.JsonDb.findUserByEmail(email);
 
-            Optional<RegisteredUser> found = users.stream()
-                    .filter(u -> u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password))
-                    .findFirst();
-
-            if (found.isPresent()) {
-                RegisteredUser ru = found.get();
-
-                User u;
-                if ("doktor".equalsIgnoreCase(ru.getRole())) {
-                    u = new com.follow_disease.Doctor(); // Doctor nesnesi üret
-                } else {
-                    u = new com.follow_disease.Patient(); // Patient nesnesi üret
-                }
-
-                // Ortak alanları set et
-                u.setId(ru.getId());
-                u.setName(ru.getName());
-                u.setSurname(ru.getSurname());
-                u.setTc(ru.getTc());
-                u.setEmail(ru.getEmail());
-                u.setPassword(ru.getPassword());
-                u.setAge(ru.getAge());
-                u.setGender(ru.getGender());
-                u.setPhone(ru.getPhone());
-
-
-                currentUser = u;
-                Session.setCurrentUser(u);
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (foundUser != null && foundUser.getPassword().equals(password)) {
+            currentUser = foundUser;
+            com.follow_disease.Session.setCurrentUser(foundUser);
+            return true;
         }
         return false;
     }
@@ -294,17 +265,31 @@ public class UserService {
         return path;
     }
 
+    // UserService.java içindeki readUsers metodunu şu şekilde değiştir:
     private static List<RegisteredUser> readUsers(Path dbFile) {
         try {
+            if (!Files.exists(dbFile)) return new ArrayList<>();
             String content = new String(Files.readAllBytes(dbFile), StandardCharsets.UTF_8);
             if (content.isEmpty() || content.equals("[]")) return new ArrayList<>();
+
             JsonArray arr = JsonParser.parseString(content).getAsJsonArray();
             List<RegisteredUser> users = new ArrayList<>();
+
             for (JsonElement el : arr) {
                 JsonObject o = el.getAsJsonObject();
+
+                // ROLE KONTROLÜ: Eğer JSON'da role yoksa hata vermemesi için:
+                String role = o.has("role") ? o.get("role").getAsString() : "";
+
+                // Eğer rol yoksa TC'den doktor olup olmadığını kontrol et (JsonDb'deki mantık gibi)
+                String tc = o.get("tc").getAsString();
+                if (role.isEmpty()) {
+                    role = isDoctor(tc) ? "doktor" : "hasta";
+                }
+
                 users.add(new RegisteredUser(
                         o.get("id").getAsInt(),
-                        o.get("tc").getAsString(),
+                        tc,
                         o.get("name").getAsString(),
                         o.get("surname").getAsString(),
                         o.get("age").getAsString(),
@@ -312,13 +297,16 @@ public class UserService {
                         o.has("phone") ? o.get("phone").getAsString() : "",
                         o.get("email").getAsString(),
                         o.get("password").getAsString(),
-                        o.get("role").getAsString(),
+                        role, // Belirlediğimiz rolü ekliyoruz
                         o.has("branch") ? o.get("branch").getAsString() : "",
                         o.has("medical_title") ? o.get("medical_title").getAsString() : ""
                 ));
             }
             return users;
-        } catch (Exception e) { return new ArrayList<>(); }
+        } catch (Exception e) {
+            System.err.println("UserService readUsers Hatası: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     private static void writeUsers(Path dbFile, List<RegisteredUser> users) throws IOException {

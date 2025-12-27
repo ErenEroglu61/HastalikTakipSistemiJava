@@ -80,7 +80,13 @@ public class DoctorController {
     genderLabel.setText(safe(u.getGender()));
     phoneLabel.setText(safe(u.getPhone()));
     tcLabel.setText(safe(u.getTc()));
-    passwordLabel.setText(safe(u.getPassword()));
+
+    if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+          // Sayfa ilk açıldığında şifre uzunluğu kadar yıldız koyar
+          passwordLabel.setText("*".repeat(u.getPassword().length()));
+      } else {
+          passwordLabel.setText("");
+    }
 
     // doctors.json'dan branch/title
     Doctor d = JsonDb.findDoctorByTc(u.getTc());
@@ -117,51 +123,71 @@ public class DoctorController {
     }
   }
 
-  // PROFİLİMİ GÜNCELLE butonu
-  @FXML
-  private void handleUpdateProfile(ActionEvent event) {
-    User u = Session.getCurrentUser();
-    if (u == null) return;
+    @FXML
+    private void handleUpdateProfile(ActionEvent event) {
+        User u = Session.getCurrentUser();
+        if (u == null) return;
 
-    Dialog<ButtonType> dialog = new Dialog<>();
-    dialog.setTitle("Profil Güncelle (Doktor)");
-    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Profil Güncelle (Doktor)");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    TextField age = new TextField(safe(u.getAge()));
-    TextField gender = new TextField(safe(u.getGender()));
-    TextField phone = new TextField(safe(u.getPhone()));
-    PasswordField pass = new PasswordField();
-    pass.setPromptText("Yeni şifre (boş bırak -> değişmesin)");
+        // Giriş alanlarını oluşturma
+        TextField age = new TextField(safe(u.getAge()));
+        TextField gender = new TextField(safe(u.getGender()));
+        TextField phone = new TextField(safe(u.getPhone()));
+        TextField email = new TextField(safe(u.getEmail()));
 
-    GridPane grid = new GridPane();
-    grid.setHgap(10);
-    grid.setVgap(10);
+        // ŞİFRE ALANI: PasswordField kullanıyoruz (yazarken görünmez)
+        PasswordField passwordField = new PasswordField();
+        passwordField.setText(safe(u.getPassword()));
 
-    int r = 0;
-    grid.addRow(r++, new Label("Yaş:"), age);
-    grid.addRow(r++, new Label("Cinsiyet:"), gender);
-    grid.addRow(r++, new Label("Tel No:"), phone);
-    grid.addRow(r++, new Label("Şifre:"), pass);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
 
-    dialog.getDialogPane().setContent(grid);
+        int r = 0;
+        grid.addRow(r++, new Label("Yaş:"), age);
+        grid.addRow(r++, new Label("Cinsiyet:"), gender);
+        grid.addRow(r++, new Label("Tel No:"), phone);
+        grid.addRow(r++, new Label("E-mail:"), email);
+        grid.addRow(r++, new Label("Şifre:"), passwordField);
 
-    ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
-    if (res != ButtonType.OK) return;
+        dialog.getDialogPane().setContent(grid);
 
-    boolean ok = ProfileService.updateDoctor(u, age.getText(), gender.getText(), phone.getText(), pass.getText());
-    if (!ok) {
-      new Alert(Alert.AlertType.ERROR, "Güncelleme başarısız!", ButtonType.OK).showAndWait();
-      return;
+        ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
+        if (res != ButtonType.OK) return;
+
+        // SIRALAMA DİKKAT: u, age, gender, phone, email, password
+        boolean ok = ProfileService.updateDoctor(u,
+                age.getText(),
+                gender.getText(),
+                phone.getText(),
+                email.getText(),
+                passwordField.getText());
+
+        if (ok) {
+            // Nesneyi güncelle
+            u.setAge(age.getText());
+            u.setGender(gender.getText());
+            u.setPhone(phone.getText());
+            u.setEmail(email.getText());
+            u.setPassword(passwordField.getText());
+
+            // Arayüzdeki (UI) etiketleri güncelle
+            ageLabel.setText(u.getAge());
+            genderLabel.setText(u.getGender());
+            phoneLabel.setText(u.getPhone());
+            emailLabel.setText(u.getEmail());
+
+            // Şifreyi ana ekranda yıldızlı gösterme
+            if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+                passwordLabel.setText("*".repeat(u.getPassword().length()));
+            } else {
+                passwordLabel.setText("");
+            }
+        }
     }
-
-    // UI refresh
-    User nu = Session.getCurrentUser();
-    ageLabel.setText(safe(nu.getAge()));
-    genderLabel.setText(safe(nu.getGender()));
-    phoneLabel.setText(safe(nu.getPhone()));
-
-    new Alert(Alert.AlertType.INFORMATION, "Profil güncellendi ✅", ButtonType.OK).showAndWait();
-  }
 
   private void addPatientCard(Patient patient) {
     HBox card = new HBox(20);
@@ -300,7 +326,6 @@ public class DoctorController {
 
   @FXML
   private void handleLogout(ActionEvent event) {
-    System.out.println("Oturum kapatıldı.");
     Session.clear();
 
     try {

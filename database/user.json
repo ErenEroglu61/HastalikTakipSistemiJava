@@ -1,19 +1,18 @@
 [
   {
+    "doctor_id": 0,
     "id": 1,
     "tc": "12345678901",
     "name": "Test",
     "surname": "Kullanicisi",
-    "age": "20",
+    "age": "24",
     "gender": "Kadın",
-    "phone": "05636544512",
+    "phone": "05636544514",
     "email": "test@gmail.com",
-    "password": "1234",
-    "role": "hasta",
-    "branch": "",
-    "medical_title": ""
+    "password": "1234"
   },
   {
+    "doctor_id": 0,
     "id": 2,
     "tc": "12345678902",
     "name": "Ahmet",
@@ -23,11 +22,10 @@
     "phone": "05424565251",
     "email": "ahmet@gmail.com",
     "password": "12345",
-    "role": "hasta",
-    "branch": "",
-    "medical_title": ""
+    "role": "hasta"
   },
   {
+    "doctor_id": 0,
     "id": 3,
     "tc": "12345678903",
     "name": "Ayşe",
@@ -37,11 +35,11 @@
     "phone": "05899875665",
     "email": "ayse@gmail.com",
     "password": "12345",
-    "role": "hasta",
-    "branch": "",
-    "medical_title": ""
+    "role": "hasta"
   },
   {
+    "branch": "",
+    "medical_title": "",
     "id": 4,
     "tc": "12345678911",
     "name": "Mehmet",
@@ -51,25 +49,25 @@
     "phone": "05414562123",
     "email": "mehmetoztekin@gmail.com",
     "password": "123456",
-    "role": "doktor",
-    "branch": "",
-    "medical_title": ""
+    "role": "doktor"
   },
   {
+    "branch": "",
+    "medical_title": "",
     "id": 5,
     "tc": "12345678912",
     "name": "Zeynep",
     "surname": "Çelik",
-    "age": "46",
+    "age": "42",
     "gender": "Kadın",
-    "phone": "05989635662",
+    "phone": "05989635668",
     "email": "zeynep@gmail.com",
     "password": "123456",
-    "role": "doktor",
-    "branch": "",
-    "medical_title": ""
+    "role": "doktor"
   },
   {
+    "branch": "",
+    "medical_title": "",
     "id": 6,
     "tc": "12345678913",
     "name": "Erdem",
@@ -79,11 +77,10 @@
     "phone": "05459876365",
     "email": "erdem@gmail.com",
     "password": "123456",
-    "role": "doktor",
-    "branch": "",
-    "medical_title": ""
+    "role": "doktor"
   },
   {
+    "doctor_id": 0,
     "id": 7,
     "tc": "12345678904",
     "name": "Meryem Kübra",
@@ -93,8 +90,6 @@
     "phone": "05654568921",
     "email": "meryem@gmail.com",
     "password": "12345",
-    "role": "hasta",
-    "branch": "",
-    "medical_title": ""
+    "role": "hasta"
   }
 ]
