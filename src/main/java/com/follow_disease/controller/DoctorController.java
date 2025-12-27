@@ -319,8 +319,6 @@ public class DoctorController {
         e.printStackTrace();
         System.err.println("HATA:DoctorPagePatientDetail.fxml dosyası yüklenemedi!");
       }
-    } else {
-      System.out.println("Lütfen detaylarını görmek istediğiniz hastayı listeden seçin.");
     }
   }
 

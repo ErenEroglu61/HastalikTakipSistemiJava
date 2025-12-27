@@ -35,16 +35,16 @@ public class LoginController {
                 fxmlPath = "/com/follow_disease/patientPage.fxml";
             }
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent root = loader.load();
+                Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-                //  Mevcut pencereyi (Stage) alıp yeni sayfayı içine koyuyoruz
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
+                Stage newStage = new Stage();
+                newStage.setScene(new Scene(root));
+                newStage.show();
+
+                currentStage.close();
 
             } catch (IOException e) {
-                System.err.println("HATA: FXML dosyası yüklenemedi. Yol: " + fxmlPath);
                 e.printStackTrace();
             }
         } else {
@@ -64,7 +64,6 @@ public class LoginController {
             stage.setScene(new javafx.scene.Scene(root));
             stage.show();
         } catch (Exception e) {
-            System.out.println("Login'den Register'a geçerken hata: " + e.getMessage());
             e.printStackTrace();
         }
     }

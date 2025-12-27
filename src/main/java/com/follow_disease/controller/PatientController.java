@@ -215,7 +215,6 @@ public class PatientController {
   public void handleContactDoctor(ActionEvent event) {
     try {
       java.net.URL fxmlLocation = getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml");
-      System.out.println("Yükleniyor: " + fxmlLocation);
 
       Parent root = FXMLLoader.load(fxmlLocation);
 
