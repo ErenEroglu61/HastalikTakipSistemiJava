@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientContactDoctorController {
+public class PatientContactDoctorController implements Feedback,Notification {
 
     @FXML private TextField txtMedicineName, txtPrescriptionCode, txtCustomCourse, txtSideEffect;
     @FXML private Label lblDoctorName, lblDoctorTitle, lblActiveDisease, lblDiagnosisDate;
@@ -51,6 +51,19 @@ public class PatientContactDoctorController {
             }
         }
     }
+
+    @Override
+    public String getFeedbackNote() {
+        return txtPatientNote.getText();}
+    @Override
+    public void setFeedbackNote(String note) {
+        txtPatientNote.setText(safe(note));}
+    @Override
+    public List<String> getNotifications() {return null;}
+    @Override
+    public void setNotifications(List<String> notifications) {}
+    @Override
+    public void updateNotificationUI() {}
 
     private void fillUIFields() {
         Doctor assignedDoctor = findDoctorById(this.assignedDoctorId);
@@ -80,7 +93,7 @@ public class PatientContactDoctorController {
 
         txtCustomCourse.setText(safe(currentPatient.getAdditional_disease_course()));
         txtSideEffect.setText(safe(currentPatient.getAdditionalDoctorNote()));
-        txtPatientNote.setText(safe(currentPatient.getAdditionalPatientNote()));
+        setFeedbackNote(currentPatient.getAdditionalPatientNote());
     }
 
     private void setupVitalSignsTable() {
@@ -241,7 +254,7 @@ public class PatientContactDoctorController {
             // Modeli güncelle
             currentPatient.setVitalSignsHistory(new ArrayList<>(filledSigns));
             currentPatient.setSelectedSymptoms(selectedSymptoms);
-            currentPatient.setAdditionalPatientNote(txtPatientNote.getText());
+            currentPatient.setAdditionalPatientNote(getFeedbackNote());
 
             // JSON'a Yaz
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -261,7 +274,14 @@ public class PatientContactDoctorController {
                 gson.toJson(allPatients, writer);
             }
 
-            new Alert(Alert.AlertType.INFORMATION, "Bilgileriniz kaydedildi.").showAndWait();
+            Doctor assignedDoctor = findDoctorById(this.assignedDoctorId);
+            if (assignedDoctor != null) {
+                User me = Session.getCurrentUser();
+                String message = "Hastanız " + me.getName() + " " + me.getSurname() + " gelen güncellemeleriniz var. ";
+                sendNotification(assignedDoctor.getTc(), message, true);
+            }
+
+            new Alert(Alert.AlertType.INFORMATION, "Yapmış olduğunuz güncellemeler doktorunuza iletildi.").showAndWait();
             handleClose(event);
 
         } catch (Exception e) {

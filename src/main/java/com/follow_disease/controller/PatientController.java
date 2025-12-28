@@ -1,19 +1,12 @@
 package com.follow_disease.controller;
 
 import com.follow_disease.Patient;
+import com.follow_disease.Notification;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
@@ -24,6 +17,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
@@ -31,7 +27,7 @@ import com.follow_disease.User;
 import com.follow_disease.Session;
 import com.follow_disease.service.ProfileService;
 
-public class PatientController {
+public class PatientController implements Notification {
 
   // Sol paneldeki Label'lar (FXML'deki fx:id'ler ile birebir aynı olmalı)
   @FXML private Label nameLabel;
@@ -50,6 +46,46 @@ public class PatientController {
   @FXML private MenuButton notificationMenuButton;
   @FXML private Circle notificationBadge;
 
+
+  @Override
+  public List<String> getNotifications() {
+        // Şu anki giriş yapmış hastanın bildirim listesini döner
+        User u = Session.getCurrentUser();
+        if (u != null) {
+            Patient p = findPatientByTc(u.getTc()); // En güncel veriyi JSON'dan çekiyoruz
+            return p != null ? p.getNotifications() : new ArrayList<>();
+        }
+        return new ArrayList<>();
+    }
+  @Override
+  public void setNotifications(List<String> notifications) {}
+
+  @Override
+  public void updateNotificationUI() {
+
+        notificationMenuButton.getItems().clear();
+        List<String> notifications = getNotifications();
+
+        if (notifications != null && !notifications.isEmpty()) {
+            notificationBadge.setVisible(true);
+
+            for (String msg : notifications) {
+                Label label = new Label(msg);
+                label.setStyle(
+                        "-fx-font-family: 'Segoe UI Semibold'; " +
+                                "-fx-font-size: 13px; " +
+                                "-fx-text-fill: #1e293b; " +
+                                "-fx-padding: 8 15 8 15;"
+                );
+                CustomMenuItem item = new CustomMenuItem(label);
+                notificationMenuButton.getItems().add(item);
+            }
+        } else {
+            notificationBadge.setVisible(false);
+            notificationMenuButton.getItems().add(new MenuItem("Bildirim yok"));
+        }
+
+  }
   @FXML
   public void initialize() {
     User u = Session.getCurrentUser();
@@ -72,8 +108,23 @@ public class PatientController {
         loadMedicalData(patient);
       }
     }
-    loadNotifications();
+
+      Label bellIcon = new Label("\uE7ED");
+      bellIcon.setStyle("-fx-font-family: 'Segoe UI Symbol'; -fx-font-size: 18; -fx-text-fill: #1976D2;");
+      notificationMenuButton.setGraphic(bellIcon);
+      notificationMenuButton.setText("");
+
+      updateNotificationUI();
   }
+
+  @FXML
+  public void handleNotificationShowing() {
+        User u = Session.getCurrentUser();
+        if (u != null) {
+            clearNotifications(u.getTc(), false);
+            notificationBadge.setVisible(false);
+        }
+    }
 
   private String safe(String s) {
     return s == null ? "" : s.trim();
@@ -228,59 +279,5 @@ public class PatientController {
       System.err.println("Yükleme sırasında teknik bir hata oluştu: " + e.getMessage());
       e.printStackTrace();
     }
-  }
-
-  private void loadNotifications() {
-    notificationMenuButton.getItems().clear();
-
-    CustomMenuItem item1 = createNotificationItem("İlaç hatırlatması: Lisinopril", "2 saat önce");
-    CustomMenuItem item2 = createNotificationItem("Doktor randevusu yarın saat 14:00", "5 saat önce");
-    CustomMenuItem item3 = createNotificationItem("Yeni test sonuçlarınız hazır", "1 gün önce");
-
-    notificationMenuButton.getItems().addAll(item1, item2, item3);
-
-    int notificationCount = notificationMenuButton.getItems().size();
-    notificationBadge.setVisible(notificationCount > 0);
-  }
-
-  private CustomMenuItem createNotificationItem(String title, String time) {
-    VBox content = new VBox(5);
-    content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
-    content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
-    content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
-
-    Label titleLabel = new Label(title);
-    titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
-    titleLabel.setWrapText(true);
-    titleLabel.setMaxWidth(260);
-
-    Label timeLabel = new Label(time);
-    timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
-
-    content.getChildren().addAll(titleLabel, timeLabel);
-
-    CustomMenuItem item = new CustomMenuItem(content);
-    item.setHideOnClick(false);
-
-    content.setOnMouseClicked(e -> {
-      System.out.println("Bildirime tıklandı: " + title);
-    });
-
-    return item;
-  }
-
-  public void updateNotificationCount(int count) {
-    notificationBadge.setVisible(count > 0);
-  }
-
-  public void addNotification(String title, String time) {
-    CustomMenuItem newItem = createNotificationItem(title, time);
-    notificationMenuButton.getItems().add(0, newItem);
-    notificationBadge.setVisible(true);
-  }
-
-  public void clearNotifications() {
-    notificationMenuButton.getItems().clear();
-    notificationBadge.setVisible(false);
   }
 }

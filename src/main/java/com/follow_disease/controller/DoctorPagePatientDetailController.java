@@ -1,16 +1,18 @@
 package com.follow_disease.controller;
 
+import com.follow_disease.Feedback;
 import com.follow_disease.Patient;
 import com.follow_disease.VitalSign;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import com.follow_disease.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import java.util.List;
 
-public class DoctorPagePatientDetailController {
+public class DoctorPagePatientDetailController implements Feedback,Notification {
 
   // FXML Bağlantıları
   @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
@@ -26,6 +28,7 @@ public class DoctorPagePatientDetailController {
 
   private Patient currentPatient;
 
+
   @FXML
   public void initialize() {
     // Tablo Sütunlarını VitalSign sınıfındaki değişkenlerle bağlıyoruz
@@ -35,6 +38,17 @@ public class DoctorPagePatientDetailController {
     colPulse.setCellValueFactory(new PropertyValueFactory<>("pulse"));
     colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
   }
+
+  public String getFeedbackNote() {
+      return txtSideEffect.getText();}
+  public void setFeedbackNote(String note){
+      txtSideEffect.setText(safe(note));}
+  @Override
+  public List<String> getNotifications() {return null;}
+  @Override
+  public void setNotifications(List<String> notifications) {}
+  @Override
+  public void updateNotificationUI() {}
 
   public void initData(Patient patient) {
     this.currentPatient = patient;
@@ -72,7 +86,8 @@ public class DoctorPagePatientDetailController {
 
     // Semptomlar ve Notlar
     displaySelectedSymptoms(patient.getSelectedSymptoms());
-    txtAdditionalComplaints.setText(patient.getAdditionalPatientNote());
+    setFeedbackNote(patient.getAdditionalDoctorNote());
+    txtAdditionalComplaints.setText(safe(patient.getAdditionalPatientNote()));
 
     // Doktorun yazdığı ilaç
     if (patient.getAdditional_medicines() != null && !patient.getAdditional_medicines().isEmpty()) {
@@ -153,25 +168,34 @@ public class DoctorPagePatientDetailController {
     String finalCourse = (feedback != null && !feedback.isEmpty()) ? feedback : courseFromCombo;
     currentPatient.setAdditional_disease_course(finalCourse);
 
-    currentPatient.setAdditionalDoctorNote(sideEffects);
-
-    // İlaç ve reçete için liste boşsa veya son eklenen reçete kodu şimdikinden farklıysa ekliyoruz
-    if (newMedicine != null && !newMedicine.isEmpty()) {
-      List<String> meds = currentPatient.getAdditional_medicines();
-      if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(newMedicine.trim())) {
-        meds.add(newMedicine.trim());
-      }
-    }
-
-    if (newPrescription != null && !newPrescription.isEmpty()) {
-      List<String> prescriptions = currentPatient.getPrescriptions();
-      if (prescriptions.isEmpty() || !prescriptions.get(prescriptions.size() - 1).equalsIgnoreCase(newPrescription.trim())) {
-        prescriptions.add(newPrescription.trim());
-      }
-    }
-
+    currentPatient.setAdditionalDoctorNote(getFeedbackNote());
+    processMedicineAndPrescription(newMedicine, newPrescription);
     savePatientDataToJson(currentPatient);
+
+    if (currentPatient != null) {
+          // targetTc: Hastanın TC'si
+          // message: İsteğine göre özelleştirilmiş mesaj
+          // isTargetDoctor: false (Çünkü bildirim hastaya gidiyor)
+          sendNotification(currentPatient.getTc(), "Doktorunuzdan gelen bir güncellemeniz var.", false);
+
+      }
+
     handleClose();
+  }
+
+  private void processMedicineAndPrescription(String med, String pres) {
+        if (med != null && !med.isEmpty()) {
+            List<String> meds = currentPatient.getAdditional_medicines();
+            if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(med.trim())) {
+                meds.add(med.trim());
+            }
+        }
+        if (pres != null && !pres.isEmpty()) {
+            List<String> prescriptions = currentPatient.getPrescriptions();
+            if (prescriptions.isEmpty() || !prescriptions.get(prescriptions.size() - 1).equalsIgnoreCase(pres.trim())) {
+                prescriptions.add(pres.trim());
+            }
+        }
   }
 
   private void savePatientDataToJson(Patient patient) {
@@ -211,4 +235,6 @@ public class DoctorPagePatientDetailController {
     Stage stage = (Stage) lblFullName.getScene().getWindow();
     stage.close();
   }
+
+  private String safe(String s) { return s == null ? "" : s; }
 }

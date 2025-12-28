@@ -24,11 +24,17 @@
                                         <Label text="👤" textFill="WHITE" style="-fx-font-size: 50;" />
                                     </children>
                                 </StackPane>
-                                <StackPane>
-                                    <MenuButton fx:id="notificationMenuButton" prefHeight="40" prefWidth="40" popupSide="BOTTOM" style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-size: 18; -fx-background-radius: 50; -fx-cursor: hand;" text="🔔">
-                                        <effect><DropShadow color="#00000033" radius="5.0" /></effect>
-                                    </MenuButton>
-                                    <Circle fx:id="notificationBadge" fill="#D32F2F" radius="7.0" stroke="WHITE" strokeWidth="2.0" translateX="12" translateY="-12" visible="false" />
+                                <StackPane alignment="TOP_RIGHT" prefWidth="40.0" prefHeight="40.0">
+                                    <children>
+                                        <MenuButton fx:id="notificationMenuButton" onShowing="#handleNotificationShowing" contentDisplay="GRAPHIC_ONLY"
+                                                    style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-size: 16; -fx-background-radius: 50; -fx-cursor: hand;"
+                                                    prefWidth="50" prefHeight="40">
+                                            <effect><DropShadow color="#00000022" radius="4.0" /></effect>
+                                        </MenuButton>
+                                        <Circle fx:id="notificationBadge" radius="5.0" fill="#D32F2F" stroke="WHITE" strokeWidth="1.5" visible="false">
+                                            <StackPane.margin><Insets top="-1.0" right="-1.0" /></StackPane.margin>
+                                        </Circle>
+                                    </children>
                                 </StackPane>
                             </children>
                         </HBox>

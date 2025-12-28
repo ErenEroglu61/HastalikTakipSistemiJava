@@ -146,9 +146,9 @@
         <Label text="Hastalık Seyri" textFill="#757575">
             <font><Font name="Segoe UI Semibold" size="14.0" /></font>
         </Label>
-        <ComboBox fx:id="cbDiseaseCourse" maxWidth="Infinity" promptText="Hastalığın seyri " style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0;" />
-        <TextField fx:id="txtCustomCourse" promptText="Doktorun Geri Bildirimleri" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-background-radius: 5; -fx-pref-height: 35;" />
-        <TextField fx:id="txtSideEffect" promptText="İlacın Olası Yan Etkileri &amp; Uyarılar" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-background-radius: 5; -fx-pref-height: 35;" />
+        <ComboBox fx:id="cbDiseaseCourse" maxWidth="Infinity" promptText="Hastalığın Seyri " style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0;" />
+        <TextField fx:id="txtCustomCourse" promptText="Doktorun Hastalığın Gidişatına Dair Yorumları " style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-background-radius: 5; -fx-pref-height: 55;" />
+        <TextField fx:id="txtSideEffect" promptText="İlacın Olası Yan Etkileri &amp; Doktorun Geribildirimleri" style="-fx-background-color: #F0F2F5; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-background-radius: 5; -fx-pref-height: 65;" />
 
         <Region VBox.vgrow="ALWAYS" />
 

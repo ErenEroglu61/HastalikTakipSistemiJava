@@ -3,7 +3,7 @@ package com.follow_disease;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Patient extends User  {
+public class Patient extends User implements Notification  {
 
     private int doctor_id;
     private String current_disease;
@@ -19,14 +19,15 @@ public class Patient extends User  {
     private String additionalDoctorNote;
     private List<String> selectedSymptoms;
     private List<VitalSign> vitalSignsHistory;
-    private String prescriptionCode;
+   // private String prescriptionCode;
+    private List<String> notifications = new ArrayList<>();
 
     public Patient() {}
 
     public Patient(int id, String name, String surname, String tc, String phone, String email, String password, String age,
                    String gender, int doctor_id, String current_disease, String appointmentDate, String additionalPatientNote, List<String> medicines, List<String> current_medicine,
                    List<String> additional_medicines, List<String> prescriptions, List<String> disease_history, String bloodType, String additional_disease_course,
-                   String additionalDoctorNote, List<String> selectedSymptoms, List<VitalSign> vitalSignsHistory, String prescriptionCode) {
+                   String additionalDoctorNote, List<String> selectedSymptoms, List<VitalSign> vitalSignsHistory, String prescriptionCode, List<String>notifications) {
 
         super(id, tc, name, surname, age, gender, phone, email, password, "hasta");
         this.doctor_id = doctor_id;
@@ -37,7 +38,7 @@ public class Patient extends User  {
         this.bloodType = (bloodType == null) ? "" : bloodType;
         this.additional_disease_course = (additional_disease_course == null) ? "" : additional_disease_course;
         this.additionalDoctorNote = (additionalDoctorNote == null) ? "" : additionalDoctorNote;
-        this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
+       // this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
 
         this.current_medicine = (current_medicine == null) ? new ArrayList<>() : current_medicine;
         this.additional_medicines = (additional_medicines == null) ? new ArrayList<>() : additional_medicines;
@@ -46,6 +47,7 @@ public class Patient extends User  {
         this.disease_history = (disease_history == null) ? new ArrayList<>() : disease_history;
         this.selectedSymptoms = (selectedSymptoms == null) ? new ArrayList<>() : selectedSymptoms;
         this.vitalSignsHistory = (vitalSignsHistory == null) ? new ArrayList<>() : vitalSignsHistory;
+        this.notifications = (notifications == null) ? new ArrayList<>() : notifications;
     }
 
     //Getters ve  Setters
@@ -92,9 +94,16 @@ public class Patient extends User  {
     public List<VitalSign> getVitalSignsHistory() { return vitalSignsHistory; }
     public void setVitalSignsHistory(List<VitalSign> vitalSignsHistory) { this.vitalSignsHistory = vitalSignsHistory; }
 
-    public String getPrescriptionCode() { return prescriptionCode; }
-    public void setPrescriptionCode(String prescriptionCode) { this.prescriptionCode = prescriptionCode; }
+   // public String getPrescriptionCode() { return prescriptionCode; }
+   // public void setPrescriptionCode(String prescriptionCode) { this.prescriptionCode = prescriptionCode; }
 
+    @Override
+    public List<String> getNotifications() { return notifications;}
+    @Override
+    public void setNotifications(List<String> notifications) {this.notifications = notifications;}
+
+    @Override
+    public void updateNotificationUI() {}
     @Override
     public String getWelcomeMessage() {
         return "Hoş geldiniz, Sayın " + getName() + " " + getSurname();

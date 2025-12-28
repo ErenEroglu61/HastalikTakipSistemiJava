@@ -1,11 +1,8 @@
 package com.follow_disease.controller;
 
-import com.follow_disease.Doctor;
-import com.follow_disease.Patient;
-import com.follow_disease.User;
+import com.follow_disease.*;
 import com.follow_disease.service.JsonDb;
 import com.follow_disease.service.ProfileService;
-import com.follow_disease.Session;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.event.ActionEvent;
@@ -27,7 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class DoctorController {
+public class DoctorController implements Notification {
 
   @FXML private VBox patientListContainer;
   @FXML private TableView<Patient> patientTable;
@@ -51,18 +48,69 @@ public class DoctorController {
   private int currentDoctorId = -1;
 
   @FXML
-  public void initialize() {
-    if (notificationMenuButton != null) {
-      Label bellIcon = new Label("\uD83D\uDD14");
-      bellIcon.setStyle("-fx-font-size: 18; -fx-text-fill: #1976D2;");
-      notificationMenuButton.setGraphic(bellIcon);
-      notificationMenuButton.setText("");
+    public void handleNotificationShowing() {
+        User u = Session.getCurrentUser();
+        if (u != null) {
+            // clearNotifications(TC, isDoctor) -> isDoctor burada TRUE olmalı
+            clearNotifications(u.getTc(), true);
+
+            // Kırmızı noktayı anında kapat
+            notificationBadge.setVisible(false);
+        }
     }
 
-    loadNotifications();
+    @FXML
+  public void initialize() {
+    if (notificationMenuButton != null) {
+      Label bellIcon = new Label("\uE7ED");
+      bellIcon.setStyle("-fx-font-family: 'Segoe UI Symbol'; -fx-font-size: 18; -fx-text-fill: #1976D2;");
+      notificationMenuButton.setGraphic(bellIcon);
+      notificationMenuButton.setText("");
+
+    }
+
+    updateNotificationUI();
     loadDoctorUIFromSession();
     loadPatientsForDoctor();
   }
+
+  @Override
+  public List<String> getNotifications() {
+        User u = Session.getCurrentUser();
+        if (u != null) {
+            // JsonDb sınıfındaki metodunu kullanarak en güncel doktor verisini çekiyoruz
+            Doctor d = JsonDb.findDoctorByTc(u.getTc());
+            return d != null ? d.getNotifications() : new java.util.ArrayList<>();
+        }
+        return new java.util.ArrayList<>();
+    }
+
+    @Override
+    public void setNotifications(List<String> notifications) {}
+
+    @Override
+    public void updateNotificationUI() {
+        notificationMenuButton.getItems().clear();
+        List<String> notifications = getNotifications();
+
+        if (notifications != null && !notifications.isEmpty()) {
+            notificationBadge.setVisible(true);
+            for (String msg : notifications) {
+                Label label = new Label(msg);
+                label.setStyle(
+                        "-fx-font-family: 'Segoe UI Semibold'; " +
+                                "-fx-font-size: 13px; " +
+                                "-fx-text-fill: #1e293b; " +
+                                "-fx-padding: 8 15 8 15;"
+                );
+                CustomMenuItem item = new CustomMenuItem(label);
+                notificationMenuButton.getItems().add(item);
+            }
+        } else {
+            notificationBadge.setVisible(false);
+            notificationMenuButton.getItems().add(new MenuItem("Bildirim yok"));
+        }
+    }
 
   private void loadDoctorUIFromSession() {
     User u = Session.getCurrentUser();
@@ -258,40 +306,6 @@ public class DoctorController {
       System.err.println("Sebep: FXML içindeki 'fx:controller' yolu yanlış olabilir veya dosya bozuk.");
       e.printStackTrace();
     }
-  }
-
-  private void loadNotifications() {
-    notificationMenuButton.getItems().clear();
-
-    CustomMenuItem item1 = createNotificationItem("Yeni hasta kaydı: Ahmet Demir", "5 dakika önce");
-    CustomMenuItem item2 = createNotificationItem("Randevu hatırlatması: Ayşe Yılmaz", "15 dakika önce");
-    CustomMenuItem item3 = createNotificationItem("Test sonucu hazır: Mehmet Kaya", "1 saat önce");
-
-    notificationMenuButton.getItems().addAll(item1, item2, item3);
-    notificationBadge.setVisible(notificationMenuButton.getItems().size() > 0);
-  }
-
-  private CustomMenuItem createNotificationItem(String title, String time) {
-    VBox content = new VBox(5);
-    content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;");
-    content.setOnMouseEntered(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: #F5F5F5; -fx-cursor: hand;"));
-    content.setOnMouseExited(e -> content.setStyle("-fx-padding: 10; -fx-min-width: 280; -fx-background-color: white;"));
-
-    Label titleLabel = new Label(title);
-    titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13;");
-    titleLabel.setWrapText(true);
-    titleLabel.setMaxWidth(260);
-
-    Label timeLabel = new Label(time);
-    timeLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #64748B;");
-
-    content.getChildren().addAll(titleLabel, timeLabel);
-
-    CustomMenuItem item = new CustomMenuItem(content);
-    item.setHideOnClick(false);
-
-    content.setOnMouseClicked(e -> System.out.println("Bildirime tıklandı: " + title));
-    return item;
   }
 
   @FXML

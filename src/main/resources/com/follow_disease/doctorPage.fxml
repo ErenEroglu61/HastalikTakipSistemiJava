@@ -26,9 +26,9 @@
                                 </StackPane>
                                 <StackPane alignment="TOP_RIGHT" prefWidth="40.0" prefHeight="40.0">
                                     <children>
-                                        <MenuButton fx:id="notificationMenuButton" text="🔔"
+                                        <MenuButton fx:id="notificationMenuButton" onShowing="#handleNotificationShowing" contentDisplay="GRAPHIC_ONLY"
                                                     style="-fx-background-color: #E3F2FD; -fx-text-fill: #1976D2; -fx-font-size: 16; -fx-background-radius: 50; -fx-cursor: hand;"
-                                                    prefWidth="35" prefHeight="35">
+                                                    prefWidth="50" prefHeight="40">
                                             <effect><DropShadow color="#00000022" radius="4.0" /></effect>
                                         </MenuButton>
                                         <Circle fx:id="notificationBadge" radius="5.0" fill="#D32F2F" stroke="WHITE" strokeWidth="1.5" visible="false">
