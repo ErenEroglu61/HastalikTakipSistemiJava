@@ -3,7 +3,7 @@ package com.follow_disease;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Patient extends User {
+public class Patient extends User  {
 
     private int doctor_id;
     private String current_disease;
