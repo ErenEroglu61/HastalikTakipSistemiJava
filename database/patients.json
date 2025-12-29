@@ -1,1 +1,164 @@
-[{"doctor_id":2,"current_disease":"Grip","appointmentDate":"2025-12-02","additionalPatientNote":"Boynumda ciddi bir ağrı var.","current_medicine":["Calpol"],"additional_medicines":["Iburamin Cold","Nurofen"],"prescriptions":["TZ5698KL","JK3256T"],"medicines":["Parol","Majezik","D Vitamini Takviye "],"disease_history":["Yüksek tansiyon","Kas Ağrısı"],"bloodType":"","additional_disease_course":"İlaç tedavisine başlandı","additionalDoctorNote":"Titreme yaşanabilir.","selectedSymptoms":["Yüksek Ateş","Halsizlik"],"vitalSignsHistory":[{"date":"2025-12-07","sugar":156.0,"bloodPressure":"7/12","pulse":83,"fever":38.0},{"date":"2025-12-09","sugar":123.0,"bloodPressure":"8/13","pulse":86,"fever":38.0},{"date":"2025-12-08","bloodPressure":"7/13","fever":39.0}],"notifications":[],"id":1,"tc":"12345678901","name":"Test","surname":"Kullanıcısı","role":"hasta"},{"doctor_id":1,"current_disease":"Grip","appointmentDate":"2025-12-10","additionalPatientNote":"","current_medicine":["Iburamin cold"],"additional_medicines":[],"prescriptions":[],"medicines":["Parol","Majezik"],"disease_history":["Yüksek tansiyon","Kusma ve Bulantı"],"bloodType":"","additional_disease_course":"","additionalDoctorNote":"","selectedSymptoms":[],"vitalSignsHistory":[],"notifications":[],"id":2,"tc":"12345678902","name":"Ahmet","surname":"Yılmaz","role":"hasta"},{"doctor_id":2,"current_disease":"Migren","appointmentDate":"2023-12-19","additionalPatientNote":"","current_medicine":["Dideral"],"additional_medicines":["Thamax"],"prescriptions":["X15T96"],"medicines":["Parol","Majezik"],"disease_history":[],"bloodType":"","additional_disease_course":"Stabil","additionalDoctorNote":"Sinir ve huzursuzluk hissi yapabilir.","selectedSymptoms":["Işık Hassasiyeti","Mide Bulantısı"],"vitalSignsHistory":[{"date":"2025-12-22","sugar":120.0,"bloodPressure":"12/8","pulse":75,"fever":0.0},{"date":"2025-12-23","sugar":115.0,"bloodPressure":"11/7","pulse":72,"fever":0.0},{"date":"2025-12-27","sugar":116.0,"bloodPressure":"","pulse":85,"fever":36.0}],"notifications":["Doktorunuzdan bir güncelleme var."],"id":3,"tc":"12345678903","name":"Ayşe","surname":"Demir","role":"hasta"}]
+[
+  {
+    "doctor_id": 2,
+    "current_disease": "Grip",
+    "appointmentDate": "2025-12-02",
+    "additionalPatientNote": "Boynumda ciddi bir ağrı var.",
+    "current_medicine": [
+      "Calpol"
+    ],
+    "additional_medicines": [
+      "Iburamin Cold",
+      "Nurofen",
+      "Aferin"
+    ],
+    "prescriptions": [
+      "TZ5698KL",
+      "JK3256T",
+      "JT6787K"
+    ],
+    "medicines": [
+      "Parol",
+      "Majezik",
+      "D Vitamini Takviye "
+    ],
+    "disease_history": [
+      "Yüksek tansiyon",
+      "Kas Ağrısı"
+    ],
+    "bloodType": "",
+    "additional_disease_course": "İlaç tedavisine başlandı",
+    "additionalDoctorNote": "Halsizlik yaşanması normal kendinizi yormamaya çalışın.",
+    "selectedSymptoms": [
+      "Halsizlik",
+      "Boğaz Ağrısı"
+    ],
+    "vitalSignsHistory": [
+      {
+        "date": "2025-12-07",
+        "sugar": 156.0,
+        "bloodPressure": "7/12",
+        "pulse": 83,
+        "fever": 38.0
+      },
+      {
+        "date": "2025-12-09",
+        "sugar": 123.0,
+        "bloodPressure": "8/13",
+        "pulse": 86,
+        "fever": 38.0
+      },
+      {
+        "date": "2025-12-08",
+        "bloodPressure": "7/13",
+        "fever": 39.0
+      },
+      {
+        "date": "2025-12-09",
+        "pulse": 95,
+        "fever": 37.0
+      },
+      {
+        "date": ""
+      }
+    ],
+    "notifications": [],
+    "id": 1,
+    "tc": "12345678901",
+    "name": "Test",
+    "surname": "Kullanıcısı",
+    "role": "hasta"
+  },
+  {
+    "doctor_id": 1,
+    "current_disease": "Grip",
+    "appointmentDate": "2025-12-10",
+    "additionalPatientNote": "",
+    "current_medicine": [
+      "Iburamin cold"
+    ],
+    "additional_medicines": [],
+    "prescriptions": [],
+    "medicines": [
+      "Parol",
+      "Majezik"
+    ],
+    "disease_history": [
+      "Yüksek tansiyon",
+      "Kusma ve Bulantı"
+    ],
+    "bloodType": "",
+    "additional_disease_course": "",
+    "additionalDoctorNote": "",
+    "selectedSymptoms": [],
+    "vitalSignsHistory": [],
+    "notifications": [],
+    "id": 2,
+    "tc": "12345678902",
+    "name": "Ahmet",
+    "surname": "Yılmaz",
+    "role": "hasta"
+  },
+  {
+    "doctor_id": 2,
+    "current_disease": "Migren",
+    "appointmentDate": "2023-12-19",
+    "additionalPatientNote": "",
+    "current_medicine": [
+      "Dideral"
+    ],
+    "additional_medicines": [
+      "Thamax"
+    ],
+    "prescriptions": [
+      "X15T96"
+    ],
+    "medicines": [
+      "Parol",
+      "Majezik"
+    ],
+    "disease_history": [],
+    "bloodType": "",
+    "additional_disease_course": "Stabil",
+    "additionalDoctorNote": "Sinir ve huzursuzluk hissi yapabilir.",
+    "selectedSymptoms": [
+      "Işık Hassasiyeti",
+      "Mide Bulantısı"
+    ],
+    "vitalSignsHistory": [
+      {
+        "date": "2025-12-22",
+        "sugar": 120.0,
+        "bloodPressure": "12/8",
+        "pulse": 75,
+        "fever": 0.0
+      },
+      {
+        "date": "2025-12-23",
+        "sugar": 115.0,
+        "bloodPressure": "11/7",
+        "pulse": 72,
+        "fever": 0.0
+      },
+      {
+        "date": "2025-12-27",
+        "sugar": 116.0,
+        "bloodPressure": "",
+        "pulse": 85,
+        "fever": 36.0
+      },
+      {
+        "date": "2025-12-28",
+        "bloodPressure": "8/13"
+      }
+    ],
+    "notifications": [
+      "Doktorunuzdan bir güncelleme var."
+    ],
+    "id": 3,
+    "tc": "12345678903",
+    "name": "Ayşe",
+    "surname": "Demir",
+    "role": "hasta"
+  }
+]

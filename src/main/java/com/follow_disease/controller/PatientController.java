@@ -109,11 +109,6 @@ public class PatientController implements Notification {
       }
     }
 
-      Label bellIcon = new Label("\uE7ED");
-      bellIcon.setStyle("-fx-font-family: 'Segoe UI Symbol'; -fx-font-size: 18; -fx-text-fill: #1976D2;");
-      notificationMenuButton.setGraphic(bellIcon);
-      notificationMenuButton.setText("");
-
       updateNotificationUI();
   }
 
