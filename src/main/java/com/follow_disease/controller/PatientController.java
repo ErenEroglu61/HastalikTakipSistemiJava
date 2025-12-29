@@ -1,278 +1,384 @@
 package com.follow_disease.controller;
 
-import com.follow_disease.Patient;
-import com.follow_disease.Notification;
+import com.follow_disease.*;
+import com.follow_disease.service.ProfileService;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.scene.layout.GridPane;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
+
+import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-
-import com.follow_disease.User;
-import com.follow_disease.Session;
-import com.follow_disease.service.ProfileService;
-
 public class PatientController implements Notification {
 
-  // Sol paneldeki Label'lar (FXML'deki fx:id'ler ile birebir aynı olmalı)
-  @FXML private Label nameLabel;
-  @FXML private Label emailLabel;
-  @FXML private Label ageLabel;
-  @FXML private Label genderLabel;
-  @FXML private Label phoneLabel;
-  @FXML private Label tcLabel;
-  @FXML private Label passwordLabel;
-  @FXML private VBox vboxActiveDiseases;
-  @FXML private VBox vboxDiseasesHistory;
-  @FXML private Circle profileCircle;
-  @FXML private Button updateButton;
+    @FXML private Label nameLabel;
+    @FXML private Label emailLabel;
+    @FXML private Label ageLabel;
+    @FXML private Label genderLabel;
+    @FXML private Label phoneLabel;
+    @FXML private Label tcLabel;
+    @FXML private Label passwordLabel;
 
-  // Bildirim sistemi
-  @FXML private MenuButton notificationMenuButton;
-  @FXML private Circle notificationBadge;
+    @FXML private VBox vboxActiveDiseases;
+    @FXML private VBox vboxDiseasesHistory;
+    @FXML private VBox vboxActiveMedicines;
 
+    @FXML private Button updateButton;
 
-  @Override
-  public List<String> getNotifications() {
-        // Şu anki giriş yapmış hastanın bildirim listesini döner
-        User u = Session.getCurrentUser();
-        if (u != null) {
-            Patient p = findPatientByTc(u.getTc()); // En güncel veriyi JSON'dan çekiyoruz
-            return p != null ? p.getNotifications() : new ArrayList<>();
+    @FXML private MenuButton notificationMenuButton;
+    @FXML private Circle notificationBadge;
+
+    @FXML
+    public void initialize() {
+
+        // Oturumdaki kullanıcı bilgisi alınır
+        User user = Session.getCurrentUser();
+
+        if (user != null) {
+
+            // Kullanıcı bilgileri label'lara atanır
+            nameLabel.setText(safe(user.getName()) + " " + safe(user.getSurname()));
+            emailLabel.setText(safe(user.getEmail()));
+            ageLabel.setText(safe(user.getAge()));
+            genderLabel.setText(safe(user.getGender()));
+            phoneLabel.setText(safe(user.getPhone()));
+            tcLabel.setText(safe(user.getTc()));
+            passwordLabel.setText(maskPassword(user.getPassword()));
+
+            // TC numarasına göre hasta kaydı bulunur
+            Patient patient = findPatientByTc(user.getTc());
+
+            // Hasta bulunduysa hastalık ve ilaç bilgileri yüklenir
+            if (patient != null) {
+                loadMedicalData(patient);
+            }
         }
+
+        // Bildirim menüsü güncellenir
+        updateNotificationUI();
+    }
+
+    @Override
+    public List<String> getNotifications() {
+
+        // Oturumdaki kullanıcı alınır
+        User user = Session.getCurrentUser();
+
+        if (user != null) {
+
+            // Kullanıcıya ait hasta kaydı bulunur
+            Patient patient = findPatientByTc(user.getTc());
+
+            if (patient != null) {
+                return patient.getNotifications();
+            }
+        }
+
         return new ArrayList<>();
     }
-  @Override
-  public void setNotifications(List<String> notifications) {}
 
-  @Override
-  public void updateNotificationUI() {
+    @Override
+    public void setNotifications(List<String> notifications) {
+        // Bu metot şu an aktif kullanılmıyor
+    }
 
+    @Override
+    public void updateNotificationUI() {
+
+        // Bildirim menüsü temizlenir
         notificationMenuButton.getItems().clear();
+
+        // Bildirim listesi alınır
         List<String> notifications = getNotifications();
 
         if (notifications != null && !notifications.isEmpty()) {
+
+            // Bildirim varsa kırmızı gösterge aktif edilir
             notificationBadge.setVisible(true);
 
+            // Bildirimler menüye eklenir
             for (String msg : notifications) {
-                Label label = new Label(msg);
-                label.setStyle(
-                        "-fx-font-family: 'Segoe UI Semibold'; " +
-                                "-fx-font-size: 13px; " +
-                                "-fx-text-fill: #1e293b; " +
-                                "-fx-padding: 8 15 8 15;"
-                );
-                CustomMenuItem item = new CustomMenuItem(label);
+                CustomMenuItem item = new CustomMenuItem(new Label(msg));
                 notificationMenuButton.getItems().add(item);
             }
+
         } else {
+
+            // Bildirim yoksa gösterge gizlenir
             notificationBadge.setVisible(false);
             notificationMenuButton.getItems().add(new MenuItem("Bildirim yok"));
         }
-
-  }
-  @FXML
-  public void initialize() {
-    User u = Session.getCurrentUser();
-    if (u != null) {
-      nameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
-      emailLabel.setText(safe(u.getEmail()));
-      ageLabel.setText(safe(u.getAge()));
-      genderLabel.setText(safe(u.getGender()));
-      tcLabel.setText(safe(u.getTc()));
-      phoneLabel.setText(safe(u.getPhone()));
-
-      if (u.getPassword() != null && !u.getPassword().isEmpty()) {
-            passwordLabel.setText("*".repeat(u.getPassword().length()));
-        } else {
-            passwordLabel.setText("");
-        }
-
-      Patient patient = findPatientByTc(u.getTc());
-      if (patient != null) {
-        loadMedicalData(patient);
-      }
     }
 
-      updateNotificationUI();
-  }
+    @FXML
+    public void handleNotificationShowing() {
 
-  @FXML
-  public void handleNotificationShowing() {
-        User u = Session.getCurrentUser();
-        if (u != null) {
-            clearNotifications(u.getTc(), false);
+        // Kullanıcı bildirim menüsünü açtığında bildirimler temizlenir
+        User user = Session.getCurrentUser();
+
+        if (user != null) {
+            clearNotifications(user.getTc(), false);
             notificationBadge.setVisible(false);
         }
     }
 
-  private String safe(String s) {
-    return s == null ? "" : s.trim();
-  }
+    @FXML
+    public void handleUpdateAction(ActionEvent event) {
 
-  @FXML
-  public void handleUpdateAction(ActionEvent event) {
-        User u = Session.getCurrentUser();
-        if (u == null) return;
+        // Oturumdaki kullanıcı alınır
+        User user = Session.getCurrentUser();
+        if (user == null) return;
 
+        // Profil güncelleme dialog'u oluşturulur
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Profil Güncelle");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        TextField age = new TextField(safe(u.getAge()));
-        TextField gender = new TextField(safe(u.getGender()));
-        TextField phone = new TextField(safe(u.getPhone()));
-        TextField email = new TextField(safe(u.getEmail()));
-
-        // 1. DEĞİŞİKLİK: Pencere içinde de şifre gizli yazılmalı
+        // Güncellenecek alanlar doldurulur
+        TextField ageField = new TextField(safe(user.getAge()));
+        TextField genderField = new TextField(safe(user.getGender()));
+        TextField phoneField = new TextField(safe(user.getPhone()));
+        TextField emailField = new TextField(safe(user.getEmail()));
         PasswordField passwordField = new PasswordField();
-        passwordField.setText(safe(u.getPassword()));
+        passwordField.setText(safe(user.getPassword()));
 
         GridPane grid = new GridPane();
-        grid.setHgap(10); grid.setVgap(10);
-        int r = 0;
-        grid.addRow(r++, new Label("Yaş:"), age);
-        grid.addRow(r++, new Label("Cinsiyet:"), gender);
-        grid.addRow(r++, new Label("Tel:"), phone);
-        grid.addRow(r++, new Label("Mail:"), email);
-        grid.addRow(r++, new Label("Şifre:"), passwordField); // passwordField kullanıldı
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.addRow(0, new Label("Yaş:"), ageField);
+        grid.addRow(1, new Label("Cinsiyet:"), genderField);
+        grid.addRow(2, new Label("Telefon:"), phoneField);
+        grid.addRow(3, new Label("E-posta:"), emailField);
+        grid.addRow(4, new Label("Şifre:"), passwordField);
 
         dialog.getDialogPane().setContent(grid);
 
-        ButtonType result = dialog.showAndWait().orElse(ButtonType.CANCEL);
-        if (result != ButtonType.OK) return;
+        // Kullanıcı iptal ederse işlem yapılmaz
+        if (dialog.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
 
-        // Sıralama: email -> passwordField.getText()
-        boolean ok = ProfileService.updatePatient(u, age.getText(), gender.getText(), phone.getText(), email.getText(), passwordField.getText());
+        // Bilgiler servis üzerinden güncellenir
+        boolean success = ProfileService.updatePatient(
+            user,
+            ageField.getText(),
+            genderField.getText(),
+            phoneField.getText(),
+            emailField.getText(),
+            passwordField.getText()
+        );
 
-        if(ok) {
-            User nu = Session.getCurrentUser();
+        // Güncelleme başarılıysa arayüz yenilenir
+        if (success) {
+            User updated = Session.getCurrentUser();
+            ageLabel.setText(safe(updated.getAge()));
+            genderLabel.setText(safe(updated.getGender()));
+            phoneLabel.setText(safe(updated.getPhone()));
+            emailLabel.setText(safe(updated.getEmail()));
+            passwordLabel.setText(maskPassword(updated.getPassword()));
+        }
+    }
 
-            ageLabel.setText(safe(nu.getAge()));
-            genderLabel.setText(safe(nu.getGender()));
-            phoneLabel.setText(safe(nu.getPhone()));
-            emailLabel.setText(safe(nu.getEmail()));
+    @FXML
+    public void handleLogout(ActionEvent event) {
 
-            // 2. DEĞİŞİKLİK: Yıldızlı gösterme kısmı sadece başarılıysa çalışmalı
-            if (nu.getPassword() != null && !nu.getPassword().isEmpty()) {
-                passwordLabel.setText("*".repeat(nu.getPassword().length()));
-            } else {
-                passwordLabel.setText("");
+        // Oturum temizlenir
+        Session.clear();
+
+        try {
+            Parent root = FXMLLoader.load(
+                getClass().getResource("/com/follow_disease/login.fxml")
+            );
+
+            // Mevcut sahne login ekranı ile değiştirilir
+            Stage stage = (Stage) ((Node) event.getSource())
+                .getScene().getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR,
+                "Giriş sayfası açılamadı").showAndWait();
+        }
+    }
+
+    private void loadMedicalData(Patient patient) {
+
+        // Önce eski veriler temizlenir
+        vboxActiveDiseases.getChildren().clear();
+        vboxDiseasesHistory.getChildren().clear();
+        vboxActiveMedicines.getChildren().clear();
+
+        // Aktif hastalık eklenir
+        if (patient.getCurrent_disease() != null) {
+            vboxActiveDiseases.getChildren().add(
+                createSimpleCard(patient.getCurrent_disease(), "#D32F2F")
+            );
+        }
+
+        // Hastalık geçmişi eklenir
+        if (patient.getDisease_history() != null) {
+            for (String disease : patient.getDisease_history()) {
+                vboxDiseasesHistory.getChildren().add(
+                    createSimpleCard(disease, "#64748B")
+                );
             }
         }
-  }
-  @FXML
-  public void handleLogout(ActionEvent event) {
-    Session.clear();
 
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/follow_disease/login.fxml"));
-      Parent root = loader.load();
-      Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-      stage.setScene(new Scene(root));
-      stage.setTitle("Hastalık Takip Sistemi - Giriş");
-      stage.show();
-    } catch (IOException e) {
-      System.err.println("Login sayfası yüklenemedi: " + e.getMessage());
-      e.printStackTrace();
-      new Alert(Alert.AlertType.ERROR, "Giriş sayfası açılamadı.", ButtonType.OK).showAndWait();
-    }
-  }
+        // Aktif ilaçlar eklenir
+        if (patient.getCurrent_medicine() != null) {
 
-  private Patient findPatientByTc(String tc) {
-    if (tc == null || tc.isEmpty()) return null;
+            List<MedicineControl> medicines = loadMedicinesFromJson();
 
-    com.google.gson.Gson gson = new com.google.gson.Gson();
-
-    try (java.io.FileReader reader = new java.io.FileReader("database/patients.json")) {
-      java.lang.reflect.Type patientListType = new com.google.gson.reflect.TypeToken<java.util.List<Patient>>(){}.getType();
-      java.util.List<Patient> allPatients = gson.fromJson(reader, patientListType);
-
-      if (allPatients != null) {
-        for (Patient p : allPatients) {
-          if (tc.equals(p.getTc())) {
-            return p;
-          }
+            for (String med : patient.getCurrent_medicine()) {
+                vboxActiveMedicines.getChildren().add(
+                    createMedicineCard(
+                        med,
+                        findMedicineByName(medicines, med)
+                    )
+                );
+            }
         }
-      }
-    } catch (java.io.IOException e) {
-      System.err.println("patients.json okunurken hata oluştu: " + e.getMessage());
     }
 
-    return null;
-  }
-
-  private void loadMedicalData(Patient patient) {
-    vboxActiveDiseases.getChildren().clear();
-    vboxDiseasesHistory.getChildren().clear();
-
-    if (patient.getCurrent_disease() != null && !patient.getCurrent_disease().isEmpty()) {
-      vboxActiveDiseases.getChildren().add(createSimpleCard(patient.getCurrent_disease(), "#D32F2F"));
+    private String safe(String value) {
+        // Null değerlerin önüne geçer
+        return value == null ? "" : value.trim();
     }
 
-    if (patient.getDisease_history() != null) {
-      for (String disease : patient.getDisease_history()) {
-        vboxDiseasesHistory.getChildren().add(createSimpleCard(disease, "#64748B"));
-      }
+    private String maskPassword(String password) {
+        // Şifreyi yıldızlı gösterir
+        if (password == null || password.isEmpty()) return "";
+        return "*".repeat(password.length());
     }
 
-    if (patient.getAdditional_medicines() != null) {
-      for (String medicine : patient.getAdditional_medicines()) {
-        // vboxActiveMedicines.getChildren().add(createSimpleCard(medicine, "#1976D2"));
-      }
+    private Patient findPatientByTc(String tc) {
+
+        // JSON dosyasından hasta listesi okunur
+        try (FileReader reader = new FileReader("database/patients.json")) {
+
+            Type type = new TypeToken<List<Patient>>(){}.getType();
+            List<Patient> patients = new Gson().fromJson(reader, type);
+
+            // TC eşleşmesi aranır
+            for (Patient p : patients) {
+                if (tc.equals(p.getTc())) return p;
+            }
+
+        } catch (Exception ignored) {
+        }
+
+        return null;
     }
-  }
 
-  private VBox createSimpleCard(String text, String color) {
-    VBox card = new VBox();
-    card.setSpacing(5);
-    card.setStyle("-fx-background-color: white; " +
-      "-fx-border-color: #E2E8F0; " +
-      "-fx-border-width: 1; " +
-      "-fx-background-radius: 10; " +
-      "-fx-border-radius: 10; " +
-      "-fx-padding: 15;");
+    private VBox createSimpleCard(String text, String color) {
 
-    Label title = new Label(text.toUpperCase());
-    title.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: " + color + ";");
+        // Basit kart yapısı oluşturur
+        VBox card = new VBox();
+        card.setStyle(
+            "-fx-padding:15;" +
+                "-fx-border-color:#E2E8F0;" +
+                "-fx-border-radius:10;"
+        );
 
-    card.getChildren().add(title);
-    DropShadow shadow = new DropShadow(10, 0, 2, Color.rgb(0, 0, 0, 0.1));
-    card.setEffect(shadow);
+        Label label = new Label(text.toUpperCase());
+        label.setStyle("-fx-font-weight:bold;-fx-text-fill:" + color);
 
-    return card;
-  }
+        card.getChildren().add(label);
+        card.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.1)));
 
-  public void handleContactDoctor(ActionEvent event) {
-    try {
-      java.net.URL fxmlLocation = getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml");
-
-      Parent root = FXMLLoader.load(fxmlLocation);
-
-      Stage stage = new Stage();
-      stage.setScene(new Scene(root));
-      stage.setTitle("Doktor Bilgilendirme Formu");
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.show();
-
-    } catch (Exception e) {
-      System.err.println("Yükleme sırasında teknik bir hata oluştu: " + e.getMessage());
-      e.printStackTrace();
+        return card;
     }
-  }
+
+    private List<MedicineControl> loadMedicinesFromJson() {
+
+        // İlaç bilgileri JSON'dan okunur
+        try (FileReader reader = new FileReader("database/medicines.json")) {
+
+            Type type = new TypeToken<List<MedicineControl>>(){}.getType();
+            return new Gson().fromJson(reader, type);
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private MedicineControl findMedicineByName(
+        List<MedicineControl> meds, String name) {
+
+        // İlaç adı eşleşmesi aranır
+        return meds.stream()
+            .filter(m -> m.getMedicine_name()
+                .equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private VBox createMedicineCard(
+        String name, MedicineControl info) {
+
+        // İlaç kartı oluşturur
+        VBox card = new VBox(6);
+        card.setStyle(
+            "-fx-padding:15;" +
+                "-fx-border-color:#E2E8F0;" +
+                "-fx-border-radius:10;"
+        );
+
+        card.getChildren().add(
+            new Label(name.toUpperCase())
+        );
+
+        // Yan etkiler varsa eklenir
+        if (info != null &&
+            info.getAdditional_side_effects() != null) {
+
+            for (String effect :
+                info.getAdditional_side_effects()) {
+
+                card.getChildren().add(
+                    new Label("• " + effect)
+                );
+            }
+        }
+
+        card.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.1)));
+        return card;
+    }
+
+    @FXML
+    public void handleContactDoctor(ActionEvent event) {
+
+        // Doktorla iletişim penceresi açılır
+        try {
+            Parent root = FXMLLoader.load(
+                getClass().getResource(
+                    "/com/follow_disease/PatientContactDoctor.fxml")
+            );
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (Exception ignored) {
+        }
+    }
 }
