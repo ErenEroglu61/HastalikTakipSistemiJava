@@ -5,8 +5,7 @@ import java.util.ArrayList;
 
 public abstract class Medicine {
     private String type;
-    private String dosage; // doktor isterse dozajı arttırabiir o yuzden final değil
-    //String olarak tanımladım çünkü mg veya gr olup olmadığı net olsun
+    private String dosage;
 
     private List<String> additionalSideEffects = new ArrayList<>();
     // JSON'dan gelecek veya doktorun ekleyeceği ek yan etkiler için

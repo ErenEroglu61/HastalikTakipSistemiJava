@@ -5,17 +5,15 @@
     "appointmentDate": "2025-12-02",
     "additionalPatientNote": "Boynumda ciddi bir ağrı var.",
     "current_medicine": [
-      "Calpol"
+      "Calpol",
+      "Apranax",
+      "Parol"
     ],
     "additional_medicines": [
-      "Iburamin Cold",
-      "Nurofen",
-      "Aferin"
+      "Parol"
     ],
     "prescriptions": [
-      "TZ5698KL",
-      "JK3256T",
-      "JT6787K"
+      "TF56432"
     ],
     "medicines": [
       "Parol",
@@ -57,12 +55,11 @@
         "date": "2025-12-09",
         "pulse": 95,
         "fever": 37.0
-      },
-      {
-        "date": ""
       }
     ],
-    "notifications": [],
+    "notifications": [
+      "Doktorunuzdan gelen bir güncellemeniz var."
+    ],
     "id": 1,
     "tc": "12345678901",
     "name": "Test",
@@ -71,25 +68,25 @@
   },
   {
     "doctor_id": 1,
-    "current_disease": "Grip",
+    "current_disease": "",
     "appointmentDate": "2025-12-10",
     "additionalPatientNote": "",
-    "current_medicine": [
-      "Iburamin cold"
-    ],
+    "current_medicine": [],
     "additional_medicines": [],
     "prescriptions": [],
     "medicines": [
       "Parol",
-      "Majezik"
+      "Majezik",
+      "Iburamin cold"
     ],
     "disease_history": [
       "Yüksek tansiyon",
-      "Kusma ve Bulantı"
+      "Kusma ve Bulantı",
+      "Grip"
     ],
     "bloodType": "",
     "additional_disease_course": "",
-    "additionalDoctorNote": "",
+    "additionalDoctorNote": "Tedavi tamamlandı.",
     "selectedSymptoms": [],
     "vitalSignsHistory": [],
     "notifications": [],
@@ -105,10 +102,11 @@
     "appointmentDate": "2023-12-19",
     "additionalPatientNote": "",
     "current_medicine": [
-      "Dideral"
+      "Dideral",
+      "Azitromisin"
     ],
     "additional_medicines": [
-      "Thamax"
+      "Azitromisin"
     ],
     "prescriptions": [
       "X15T96"
@@ -153,7 +151,7 @@
       }
     ],
     "notifications": [
-      "Doktorunuzdan bir güncelleme var."
+      "Doktorunuzdan gelen bir güncellemeniz var."
     ],
     "id": 3,
     "tc": "12345678903",

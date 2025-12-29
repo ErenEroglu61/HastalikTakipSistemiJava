@@ -4,6 +4,7 @@ import com.follow_disease.*;
 import com.follow_disease.service.JsonDb;
 import com.follow_disease.service.ProfileService;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -148,7 +149,7 @@ public class DoctorController implements Notification {
                 patientListContainer.getChildren().clear();
                 if (currentDoctorId == -1) return;
 
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 try (FileReader reader = new FileReader("database/patients.json")) {
                     Type patientListType = new TypeToken<List<Patient>>(){}.getType();
                     List<Patient> allPatients = gson.fromJson(reader, patientListType);

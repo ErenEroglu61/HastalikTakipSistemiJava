@@ -1,6 +1,8 @@
 com\follow_disease\Notification$2.class
+com\follow_disease\MedicineProvider.class
 com\follow_disease\service\JsonDb.class
 com\follow_disease\controller\PatientContactDoctorController$2.class
+com\follow_disease\MedicineProvider$1.class
 com\follow_disease\Disease.class
 com\follow_disease\controller\PatientContactDoctorController$5.class
 com\follow_disease\controller\DoctorController$1.class
@@ -26,6 +28,7 @@ com\follow_disease\Doctor.class
 com\follow_disease\Patient.class
 com\follow_disease\User.class
 com\follow_disease\controller\PatientContactDoctorController$4.class
+com\follow_disease\MedicineControl.class
 com\follow_disease\service\JsonDb$1.class
 com\follow_disease\Main.class
 com\follow_disease\controller\DoctorPagePatientDetailController.class

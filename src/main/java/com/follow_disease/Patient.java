@@ -114,15 +114,4 @@ public class Patient extends User implements Notification  {
         return "Hasta - Tanı: " + current_disease;
     }
 
-
-    public void completeTreatment() {
-        if (this.current_disease != null && !this.current_disease.isEmpty()) {
-            this.disease_history.add(this.current_disease + " (Tedavi Edildi)");
-            this.current_disease = null;
-            this.doctor_id = 0;
-            if (this.medicines != null) {
-                this.medicines.clear();
-            }
-        }
-    }
 }

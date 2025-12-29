@@ -164,20 +164,47 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
         String feedback = txtCustomCourse.getText();
         String courseFromCombo = cbDiseaseCourse.getValue();
 
-        // Öncelik doktorun yazdığında
         String finalCourse = (feedback != null && !feedback.isEmpty()) ? feedback : courseFromCombo;
-        currentPatient.setAdditional_disease_course(finalCourse);
 
-        currentPatient.setAdditionalDoctorNote(getFeedbackNote());
-        processMedicineAndPrescription(newMedicine, newPrescription);
+
+        if ("Tedaviyi bitir".equalsIgnoreCase(finalCourse)) {
+
+            if (currentPatient.getCurrent_disease() != null && !currentPatient.getCurrent_disease().isEmpty()) {
+                if (!currentPatient.getDisease_history().contains(currentPatient.getCurrent_disease())) {
+                    currentPatient.getDisease_history().add(currentPatient.getCurrent_disease());
+                }
+                currentPatient.setCurrent_disease("");
+            }
+
+            if (currentPatient.getCurrent_medicine() != null && !currentPatient.getCurrent_medicine().isEmpty()) {
+                for (String med : currentPatient.getCurrent_medicine()) {
+                    if (!currentPatient.getMedicines().contains(med)) {
+                        currentPatient.getMedicines().add(med);
+                    }
+                }
+                currentPatient.getCurrent_medicine().clear();
+            }
+
+            currentPatient.setAdditional_disease_course("");
+            currentPatient.setAdditionalDoctorNote("Tedavi tamamlandı.");
+            currentPatient.getAdditional_medicines().clear();
+            currentPatient.getPrescriptions().clear();
+
+        } else {
+
+            currentPatient.setAdditional_disease_course(finalCourse);
+            currentPatient.setAdditionalDoctorNote(getFeedbackNote());
+            processMedicineAndPrescription(newMedicine, newPrescription);
+        }
+
+
         savePatientDataToJson(currentPatient);
 
         if (currentPatient != null) {
-            // targetTc: Hastanın TC'si
-            // message: İsteğine göre özelleştirilmiş mesaj
-            // isTargetDoctor: false (Çünkü bildirim hastaya gidiyor)
-            sendNotification(currentPatient.getTc(), "Doktorunuzdan gelen bir güncellemeniz var.", false);
-
+            String msg = "Tedaviyi bitir".equalsIgnoreCase(finalCourse) ?
+                    "Tedaviniz başarıyla tamamlandı." :
+                    "Doktorunuzdan gelen bir güncellemeniz var.";
+            sendNotification(currentPatient.getTc(), msg, false);
         }
 
         handleClose();
@@ -220,9 +247,13 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
                     pJson.put("additional_disease_course", patient.getAdditional_disease_course());
                     pJson.put("additionalPatientNote", patient.getAdditionalPatientNote());
                     pJson.put("additional_medicines", patient.getAdditional_medicines());
-                    pJson.put("current_medicine", patient.getCurrent_medicine()); // ✅ YENİ
+                    pJson.put("current_medicine", patient.getCurrent_medicine());
                     pJson.put("prescriptions", patient.getPrescriptions());
                     pJson.put("additionalDoctorNote", patient.getAdditionalDoctorNote());
+                    pJson.put("current_disease", patient.getCurrent_disease());
+                    pJson.put("disease_history", patient.getDisease_history());
+                    pJson.put("current_medicine", patient.getCurrent_medicine());
+                    pJson.put("medicines", patient.getMedicines());
                     break;
                 }
             }

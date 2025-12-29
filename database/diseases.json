@@ -2,11 +2,11 @@
   {
     "disease_name": "Grip",
     "disease_symptoms": ["Yüksek Ateş", "Öksürük", "Halsizlik", "Boğaz Ağrısı"],
-    "disease_course": ["Hafif seyrediyor, istirahat verildi", "İlaç tedavisine başlandı", "Durumu ağırlaştı, hastaneye sevk"]
+    "disease_course": ["Hafif seyrediyor, istirahat verildi", "İlaç tedavisine başlandı", "Durumu ağırlaştı, hastaneye sevk", "Hastalık semptomları azaldı, iyileşme aşamasında", "Tedaviyi bitir"]
   },
   {
     "disease_name": "Migren",
     "disease_symptoms": ["Baş Ağrısı", "Işık Hassasiyeti", "Mide Bulantısı"],
-    "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi"]
+    "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi","Tedaviyi bitir"]
   }
 ]

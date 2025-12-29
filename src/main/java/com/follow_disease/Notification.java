@@ -1,6 +1,7 @@
 package com.follow_disease;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -41,7 +42,7 @@ public interface Notification {
 
     // JSON İşleme Motoru
     private void processFile(String tc, String path, boolean isDoctor, java.util.function.Consumer<Notification> action) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             // ÖNEMLİ: Burada 'Notification' tipinde bir liste gibi işlem yapıyoruz
             // Çünkü hem Patient hem Doctor bu interface'i implement ediyor.

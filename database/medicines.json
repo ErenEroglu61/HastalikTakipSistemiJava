@@ -2,18 +2,69 @@
   {
     "medicine_name": "Parol",
     "medicine_type": "Ağrı Kesici",
-    "additional_side_effects": ["Kaşıntı"]
+    "additional_side_effects": ["Kaşıntı"],
+    "dosage": "Günde 1 defa tok karnına"
 
   },
   {
     "medicine_name": "Augmentin",
     "medicine_type": "Antibiyotik",
-    "additional_side_effects": []
+    "additional_side_effects": [],
+    "dosage": "Günde 2 defa 12 saat arayla tok karnına"
   },
   {
     "medicine_name": "Majezik",
     "medicine_type": "Ağrı Kesici",
-    "additional_side_effects": []
+    "additional_side_effects": [],
+    "dosage": "Günde 1 defa tok karnına"
 
+  },
+  {
+    "medicine_name": "Calpol",
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": ["Hafif uyku"],
+    "dosage": "Günde 3 defa tok karnına"
+  },
+  {
+    "medicine_name": "Apranax",
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": ["Mide yanması"],
+    "dosage": "Günde 2 defa"
+  },
+  {
+    "medicine_name": "Dideral",
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": ["Yorgunluk", "Ellerde soğukluk hissi", "Uyku düzeninde değişiklik"],
+    "dosage": "Günde 1 defa aç karnına"
+  },
+  {
+    "medicine_name": "Thomax",
+    "medicine_type": "Ağrı Kesici",
+    "additional_side_effects": ["Çarpıntı (kafein kaynaklı)", "Mide hassasiyeti"],
+    "dosage": "Günde en fazla 3 defa tok karnına"
+  },
+  {
+    "medicine_name": "Azitromisin",
+    "medicine_type": "Antibiyotik",
+    "additional_side_effects": ["İshal", "Mide bulantısı", "Karın ağrısı"],
+    "dosage": "Günde 1 defa, yemeklerden 1 saat önce veya 2 saat sonra"
+  },
+  {
+    "medicine_name": "Iburamin Cold",
+    "medicine_type": "Soğuk Algınlığı",
+    "additional_side_effects": ["Deride döküntü"],
+    "dosage": "Günde 2 veya 3 defa, yemeklerden sonra tok karnına"
+  },
+  {
+    "medicine_name": "Aferin",
+    "medicine_type": "Soğuk Algınlığı",
+    "additional_side_effects": ["İştah kaybı"],
+    "dosage": "6 saat arayla günde en fazla 4 tablet"
+  },
+  {
+    "medicine_name": "Nurofen",
+    "medicine_type": "Soğuk Algınlığı",
+    "additional_side_effects": ["Sinirlilik hali"],
+    "dosage": "Günde 3 defa, bol su ile tok karnına"
   }
 ]

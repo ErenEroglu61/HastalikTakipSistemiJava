@@ -4,6 +4,7 @@ import com.follow_disease.*;
 import com.follow_disease.service.ProfileService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.follow_disease.MedicineProvider;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -19,7 +21,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
-
+import javafx.scene.control.Separator;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -38,7 +40,9 @@ public class PatientController implements Notification {
 
     @FXML private VBox vboxActiveDiseases;
     @FXML private VBox vboxDiseasesHistory;
-    @FXML private VBox vboxActiveMedicines;
+    @FXML private FlowPane vboxActiveMedicines;
+    @FXML private FlowPane vboxPastMedicines;
+
 
     @FXML private Button updateButton;
 
@@ -221,16 +225,28 @@ public class PatientController implements Notification {
 
     private void loadMedicalData(Patient patient) {
 
+        vboxActiveDiseases.setSpacing(10);
+        vboxDiseasesHistory.setSpacing(10);
+
         // Önce eski veriler temizlenir
         vboxActiveDiseases.getChildren().clear();
         vboxDiseasesHistory.getChildren().clear();
         vboxActiveMedicines.getChildren().clear();
 
-        // Aktif hastalık eklenir
-        if (patient.getCurrent_disease() != null) {
+        if (patient.getCurrent_disease() != null && !patient.getCurrent_disease().trim().isEmpty()) {
             vboxActiveDiseases.getChildren().add(
-                createSimpleCard(patient.getCurrent_disease(), "#D32F2F")
+                    createSimpleCard(patient.getCurrent_disease(), "#D32F2F")
             );
+        } else {
+
+            Label congratsLabel = new Label(" Geçmiş olsun :) aktif hastalığınız bulunmuyor.");
+
+            congratsLabel.setStyle("-fx-font-size: 14px; " +
+                    "-fx-text-fill: #64748B; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-padding: 10 0 0 5;");
+
+            vboxActiveDiseases.getChildren().add(congratsLabel);
         }
 
         // Hastalık geçmişi eklenir
@@ -244,20 +260,74 @@ public class PatientController implements Notification {
 
         // Aktif ilaçlar eklenir
         if (patient.getCurrent_medicine() != null) {
-
-            List<MedicineControl> medicines = loadMedicinesFromJson();
-
-            for (String med : patient.getCurrent_medicine()) {
-                vboxActiveMedicines.getChildren().add(
-                    createMedicineCard(
-                        med,
-                        findMedicineByName(medicines, med)
-                    )
-                );
+            System.out.println("Hasta İlaç Sayısı: " + patient.getCurrent_medicine().size());
+            for (String medName : patient.getCurrent_medicine()) {
+                System.out.println("Aranan İlaç: " + medName);
+                VBox card = createDetailedMedicineCard(medName);
+                if (card != null) {
+                    System.out.println(medName + " kartı başarıyla eklendi.");
+                    vboxActiveMedicines.getChildren().add(card);
+                }else {
+                    System.out.println(medName + " için MedicineProvider null döndü!"); // DEBUG
+                }
+            }
+        }else {
+            System.out.println("Hastanın aktif ilacı bulunamadı."); // DEBUG
+        }
+        if (patient.getMedicines() != null) { // 'medicines' geçmiş ilaçları tutan listeniz
+            for (String medName : patient.getMedicines()) {
+                VBox card = createDetailedMedicineCard(medName);
+                if (card != null) {
+                    // Geçmiş ilaç kartlarını biraz daha soluk (opsiyonel) yaparak fark yaratabiliriz
+                    card.setOpacity(0.85);
+                    vboxPastMedicines.getChildren().add(card);
+                }
             }
         }
     }
+    private VBox createDetailedMedicineCard(String medicineName) {
 
+        Medicine medicine = MedicineProvider.getMedicineDetails(medicineName);
+        if (medicine == null) return null;
+
+
+        VBox card = new VBox(8);
+        card.setStyle("-fx-background-color: #FFFFFF; " +
+                "-fx-border-color: #E2E8F0; " +
+                "-fx-border-radius: 12; " +
+                "-fx-background-radius: 12; " +
+                "-fx-padding: 15;");
+        card.setMinWidth(200);
+        card.setPrefWidth(200);
+        card.setMaxWidth(200);
+
+        Label lblName = new Label(medicineName.toUpperCase());
+        lblName.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #1E293B;");
+
+        Label lblInfo = new Label(medicine.getType() + "\n" + medicine.getDosage());
+        lblInfo.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748B;");
+        lblInfo.setWrapText(true);
+
+        Separator separator = new Separator();
+        separator.setStyle("-fx-padding: 5 0 5 0;");
+
+        Label lblSideTitle = new Label("Yan Etkileri:");
+        lblSideTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #EF4444;");
+
+        VBox sideEffectsContainer = new VBox(4);
+
+        for (String effect : medicine.getAllSideEffects()) {
+            Label lblEffect = new Label("• " + effect);
+            lblEffect.setStyle("-fx-font-size: 11px; -fx-text-fill: #475569;");
+            lblEffect.setWrapText(true);
+            sideEffectsContainer.getChildren().add(lblEffect);
+        }
+
+        card.getChildren().addAll(lblName, lblInfo, separator, lblSideTitle, sideEffectsContainer);
+        card.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.08)));
+
+        return card;
+    }
     private String safe(String value) {
         // Null değerlerin önüne geçer
         return value == null ? "" : value.trim();
@@ -289,79 +359,28 @@ public class PatientController implements Notification {
     }
 
     private VBox createSimpleCard(String text, String color) {
-
-        // Basit kart yapısı oluşturur
+        // Kartın ana yapısı
         VBox card = new VBox();
+
         card.setStyle(
-            "-fx-padding:15;" +
-                "-fx-border-color:#E2E8F0;" +
-                "-fx-border-radius:10;"
+                "-fx-padding: 15;" +
+                        "-fx-background-color: #FFFFFF;" +
+                        "-fx-border-color: #E2E8F0;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;"
         );
 
         Label label = new Label(text.toUpperCase());
-        label.setStyle("-fx-font-weight:bold;-fx-text-fill:" + color);
+        label.setStyle("-fx-font-weight: bold; -fx-text-fill: " + color + "; -fx-font-size: 13px;");
 
         card.getChildren().add(label);
-        card.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.1)));
+
+        card.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.05)));
 
         return card;
     }
 
-    private List<MedicineControl> loadMedicinesFromJson() {
 
-        // İlaç bilgileri JSON'dan okunur
-        try (FileReader reader = new FileReader("database/medicines.json")) {
-
-            Type type = new TypeToken<List<MedicineControl>>(){}.getType();
-            return new Gson().fromJson(reader, type);
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    private MedicineControl findMedicineByName(
-        List<MedicineControl> meds, String name) {
-
-        // İlaç adı eşleşmesi aranır
-        return meds.stream()
-            .filter(m -> m.getMedicine_name()
-                .equalsIgnoreCase(name))
-            .findFirst()
-            .orElse(null);
-    }
-
-    private VBox createMedicineCard(
-        String name, MedicineControl info) {
-
-        // İlaç kartı oluşturur
-        VBox card = new VBox(6);
-        card.setStyle(
-            "-fx-padding:15;" +
-                "-fx-border-color:#E2E8F0;" +
-                "-fx-border-radius:10;"
-        );
-
-        card.getChildren().add(
-            new Label(name.toUpperCase())
-        );
-
-        // Yan etkiler varsa eklenir
-        if (info != null &&
-            info.getAdditional_side_effects() != null) {
-
-            for (String effect :
-                info.getAdditional_side_effects()) {
-
-                card.getChildren().add(
-                    new Label("• " + effect)
-                );
-            }
-        }
-
-        card.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.1)));
-        return card;
-    }
 
     @FXML
     public void handleContactDoctor(ActionEvent event) {
