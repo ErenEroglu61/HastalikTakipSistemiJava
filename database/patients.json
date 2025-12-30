@@ -97,7 +97,7 @@
     "doctor_id": 2,
     "current_disease": "Migren",
     "appointmentDate": "2023-12-19",
-    "additionalPatientNote": "",
+    "additionalPatientNote": "Ağrılarım azaldı.",
     "current_medicine": [
       "Dideral",
       "Azitromisin"
@@ -114,11 +114,11 @@
     ],
     "disease_history": [],
     "bloodType": "",
-    "additional_disease_course": "Stabil",
+    "additional_disease_course": "Kronikleşme eğilimi",
     "additionalDoctorNote": "Sinir ve huzursuzluk hissi yapabilir.",
     "selectedSymptoms": [
-      "Işık Hassasiyeti",
-      "Mide Bulantısı"
+      "Baş Ağrısı",
+      "Işık Hassasiyeti"
     ],
     "vitalSignsHistory": [
       {
@@ -147,9 +147,7 @@
         "bloodPressure": "8/13"
       }
     ],
-    "notifications": [
-      "Doktorunuzdan gelen bir güncellemeniz var."
-    ],
+    "notifications": [],
     "id": 3,
     "tc": "12345678903",
     "name": "Ayşe",

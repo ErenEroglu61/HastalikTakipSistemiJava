@@ -9,8 +9,7 @@
     "disease_symptoms": ["Baş Ağrısı", "Işık Hassasiyeti", "Mide Bulantısı"],
     "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi","Tedaviyi bitir"]
   },
-  [
-    {
+  {
       "disease_name": "Yüksek Tansiyon (Hipertansiyon)",
       "disease_symptoms": ["Baş Ağrısı", "Baş Dönmesi", "Burun Kanaması", "Çarpıntı", "Kulak Çınlaması"],
       "disease_course": [
@@ -21,7 +20,7 @@
         "Kronik takip sürecine geçildi",
         "Tedaviyi bitir"
       ]
-    },
+  },
     {
       "disease_name": "Zatürre",
       "disease_symptoms": ["Yüksek Ateş", "Balgamlı Öksürük", "Göğüs Ağrısı", "Nefes Darlığı", "Halsizlik"],
@@ -45,4 +44,3 @@
       ]
     }
   ]
-]

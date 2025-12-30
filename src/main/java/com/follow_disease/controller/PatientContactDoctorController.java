@@ -184,30 +184,55 @@ public class PatientContactDoctorController implements Feedback,Notification {
 
     private void loadSymptomsFromJSON() {
         String diseaseName = currentPatient.getCurrent_disease();
-        if (diseaseName == null) return;
+        if (diseaseName == null || diseaseName.trim().isEmpty()) {
+            System.out.println("DEBUG: Aktif hastalık bulunamadı, semptomlar yüklenmiyor.");
+            flowSymptoms.getChildren().clear();
+            Label msg = new Label("Aktif bir hastalığınız bulunmadığı için semptom listesi boş.");
+            msg.setStyle("-fx-text-fill: #64748B; -fx-font-style: italic;");
+            flowSymptoms.getChildren().add(msg);
+            return;
+        }
 
         try (FileReader reader = new FileReader("database/diseases.json")) {
+
             Type listType = new TypeToken<List<Disease>>(){}.getType();
             List<Disease> diseases = new Gson().fromJson(reader, listType);
 
+            if (diseases == null) return;
+
+            boolean found = false;
             for (Disease d : diseases) {
-                if (d.getDisease_name().equalsIgnoreCase(diseaseName)) {
+
+                if (d.getDisease_name().equalsIgnoreCase(diseaseName.trim())) {
+                    found = true;
                     flowSymptoms.getChildren().clear();
-                    for (String s : d.getDisease_symptoms()) {
-                        CheckBox cb = new CheckBox(s);
-                        cb.setStyle("-fx-text-fill: #1565C0; -fx-font-weight: bold;");
-                        // Eğer hasta daha önce bunu seçtiyse işaretli getir
-                        if (currentPatient.getSelectedSymptoms() != null &&
-                                currentPatient.getSelectedSymptoms().contains(s)) {
-                            cb.setSelected(true);
+
+                    if (d.getDisease_symptoms() != null) {
+                        for (String s : d.getDisease_symptoms()) {
+                            CheckBox cb = new CheckBox(s);
+                            cb.setStyle("-fx-text-fill: #1565C0; -fx-font-weight: bold; -fx-padding: 5;");
+                            cb.setPrefWidth(150);
+
+                            if (currentPatient.getSelectedSymptoms() != null &&
+                                    currentPatient.getSelectedSymptoms().contains(s)) {
+                                cb.setSelected(true);
+                            }
+                            flowSymptoms.getChildren().add(cb);
                         }
-                        flowSymptoms.getChildren().add(cb);
                     }
+                    break;
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); }
-    }
 
+            if (!found) {
+                System.out.println("DEBUG: diseases.json içinde '" + diseaseName + "' bulunamadı.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Semptom yükleme hatası: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     private Patient findPatientByTc(String tc) {
         try (FileReader reader = new FileReader("database/patients.json")) {
             Type listType = new TypeToken<List<Patient>>(){}.getType();

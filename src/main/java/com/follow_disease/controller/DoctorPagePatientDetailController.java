@@ -152,6 +152,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
             flowSymptoms.getChildren().add(item);
         }
     }
+
     //Güncelle ve kaydet butonuna basınca çalışan metot
     @FXML
     private void handleSave() {

@@ -28,7 +28,6 @@ com\follow_disease\Doctor.class
 com\follow_disease\Patient.class
 com\follow_disease\User.class
 com\follow_disease\controller\PatientContactDoctorController$4.class
-com\follow_disease\MedicineControl.class
 com\follow_disease\service\JsonDb$1.class
 com\follow_disease\Main.class
 com\follow_disease\controller\DoctorPagePatientDetailController.class
