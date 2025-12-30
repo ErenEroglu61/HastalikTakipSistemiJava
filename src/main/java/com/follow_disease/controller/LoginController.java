@@ -20,7 +20,7 @@ public class LoginController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
 
-    @FXML
+    @FXML //Giriş yapan kullanıcının doktor veya hasta olduğuna karar verir ve arayüzü yükleyen metod
     public void handleLogin(ActionEvent event) {
         String email = emailField.getText();
         String password = passwordField.getText();
@@ -52,7 +52,7 @@ public class LoginController {
             new Alert(Alert.AlertType.ERROR, "E-posta veya şifre hatalı!").showAndWait();
         }
     }
-
+    //Hesabınız yok mu kayıt olun metninden kayıt olma ekranına geçmeyi sağlayan metod
     @FXML
     public void handleRegisterRedirect(javafx.event.ActionEvent event) { //event hangi buton olduğu anlaşılsın diye
         try {

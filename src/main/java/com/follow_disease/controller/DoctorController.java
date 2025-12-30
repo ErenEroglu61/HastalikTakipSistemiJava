@@ -30,10 +30,8 @@ public class DoctorController implements Notification {
 
   @FXML private VBox patientListContainer;
   @FXML private TableView<Patient> patientTable;
-
   @FXML private Label doctornameLabel;
   @FXML private Label doctorRoleLabel;
-
   @FXML private Label emailLabel;
   @FXML private Label branchLabel;
   @FXML private Label titleLabel;
@@ -42,26 +40,21 @@ public class DoctorController implements Notification {
   @FXML private Label phoneLabel;
   @FXML private Label tcLabel;
   @FXML private Label passwordLabel;
-
-  // Bildirim
   @FXML private MenuButton notificationMenuButton;
   @FXML private Circle notificationBadge;
 
   private int currentDoctorId = -1;
 
+  //Bidirim geldiğinde bildirim iconunun üstünde kırmızı bir yuvarlak oluşmasını sağlayan metod
   @FXML
     public void handleNotificationShowing() {
         User u = Session.getCurrentUser();
         if (u != null) {
-            // clearNotifications(TC, isDoctor) -> isDoctor burada TRUE olmalı
             clearNotifications(u.getTc(), true);
-
-            // Kırmızı noktayı anında kapat
             notificationBadge.setVisible(false);
         }
     }
-
-    @FXML
+  @FXML
   public void initialize() {
 
         updateNotificationUI();
@@ -69,26 +62,26 @@ public class DoctorController implements Notification {
         loadPatientsForDoctor();
   }
 
-            @Override
-            public List<String> getNotifications() {
-                User u = Session.getCurrentUser();
-                if (u != null) {
-                    // JsonDb sınıfındaki metodunu kullanarak en güncel doktor verisini çekiyoruz
-                    Doctor d = JsonDb.findDoctorByTc(u.getTc());
-                    return d != null ? d.getNotifications() : new java.util.ArrayList<>();
+  @Override
+   public List<String> getNotifications() {
+      User u = Session.getCurrentUser();
+      if (u != null) {
+
+          Doctor d = JsonDb.findDoctorByTc(u.getTc());
+          return d != null ? d.getNotifications() : new java.util.ArrayList<>();
                 }
-                return new java.util.ArrayList<>();
-            }
+       return new java.util.ArrayList<>();
+    }
 
-            @Override
-            public void setNotifications(List<String> notifications) {}
+    @Override
+     public void setNotifications(List<String> notifications) {}
 
-            @Override
-            public void updateNotificationUI() {
-                notificationMenuButton.getItems().clear();
-                List<String> notifications = getNotifications();
+    @Override
+     public void updateNotificationUI() {
+       notificationMenuButton.getItems().clear();
+       List<String> notifications = getNotifications();
 
-                if (notifications != null && !notifications.isEmpty()) {
+           if (notifications != null && !notifications.isEmpty()) {
                     notificationBadge.setVisible(true);
                     for (String msg : notifications) {
                         Label label = new Label(msg);
@@ -106,15 +99,16 @@ public class DoctorController implements Notification {
                     notificationMenuButton.getItems().add(new MenuItem("Bildirim yok"));
                 }
             }
-
+            // Sisteme hangi doktorun giriş yaptığını bulan ve sayfanın ayarlanmasını sağlayan metod
             private void loadDoctorUIFromSession() {
-                User u = Session.getCurrentUser();
-                if (u == null) {
-                    System.err.println("Session currentUser null! Login sonrası Session.setCurrentUser() çağrılmalı.");
-                    return;
+
+                   User u = Session.getCurrentUser();
+                      if (u == null) {
+                          System.err.println("Session currentUser null! Login sonrası Session.setCurrentUser() çağrılmalı.");
+                          return;
                 }
 
-                // Sol panel: user.json'dan gelenler
+
                 doctornameLabel.setText(safe(u.getName()) + " " + safe(u.getSurname()));
                 doctorRoleLabel.setText("Doktor Profili");
                 emailLabel.setText(safe(u.getEmail()));
@@ -125,26 +119,23 @@ public class DoctorController implements Notification {
                 tcLabel.setText(safe(u.getTc()));
 
                 if (u.getPassword() != null && !u.getPassword().isEmpty()) {
-                    // Sayfa ilk açıldığında şifre uzunluğu kadar yıldız koyar
                     passwordLabel.setText("*".repeat(u.getPassword().length()));
                 } else {
                     passwordLabel.setText("");
                 }
 
-                // doctors.json'dan branch/title
                 Doctor d = JsonDb.findDoctorByTc(u.getTc());
                 if (d != null) {
                     currentDoctorId = d.getId();
                     branchLabel.setText(safe(d.getBranch()));
                     titleLabel.setText(safe(d.getMedical_title()));
                 } else {
-                    // Doktor TC doctors.json'da yoksa yine UI boş kalmasın
                     branchLabel.setText("-");
                     titleLabel.setText("-");
                     currentDoctorId = -1;
                 }
             }
-
+            //Giriş yapan oktora ait hastaları alt alta listeleyen metod
             private void loadPatientsForDoctor() {
                 patientListContainer.getChildren().clear();
                 if (currentDoctorId == -1) return;
@@ -166,6 +157,7 @@ public class DoctorController implements Notification {
                 }
             }
 
+            //Sol paneldeki profil işlemleri
             @FXML
             private void handleUpdateProfile(ActionEvent event) {
                 User u = Session.getCurrentUser();
@@ -175,13 +167,11 @@ public class DoctorController implements Notification {
                 dialog.setTitle("Profil Güncelle (Doktor)");
                 dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-                // Giriş alanlarını oluşturma
                 TextField age = new TextField(safe(u.getAge()));
                 TextField gender = new TextField(safe(u.getGender()));
                 TextField phone = new TextField(safe(u.getPhone()));
                 TextField email = new TextField(safe(u.getEmail()));
 
-                // ŞİFRE ALANI: PasswordField kullanıyoruz (yazarken görünmez)
                 PasswordField passwordField = new PasswordField();
                 passwordField.setText(safe(u.getPassword()));
 
@@ -201,7 +191,6 @@ public class DoctorController implements Notification {
                 ButtonType res = dialog.showAndWait().orElse(ButtonType.CANCEL);
                 if (res != ButtonType.OK) return;
 
-                // SIRALAMA DİKKAT: u, age, gender, phone, email, password
                 boolean ok = ProfileService.updateDoctor(u,
                         age.getText(),
                         gender.getText(),
@@ -210,20 +199,18 @@ public class DoctorController implements Notification {
                         passwordField.getText());
 
                 if (ok) {
-                    // Nesneyi güncelle
+
                     u.setAge(age.getText());
                     u.setGender(gender.getText());
                     u.setPhone(phone.getText());
                     u.setEmail(email.getText());
                     u.setPassword(passwordField.getText());
 
-                    // Arayüzdeki (UI) etiketleri güncelle
                     ageLabel.setText(u.getAge());
                     genderLabel.setText(u.getGender());
                     phoneLabel.setText(u.getPhone());
                     emailLabel.setText(u.getEmail());
 
-                    // Şifreyi ana ekranda yıldızlı gösterme
                     if (u.getPassword() != null && !u.getPassword().isEmpty()) {
                         passwordLabel.setText("*".repeat(u.getPassword().length()));
                     } else {
@@ -231,7 +218,7 @@ public class DoctorController implements Notification {
                     }
                 }
             }
-
+            // Hastaları listelerken kullanılan ve arayüzü güzelleştiren metod
             private void addPatientCard(Patient patient) {
                 HBox card = new HBox(20);
                 card.setStyle("-fx-background-color: white; " +
@@ -271,7 +258,7 @@ public class DoctorController implements Notification {
                 card.getChildren().addAll(infoBox, spacer, btnDetails);
                 patientListContainer.getChildren().add(card);
             }
-
+           //Detayları gör butonuna tıklandığında oluşan ekranı açan metod
             @FXML
             private void openPatientPopup(Patient selectedPatient) {
                 String path = "/com/follow_disease/DoctorPagePatientDetail.fxml";
@@ -330,7 +317,7 @@ public class DoctorController implements Notification {
                     }
                 }
             }
-
+            //Çıkış yap
             @FXML
             private void handleLogout(ActionEvent event) {
                 Session.clear();

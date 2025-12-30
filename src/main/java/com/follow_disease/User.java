@@ -28,12 +28,10 @@ public abstract class User {
         this.role = role;
     }
 
-    // Ortak metot
     public String getFullName() {
         return name + " " + surname;
     }
 
-    // Alt sınıfların override etmesi gereken soyut metotlar
     public abstract String getWelcomeMessage();
     public abstract String getRoleDescription();
 

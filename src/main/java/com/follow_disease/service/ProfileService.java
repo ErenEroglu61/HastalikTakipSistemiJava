@@ -50,7 +50,7 @@ public final class ProfileService {
         int atIndex = email.indexOf("@");
         int lastDotIndex = email.lastIndexOf(".");
         if (atIndex <= 0 || lastDotIndex <= atIndex + 1 || lastDotIndex == email.length() - 1) return false;
-        if (email.length() - lastDotIndex < 3) return false; // .co, .com vb için en az 2 karakter kalmalı
+        if (email.length() - lastDotIndex < 3) return false;
         return email.chars().filter(ch -> ch == '@').count() == 1;
     }
 
@@ -91,7 +91,6 @@ public final class ProfileService {
         u.setEmail(email.trim());
         if (password != null && !password.isBlank()) u.setPassword(password.trim());
 
-        // JsonDb Metodu (6 parametre tam sıra)
         boolean ok = JsonDb.updateDoctorProfile(u.getTc(), u.getAge(), u.getGender(), u.getPhone(), u.getEmail(), u.getPassword());
         if (ok) { Session.setCurrentUser(u); showInfo("Başarılı", "Profil güncellendi."); }
         return ok;
@@ -113,7 +112,6 @@ public final class ProfileService {
         u.setEmail(email.trim());
         if (password != null && !password.isBlank()) u.setPassword(password.trim());
 
-        // JsonDb Metodu (6 parametre tam sıra)
         boolean ok = JsonDb.updatePatientProfile(u.getTc(), u.getAge(), u.getGender(), u.getPhone(), u.getEmail(), u.getPassword());
         if (ok) { Session.setCurrentUser(u); showInfo("Başarılı", "Profil güncellendi."); }
         return ok;

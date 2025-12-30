@@ -66,5 +66,18 @@
     "medicine_type": "Soğuk Algınlığı",
     "additional_side_effects": ["Sinirlilik hali"],
     "dosage": "Günde 3 defa, bol su ile tok karnına"
+  },
+  {
+      "medicine_name": "Minoset Plus",
+      "medicine_type": "Ağrı Kesici",
+      "additional_side_effects": ["Deri döküntüsü", "Uykusuzluk"],
+      "dosage": "Günde en fazla 3 defa, 6-8 saat arayla, tok karnına"
+  },
+  {
+      "medicine_name": "Zinnat",
+      "medicine_type": "Antibiyotik",
+      "additional_side_effects": ["Baş dönmesi", "Mide rahatsızlığı"],
+      "dosage": "Günde 2 defa, tok karnına"
   }
+
 ]

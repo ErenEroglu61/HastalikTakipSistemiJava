@@ -40,12 +40,10 @@ public interface Notification {
         });
     }
 
-    // JSON İşleme Motoru
     private void processFile(String tc, String path, boolean isDoctor, java.util.function.Consumer<Notification> action) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            // ÖNEMLİ: Burada 'Notification' tipinde bir liste gibi işlem yapıyoruz
-            // Çünkü hem Patient hem Doctor bu interface'i implement ediyor.
+
             Type type = isDoctor ? new TypeToken<List<Doctor>>(){}.getType() : new TypeToken<List<Patient>>(){}.getType();
 
             List<Notification> users;
@@ -55,8 +53,7 @@ public interface Notification {
 
             if (users != null) {
                 for (Notification n : users) {
-                    // Burada n.getTc() diyebilmek için User'dan geldiğini bilmeliyiz
-                    // n bir Notification'dır, ama aynı zamanda bir User'dır (Casting yapabiliriz)
+
                     User u = (User) n;
                     if (u.getTc().equals(tc)) {
                         action.accept(n);

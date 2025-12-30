@@ -24,14 +24,14 @@ public abstract class Medicine {
         this.dosage = dosage;
     }
 
-    // Ortak metot: Kategorik yan etkileri ve ek yan etkileri birleştirmek için
+    // Kategorik yan etkileri ve ek yan etkileri birleştirmek için
     public List<String> getAllSideEffects() {
         List<String> allSideEffects = new ArrayList<>(getCategorySideEffects());
         allSideEffects.addAll(additionalSideEffects);
         return allSideEffects;
     }
 
-    // Soyut metot: Her kategori kendi temel etkilerini dönecek
+    // Her kategori kendi temel etkilerini yazacak
     protected abstract List<String> getCategorySideEffects();
 
     // Doktorun yeni yan etki eklemesi için metot

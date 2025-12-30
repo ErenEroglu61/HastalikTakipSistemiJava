@@ -29,7 +29,6 @@ public class UserService {
         return currentUser;
     }
 
-    //  DTO Sınıfı
     public static class HospitalRecord {
         public String name;
         public String surname;
@@ -40,7 +39,6 @@ public class UserService {
         }
     }
 
-    // Otomatik Doldurma için kullanılan metot
     public static HospitalRecord getHospitalRecord(String tc) {
         try {
             if (!Files.exists(HOSPITAL_RECORDS)) return null;
@@ -60,14 +58,13 @@ public class UserService {
         } catch (Exception e) {
             System.err.println("Arşiv okuma hatası: " + e.getMessage());
         }
-        return null; // Kayıt bulunamazsa null döner
+        return null;
     }
 
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.trim().isEmpty();
     }
 
-    // Hata veren repository yerine bu metodu kullanacağız
     private static boolean isDoctor(String tc) {
         try {
             if (!Files.exists(DOCTORS_FILE)) return false;
@@ -105,8 +102,6 @@ public class UserService {
         });
     }
 
-    // --- KAYIT VE GİRİŞ METOTLARI ---
-
     private static boolean isTcInHospitalRecords(String tc) {
         try {
             if (!Files.exists(HOSPITAL_RECORDS)) return false;
@@ -126,53 +121,45 @@ public class UserService {
                                                        String email, String password,
                                                        String branch, String medical_title) {
 
-        // Temel zorunluluklar: TC, e-posta ve şifre mutlaka olmalı.
         if (isNullOrEmpty(tc) || isNullOrEmpty(email) || isNullOrEmpty(password)) {
             showAlert("Eksik alan", "Lütfen TC, e-posta ve şifre alanlarını doldurun.");
             return false;
         }
 
-        // Yaş numeric kontrolü (boş bırakılabilir ama eğer doldurulmuşsa sadece rakamlardan oluşmalı)
         if (!isNullOrEmpty(age) && !age.matches("\\d+")) {
             showAlert("Hatalı yaş", "Yaş sadece rakamlardan oluşmalıdır.");
             return false;
         }
 
-        // E-posta doğrulama (basit ama güçlü bir regex)
         Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
         if (!emailPattern.matcher(email.trim()).matches()) {
             showAlert("Hatalı e-posta", "Lütfen geçerli bir e-posta adresi girin.");
             return false;
         }
 
-        // Telefon doğrulama:
         if (!isNullOrEmpty(phone)) {
-            String normalized = phone.replaceAll("\\s+", "");      // boşlukları kaldır
-            normalized = normalized.replaceAll("[^\\d]", "");     // rakam olmayanları temizle
+            String normalized = phone.replaceAll("\\s+", "");
+            normalized = normalized.replaceAll("[^\\d]", "");
             if (!normalized.matches("\\d{11}")) {
                 showAlert("Hatalı telefon", "Lütfen 11 haneli bir telefon numarası girin.");
                 return false;
             }
-            phone = normalized; // kaydederken 11 haneli rakam dizisi olarak sakla
+            phone = normalized;
         } else {
-            // Telefon alanı boşsa isteniyorsa izin ver, istenmiyorsa hata verilebilir.
-            // Şu an boş telefon kabul ediliyor; eğer zorunlu olacaksa aşağıdaki satırı kullan:
             showAlert("Eksik alan", "Lütfen telefon numarası girin.");
             return false;
         }
 
-        // Hastane kayıtlarında TC olmalı (otomatik doldurma için)
         if (!isTcInHospitalRecords(tc)) {
             showAlert("Erişim Engellendi", "Hastanede bu TC numarasına ait kayıt bulunamadı.");
             return false;
         }
 
-        // TC güvenlik / otomatik doldurma: name ve surname'i hastane kaydından alıp üzerine yazıyoruz.
         HospitalRecord hr = getHospitalRecord(tc);
         if (hr != null) {
             name = hr.name;
             surname = hr.surname;
-            // NOT: UI tarafında da bu alanları düzenlenemez yapmalısınız (setEditable(false) / setDisable(true))
+
         }
 
         try {
@@ -201,7 +188,7 @@ public class UserService {
     }
 
     public static boolean login_method(String email, String password) {
-        // Doğrudan JsonDb kullanarak kullanıcıyı ara
+
         com.follow_disease.User foundUser = com.follow_disease.service.JsonDb.findUserByEmail(email);
 
         if (foundUser != null && foundUser.getPassword().equals(password)) {
@@ -212,7 +199,6 @@ public class UserService {
         return false;
     }
 
-    // --- DTO VE NESNE YAPISI ---
 
     private static class RegisteredUser {
         private int id;
@@ -265,7 +251,6 @@ public class UserService {
         return path;
     }
 
-    // UserService.java içindeki readUsers metodunu şu şekilde değiştir:
     private static List<RegisteredUser> readUsers(Path dbFile) {
         try {
             if (!Files.exists(dbFile)) return new ArrayList<>();
@@ -278,10 +263,8 @@ public class UserService {
             for (JsonElement el : arr) {
                 JsonObject o = el.getAsJsonObject();
 
-                // ROLE KONTROLÜ: Eğer JSON'da role yoksa hata vermemesi için:
                 String role = o.has("role") ? o.get("role").getAsString() : "";
 
-                // Eğer rol yoksa TC'den doktor olup olmadığını kontrol et (JsonDb'deki mantık gibi)
                 String tc = o.get("tc").getAsString();
                 if (role.isEmpty()) {
                     role = isDoctor(tc) ? "doktor" : "hasta";
@@ -297,7 +280,7 @@ public class UserService {
                         o.has("phone") ? o.get("phone").getAsString() : "",
                         o.get("email").getAsString(),
                         o.get("password").getAsString(),
-                        role, // Belirlediğimiz rolü ekliyoruz
+                        role,
                         o.has("branch") ? o.get("branch").getAsString() : "",
                         o.has("medical_title") ? o.get("medical_title").getAsString() : ""
                 ));

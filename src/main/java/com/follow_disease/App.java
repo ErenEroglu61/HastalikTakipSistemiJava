@@ -14,14 +14,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Sadece login sayfasını yüklüyoruz
+
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/follow_disease/login.fxml")));
         stage.setTitle("Hastalık Takip Sistemi");
         stage.setScene(new Scene(root));
         stage.show();
     }
 
-    // GİRİŞ EKRANINI AÇAN METOT
     private void showLogin(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/com/follow_disease/login.fxml"));
         scene = new Scene(root, 800, 600);
@@ -30,7 +29,6 @@ public class App extends Application {
         stage.show();
     }
 
-    // HASTA PANELİNİ AÇAN METOT
     private void showPatientPage(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/com/follow_disease/patientPage.fxml"));
         scene = new Scene(root, 1000, 700); // Panel daha geniş olduğu için 1000x700
@@ -39,7 +37,6 @@ public class App extends Application {
         stage.show();
     }
 
-    // DOKTOR PANELİ
     private void showDoctorPage(Stage stage) throws IOException {
 
         Parent root = FXMLLoader.load(getClass().getResource("/com/follow_disease/doctorPage.fxml"));

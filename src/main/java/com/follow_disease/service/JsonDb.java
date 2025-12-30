@@ -34,7 +34,6 @@ public final class JsonDb {
                 JsonObject obj = element.getAsJsonObject();
                 String tc = obj.has("tc") ? obj.get("tc").getAsString() : null;
 
-                // Eğer bu TC doktorlar listesinde varsa Doctor olarak, yoksa Patient olarak canlandır
                 if (tc != null && isTcInDoctors(tc)) {
                     userList.add(GSON.fromJson(obj, Doctor.class));
                 } else {
@@ -92,7 +91,7 @@ public final class JsonDb {
                     obj.addProperty("age", age);
                     obj.addProperty("gender", gender);
                     obj.addProperty("phone", phone);
-                    obj.addProperty("email", email); // Email eklendi
+                    obj.addProperty("email", email);
                     if (password != null && !password.isEmpty()) {
                         obj.addProperty("password", password);
                     }

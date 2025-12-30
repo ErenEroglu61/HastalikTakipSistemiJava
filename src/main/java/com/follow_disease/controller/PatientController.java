@@ -37,27 +37,20 @@ public class PatientController implements Notification {
     @FXML private Label phoneLabel;
     @FXML private Label tcLabel;
     @FXML private Label passwordLabel;
-
     @FXML private VBox vboxActiveDiseases;
     @FXML private VBox vboxDiseasesHistory;
     @FXML private FlowPane vboxActiveMedicines;
     @FXML private FlowPane vboxPastMedicines;
-
-
     @FXML private Button updateButton;
-
     @FXML private MenuButton notificationMenuButton;
     @FXML private Circle notificationBadge;
 
     @FXML
     public void initialize() {
-
-        // Oturumdaki kullanıcı bilgisi alınır
         User user = Session.getCurrentUser();
 
         if (user != null) {
 
-            // Kullanıcı bilgileri label'lara atanır
             nameLabel.setText(safe(user.getName()) + " " + safe(user.getSurname()));
             emailLabel.setText(safe(user.getEmail()));
             ageLabel.setText(safe(user.getAge()));
@@ -66,28 +59,23 @@ public class PatientController implements Notification {
             tcLabel.setText(safe(user.getTc()));
             passwordLabel.setText(maskPassword(user.getPassword()));
 
-            // TC numarasına göre hasta kaydı bulunur
             Patient patient = findPatientByTc(user.getTc());
 
-            // Hasta bulunduysa hastalık ve ilaç bilgileri yüklenir
             if (patient != null) {
                 loadMedicalData(patient);
             }
         }
 
-        // Bildirim menüsü güncellenir
         updateNotificationUI();
     }
 
     @Override
     public List<String> getNotifications() {
 
-        // Oturumdaki kullanıcı alınır
         User user = Session.getCurrentUser();
 
         if (user != null) {
 
-            // Kullanıcıya ait hasta kaydı bulunur
             Patient patient = findPatientByTc(user.getTc());
 
             if (patient != null) {
@@ -99,33 +87,22 @@ public class PatientController implements Notification {
     }
 
     @Override
-    public void setNotifications(List<String> notifications) {
-        // Bu metot şu an aktif kullanılmıyor
-    }
-
+    public void setNotifications(List<String> notifications) {}
     @Override
     public void updateNotificationUI() {
 
-        // Bildirim menüsü temizlenir
         notificationMenuButton.getItems().clear();
-
-        // Bildirim listesi alınır
         List<String> notifications = getNotifications();
 
         if (notifications != null && !notifications.isEmpty()) {
 
-            // Bildirim varsa kırmızı gösterge aktif edilir
             notificationBadge.setVisible(true);
-
-            // Bildirimler menüye eklenir
             for (String msg : notifications) {
                 CustomMenuItem item = new CustomMenuItem(new Label(msg));
                 notificationMenuButton.getItems().add(item);
             }
 
         } else {
-
-            // Bildirim yoksa gösterge gizlenir
             notificationBadge.setVisible(false);
             notificationMenuButton.getItems().add(new MenuItem("Bildirim yok"));
         }
@@ -133,10 +110,7 @@ public class PatientController implements Notification {
 
     @FXML
     public void handleNotificationShowing() {
-
-        // Kullanıcı bildirim menüsünü açtığında bildirimler temizlenir
         User user = Session.getCurrentUser();
-
         if (user != null) {
             clearNotifications(user.getTc(), false);
             notificationBadge.setVisible(false);
@@ -145,17 +119,13 @@ public class PatientController implements Notification {
 
     @FXML
     public void handleUpdateAction(ActionEvent event) {
-
-        // Oturumdaki kullanıcı alınır
         User user = Session.getCurrentUser();
         if (user == null) return;
 
-        // Profil güncelleme dialog'u oluşturulur
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Profil Güncelle");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Güncellenecek alanlar doldurulur
         TextField ageField = new TextField(safe(user.getAge()));
         TextField genderField = new TextField(safe(user.getGender()));
         TextField phoneField = new TextField(safe(user.getPhone()));
@@ -175,10 +145,8 @@ public class PatientController implements Notification {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Kullanıcı iptal ederse işlem yapılmaz
         if (dialog.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
 
-        // Bilgiler servis üzerinden güncellenir
         boolean success = ProfileService.updatePatient(
             user,
             ageField.getText(),
@@ -188,7 +156,6 @@ public class PatientController implements Notification {
             passwordField.getText()
         );
 
-        // Güncelleme başarılıysa arayüz yenilenir
         if (success) {
             User updated = Session.getCurrentUser();
             ageLabel.setText(safe(updated.getAge()));
@@ -202,7 +169,6 @@ public class PatientController implements Notification {
     @FXML
     public void handleLogout(ActionEvent event) {
 
-        // Oturum temizlenir
         Session.clear();
 
         try {
@@ -210,7 +176,6 @@ public class PatientController implements Notification {
                 getClass().getResource("/com/follow_disease/login.fxml")
             );
 
-            // Mevcut sahne login ekranı ile değiştirilir
             Stage stage = (Stage) ((Node) event.getSource())
                 .getScene().getWindow();
 
@@ -228,7 +193,6 @@ public class PatientController implements Notification {
         vboxActiveDiseases.setSpacing(10);
         vboxDiseasesHistory.setSpacing(10);
 
-        // Önce eski veriler temizlenir
         vboxActiveDiseases.getChildren().clear();
         vboxDiseasesHistory.getChildren().clear();
         vboxActiveMedicines.getChildren().clear();
@@ -249,7 +213,6 @@ public class PatientController implements Notification {
             vboxActiveDiseases.getChildren().add(congratsLabel);
         }
 
-        // Hastalık geçmişi eklenir
         if (patient.getDisease_history() != null) {
             for (String disease : patient.getDisease_history()) {
                 vboxDiseasesHistory.getChildren().add(
@@ -258,27 +221,20 @@ public class PatientController implements Notification {
             }
         }
 
-        // Aktif ilaçlar eklenir
         if (patient.getCurrent_medicine() != null) {
-            System.out.println("Hasta İlaç Sayısı: " + patient.getCurrent_medicine().size());
             for (String medName : patient.getCurrent_medicine()) {
-                System.out.println("Aranan İlaç: " + medName);
                 VBox card = createDetailedMedicineCard(medName);
                 if (card != null) {
-                    System.out.println(medName + " kartı başarıyla eklendi.");
                     vboxActiveMedicines.getChildren().add(card);
-                }else {
-                    System.out.println(medName + " için MedicineProvider null döndü!"); // DEBUG
                 }
+
             }
-        }else {
-            System.out.println("Hastanın aktif ilacı bulunamadı."); // DEBUG
         }
-        if (patient.getMedicines() != null) { // 'medicines' geçmiş ilaçları tutan listeniz
+        if (patient.getMedicines() != null) {
             for (String medName : patient.getMedicines()) {
                 VBox card = createDetailedMedicineCard(medName);
                 if (card != null) {
-                    // Geçmiş ilaç kartlarını biraz daha soluk (opsiyonel) yaparak fark yaratabiliriz
+
                     card.setOpacity(0.85);
                     vboxPastMedicines.getChildren().add(card);
                 }
@@ -329,25 +285,22 @@ public class PatientController implements Notification {
         return card;
     }
     private String safe(String value) {
-        // Null değerlerin önüne geçer
+
         return value == null ? "" : value.trim();
     }
 
     private String maskPassword(String password) {
-        // Şifreyi yıldızlı gösterir
+
         if (password == null || password.isEmpty()) return "";
         return "*".repeat(password.length());
     }
 
     private Patient findPatientByTc(String tc) {
 
-        // JSON dosyasından hasta listesi okunur
         try (FileReader reader = new FileReader("database/patients.json")) {
 
             Type type = new TypeToken<List<Patient>>(){}.getType();
             List<Patient> patients = new Gson().fromJson(reader, type);
-
-            // TC eşleşmesi aranır
             for (Patient p : patients) {
                 if (tc.equals(p.getTc())) return p;
             }
@@ -359,7 +312,7 @@ public class PatientController implements Notification {
     }
 
     private VBox createSimpleCard(String text, String color) {
-        // Kartın ana yapısı
+
         VBox card = new VBox();
 
         card.setStyle(
@@ -385,11 +338,9 @@ public class PatientController implements Notification {
     @FXML
     public void handleContactDoctor(ActionEvent event) {
 
-        // Doktorla iletişim penceresi açılır
         try {
             Parent root = FXMLLoader.load(
-                getClass().getResource(
-                    "/com/follow_disease/PatientContactDoctor.fxml")
+                getClass().getResource("/com/follow_disease/PatientContactDoctor.fxml")
             );
 
             Stage stage = new Stage();

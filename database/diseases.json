@@ -8,5 +8,41 @@
     "disease_name": "Migren",
     "disease_symptoms": ["Baş Ağrısı", "Işık Hassasiyeti", "Mide Bulantısı"],
     "disease_course": ["Atak dönemi", "Stabil", "Kronikleşme eğilimi","Tedaviyi bitir"]
-  }
+  },
+  [
+    {
+      "disease_name": "Yüksek Tansiyon (Hipertansiyon)",
+      "disease_symptoms": ["Baş Ağrısı", "Baş Dönmesi", "Burun Kanaması", "Çarpıntı", "Kulak Çınlaması"],
+      "disease_course": [
+        "Düzenli tansiyon takibi başladı",
+        "Yaşam tarzı ve diyet değişikliği önerildi",
+        "İlaç tedavisine başlandı",
+        "Tansiyon değerleri stabilize edildi",
+        "Kronik takip sürecine geçildi",
+        "Tedaviyi bitir"
+      ]
+    },
+    {
+      "disease_name": "Zatürre",
+      "disease_symptoms": ["Yüksek Ateş", "Balgamlı Öksürük", "Göğüs Ağrısı", "Nefes Darlığı", "Halsizlik"],
+      "disease_course": [
+        "Tanı konuldu ",
+        "Antibiyotik ve ilaç tedavisi başlandı",
+        "Ateş ve öksürük şiddeti azaldı",
+        "Tedaviyi bitir"
+      ]
+    },
+    {
+      "disease_name": "Enfeksiyon",
+      "disease_symptoms": ["Ateş ve Titreme", "Eklem Ağrıları", "İştahsızlık", "Terleme"],
+      "disease_course": [
+        "Enfeksiyon odağı tespit edildi",
+        "Kültür testi sonuçları beklendi",
+        "Hedefe yönelik antibiyotik tedavisi başlandı",
+        "Enfeksiyon markerları düşüşe geçti",
+        "Klinik iyileşme gözlendi",
+        "Tedaviyi bitir"
+      ]
+    }
+  ]
 ]

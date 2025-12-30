@@ -25,9 +25,8 @@ public class MedicineProvider {
                     String type = (String) data.get("medicine_type");
                     String dosage = (String) data.get("dosage");
                     List<String> extraEffects = (List<String>) data.get("additional_side_effects");
-
-                    // Tipe göre doğru nesneyi oluşturuyoruz (Polymorphism)
                     Medicine medicine;
+
                     switch (type.toLowerCase()) {
                         case "antibiyotik":
                             medicine = new Antibiotic(type, dosage, name);
@@ -42,10 +41,9 @@ public class MedicineProvider {
                             medicine = new ColdMedicine(type, dosage, name);
                             break;
                         default:
-                            return null; // Tanımlı olmayan bir tip ise
+                            return null;
                     }
 
-                    // JSON'dan gelen ek yan etkileri nesneye ekliyoruz
                     if (extraEffects != null) {
                         for (String effect : extraEffects) {
                             medicine.addSideEffect(effect);

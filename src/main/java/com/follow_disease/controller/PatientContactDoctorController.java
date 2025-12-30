@@ -99,47 +99,41 @@ public class PatientContactDoctorController implements Feedback,Notification {
     private void setupVitalSignsTable() {
         tblVitalSigns.setEditable(true);
 
-        // Kolon eşleştirmeleri
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colSugar.setCellValueFactory(new PropertyValueFactory<>("sugar"));
         colBloodPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
         colPulse.setCellValueFactory(new PropertyValueFactory<>("pulse"));
         colFever.setCellValueFactory(new PropertyValueFactory<>("fever"));
 
-        // Hücre fabrikaları (Odak kaybında ve Enter'da otomatik commit eder)
+
         colDate.setCellFactory(tc -> createAutoCommitCell(new DefaultStringConverter()));
         colSugar.setCellFactory(tc -> createAutoCommitCell(new DoubleStringConverter()));
         colBloodPressure.setCellFactory(tc -> createAutoCommitCell(new DefaultStringConverter()));
         colPulse.setCellFactory(tc -> createAutoCommitCell(new IntegerStringConverter()));
         colFever.setCellFactory(tc -> createAutoCommitCell(new DoubleStringConverter()));
 
-        // OnEditCommit olayları (Modeli günceller)
         colDate.setOnEditCommit(e -> e.getRowValue().setDate(e.getNewValue()));
         colSugar.setOnEditCommit(e -> e.getRowValue().setSugar(e.getNewValue()));
         colBloodPressure.setOnEditCommit(e -> e.getRowValue().setBloodPressure(e.getNewValue()));
         colPulse.setOnEditCommit(e -> e.getRowValue().setPulse(e.getNewValue()));
         colFever.setOnEditCommit(e -> e.getRowValue().setFever(e.getNewValue()));
 
-        // Tabloyu verilerle doldur
         vitalSignsData.clear();
-        // Varsa eski verileri ekle (Persistence)
+
         if (currentPatient.getVitalSignsHistory() != null) {
             vitalSignsData.addAll(currentPatient.getVitalSignsHistory());
         }
 
-        // Tablonun boş kalmaması için 10 satıra tamamla
         while (vitalSignsData.size() < 10) {
             vitalSignsData.add(new VitalSign(null, null, null, null, null));
         }
         tblVitalSigns.setItems(vitalSignsData);
     }
 
-    // Odak kaybında (Focus Lost) otomatik olarak commit eden genel hücre yapısı
     private <T> TableCell<VitalSign, T> createAutoCommitCell(StringConverter<T> converter) {
         return new TableCell<>() {
             private final TextField textField = new TextField();
             {
-                // Odak kaybolduğunda yazılanı onayla
                 textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused && isEditing()) {
                         try {
@@ -149,7 +143,6 @@ public class PatientContactDoctorController implements Feedback,Notification {
                         }
                     }
                 });
-                // Enter'a basıldığında onayla
                 textField.setOnAction(e -> commitEdit(converter.fromString(textField.getText())));
             }
 
@@ -289,7 +282,7 @@ public class PatientContactDoctorController implements Feedback,Notification {
             new Alert(Alert.AlertType.ERROR, "Hata oluştu: " + e.getMessage()).show();
         }
     }
-
+    //İptal et butonu
     @FXML
     private void handleClose(ActionEvent event) {
         ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();

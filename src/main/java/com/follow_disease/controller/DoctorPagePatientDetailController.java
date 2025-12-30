@@ -14,7 +14,6 @@ import java.util.List;
 
 public class DoctorPagePatientDetailController implements Feedback,Notification {
 
-    // FXML Bağlantıları
     @FXML private Label lblFullName, lblBloodType, lblActiveDisease, lblAppointmentDate, lblCurrentMedicine, lblOtherMedicines;
     @FXML private TableView<VitalSign> tblVitalSigns;
     @FXML private TableColumn<VitalSign, String> colDate, colBloodPressure;
@@ -31,7 +30,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
 
     @FXML
     public void initialize() {
-        // Tablo Sütunlarını VitalSign sınıfındaki değişkenlerle bağlıyoruz
+
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colSugar.setCellValueFactory(new PropertyValueFactory<>("sugar"));
         colBloodPressure.setCellValueFactory(new PropertyValueFactory<>("bloodPressure"));
@@ -101,16 +100,14 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
             txtPrescriptionCode.setText(sonRecete);
         }
 
-        // Dinamik ComboBox Yükleme
         loadCourseOptions(patient.getCurrent_disease());
 
-        // Eğer daha önce bir gidişat kaydedilmişse onu ComboBox'ta göster
         if (patient.getAdditional_disease_course() != null && !patient.getAdditional_disease_course().isEmpty()) {
             cbDiseaseCourse.setValue(patient.getAdditional_disease_course());
         }
         txtSideEffect.setText(patient.getAdditionalDoctorNote());
     }
-
+    //Doktorun hastalığın seyrine ait seçeneklerden birini seçmesini sağlar
     private void loadCourseOptions(String diseaseName) {
         cbDiseaseCourse.getItems().clear();
 
@@ -135,7 +132,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
             cbDiseaseCourse.setPromptText("Seçenekler yüklenemedi");
         }
     }
-
+   //Hastanın seçtiği semptomların ekranda gözükmesini sağlar
     private void displaySelectedSymptoms(List<String> selectedSymptoms) {
         flowSymptoms.getChildren().clear();
 
@@ -155,7 +152,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
             flowSymptoms.getChildren().add(item);
         }
     }
-
+    //Güncelle ve kaydet butonuna basınca çalışan metot
     @FXML
     private void handleSave() {
         String newMedicine = txtMedicineName.getText();
@@ -210,15 +207,14 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
         handleClose();
     }
 
+    // hastaya verilen ilaç ve reçete kodunu jsona yeni ilaç olarak kaydeden metod
     private void processMedicineAndPrescription(String med, String pres) {
         if (med != null && !med.isEmpty()) {
-            // additional_medicines listesine ekle
+
             List<String> meds = currentPatient.getAdditional_medicines();
             if (meds.isEmpty() || !meds.get(meds.size() - 1).equalsIgnoreCase(med.trim())) {
                 meds.add(med.trim());
             }
-
-            // ✅ YENİ: current_medicine listesine de ekle (Aktif İlaç olarak)
             List<String> currentMeds = currentPatient.getCurrent_medicine();
             if (!currentMeds.contains(med.trim())) {
                 currentMeds.add(med.trim());
@@ -233,6 +229,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
         }
     }
 
+    //Hastaya ait bilgileri jsona kaydeden metod
     private void savePatientDataToJson(Patient patient) {
         try {
             String pathString = "database/patients.json";
@@ -269,7 +266,7 @@ public class DoctorPagePatientDetailController implements Feedback,Notification 
             e.printStackTrace();
         }
     }
-
+    //Çıkış yap butonu
     @FXML
     private void handleClose() {
         Stage stage = (Stage) lblFullName.getScene().getWindow();

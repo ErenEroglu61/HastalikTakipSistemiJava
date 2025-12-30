@@ -24,9 +24,9 @@ public class RegisterController {
 
     @FXML
     public void initialize() {
-        // TC No alanından odak çıktığında (Focus Lost) kontrol tetiklenir
+
         tcField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // Odak kaybolduğunda
+            if (!newValue) {
                 handleAutoFill();
             }
         });

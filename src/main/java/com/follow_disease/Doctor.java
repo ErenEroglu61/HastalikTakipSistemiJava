@@ -35,8 +35,7 @@ public class Doctor extends User implements Notification{
     public void updateNotificationUI(){}
 
     @Override
-    public String getWelcomeMessage() { // giriş ekranı açıldığında bu mesajı kullanabiliriz
-        // Örn: "Hoş geldiniz, Prof. Dr. Erdem Yılmaz (Dahiliye)"
+    public String getWelcomeMessage() {
         return "Hoş geldiniz, " + medical_title + " " +  getName() + " " + getSurname() + " (" + getBranch() + ")";
     }
 

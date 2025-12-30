@@ -19,7 +19,7 @@ public class Patient extends User implements Notification  {
     private String additionalDoctorNote;
     private List<String> selectedSymptoms;
     private List<VitalSign> vitalSignsHistory;
-   // private String prescriptionCode;
+    private String prescriptionCode;
     private List<String> notifications = new ArrayList<>();
 
     public Patient() {}
@@ -38,7 +38,7 @@ public class Patient extends User implements Notification  {
         this.bloodType = (bloodType == null) ? "" : bloodType;
         this.additional_disease_course = (additional_disease_course == null) ? "" : additional_disease_course;
         this.additionalDoctorNote = (additionalDoctorNote == null) ? "" : additionalDoctorNote;
-       // this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
+        this.prescriptionCode = (prescriptionCode == null) ? "" : prescriptionCode;
 
         this.current_medicine = (current_medicine == null) ? new ArrayList<>() : current_medicine;
         this.additional_medicines = (additional_medicines == null) ? new ArrayList<>() : additional_medicines;
@@ -94,8 +94,8 @@ public class Patient extends User implements Notification  {
     public List<VitalSign> getVitalSignsHistory() { return vitalSignsHistory; }
     public void setVitalSignsHistory(List<VitalSign> vitalSignsHistory) { this.vitalSignsHistory = vitalSignsHistory; }
 
-   // public String getPrescriptionCode() { return prescriptionCode; }
-   // public void setPrescriptionCode(String prescriptionCode) { this.prescriptionCode = prescriptionCode; }
+    public String getPrescriptionCode() { return prescriptionCode; }
+    public void setPrescriptionCode(String prescriptionCode) { this.prescriptionCode = prescriptionCode; }
 
     @Override
     public List<String> getNotifications() { return notifications;}
