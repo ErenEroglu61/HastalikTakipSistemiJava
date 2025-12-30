@@ -57,9 +57,7 @@
         "fever": 37.0
       }
     ],
-    "notifications": [
-      "Doktorunuzdan gelen bir güncellemeniz var."
-    ],
+    "notifications": [],
     "id": 1,
     "tc": "12345678901",
     "name": "Test",
