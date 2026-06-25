@@ -8,7 +8,7 @@
 
 Bu proje, doktorların hastalarını, hastaların ise kendi tedavi ve hastalık süreçlerini dijital bir ortamda güvenle takip edebilmeleri amacıyla geliştirilmiş kapsamlı bir otomasyon sistemidir. Temel hedef, Java programlama dili, Nesne Yönelimli Programlama (OOP) prensipleri ve JavaFX ile Grafiksel Kullanıcı Arayüzü (GUI) tasarım tekniklerini gerçek hayat senaryolarına uygun bir uygulamada birleştirmektir.
 
-## 🛠 Kullanılan Teknolojiler
+##  Kullanılan Teknolojiler
 
 * **Programlama Dili:** Java 21
 * **Kullanıcı Arayüzü (GUI):** JavaFX
@@ -36,7 +36,7 @@ Bu proje, doktorların hastalarını, hastaların ise kendi tedavi ve hastalık 
 * `Feedback` arayüzü sayesinde doktor ve hasta arasında kesintisiz bir bilgi alışverişi (geri bildirim, şikayet, yan etki notları) sağlanır.
 * `Notification` arayüzü sayesinde, bir taraf güncelleme yaptığında diğer tarafın hesabına anlık bildirim düşer (Örn: "Hastanızdan gelen güncellemeleriniz var") ve bu durum arayüzde bildirim ikonu (badge) ile görselleştirilir.
 
-## 🏗️ Yazılım Mimarisi ve OOP Prensipleri
+##  Yazılım Mimarisi ve OOP Prensipleri
 
 Proje, katmanlı bir yapıda (Database, Service, Controller, Model) tasarlanarak veri katmanı ile arayüz katmanının birbirinden ayrılması hedeflenmiştir:
 * **Kalıtım (Inheritance):** Sistemdeki tüm kullanıcılar ortak bir `User` soyut sınıfından, tüm ilaçlar ise `Medicine` soyut sınıfından türetilmiştir.
