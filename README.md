@@ -6,108 +6,40 @@
 - Fatma TANRIVERDİ — 170424023  
 - Engin ÇETİNTAŞ — 170422026  
 
-## Proje Özeti
-Bu proje, doktor ve hastaların hastalık seyirini takip edebildiği basit bir Java uygulamasıdır. Amaç; hasta tahlil verilerinin güvenli bir şekilde kaydedilmesi, doktorun bu verileri görmesi ve "Hastalarım" görünümünde hasta listesi veya form şeklinde gösterilebilmesidir. Veri kalıcı depolama olarak JSON dosyası kullanılır.
+Bu proje, doktorların hastalarını, hastaların ise kendi tedavi ve hastalık süreçlerini dijital bir ortamda güvenle takip edebilmeleri amacıyla geliştirilmiş kapsamlı bir otomasyon sistemidir. Temel hedef, Java programlama dili, Nesne Yönelimli Programlama (OOP) prensipleri ve JavaFX ile Grafiksel Kullanıcı Arayüzü (GUI) tasarım tekniklerini gerçek hayat senaryolarına uygun bir uygulamada birleştirmektir.
 
-## Temel Özellikler
-- Doctor ve Hasta için ayrı giriş ekranları (login).
-- Hasta hesabı üzerinden tahlil (laboratuvar) verilerinin girilmesi.
-- Girilen tahlillerin JSON formatında dosyaya kaydedilmesi.
-- Doktorun ilgili hastanın tahlillerini görüntüleyebilmesi.
-- "Hastalarım" bölümünde:
-  - Liste görünümü: Hastaların kısa bilgileri ve son tahlil özetleri.
-  - Form/genişletilmiş görünüm: Bir hastaya tıklandığında detaylı tahlil formu gösterilir.
-- Basit doğrulama ve hata yönetimi (ör. eksik alan, bozuk JSON).
+## 🛠 Kullanılan Teknolojiler
 
-## Örnek JSON Yapısı
-Aşağıdaki örnek, her hasta için saklanabilecek JSON formatını gösterir:
+* **Programlama Dili:** Java 21
+* **Kullanıcı Arayüzü (GUI):** JavaFX
+* **Veri Yönetimi:** Gson (Google) kütüphanesi ile hafif ve okunabilir JSON formatında veri saklama
+* **Proje Yönetimi:** Maven
 
-{
-  "patients": [
-    {
-      "id": "170424035",
-      "name": "Eren EROĞLU",
-      "birthDate": "1997-05-10",
-      "gender": "Erkek",
-      "tests": [
-        {
-          "date": "2025-12-01",
-          "type": "Kan Tahlili",
-          "results": {
-            "hemoglobin": 14.2,
-            "wbc": 6200
-          },
-          "notes": "Normal aralıkta"
-        }
-      ]
-    }
-  ],
-  "doctors": [
-    {
-      "id": "dr001",
-      "name": "Dr. Ahmet Örnek",
-      "specialty": "Genel"
-    }
-  ]
-}
+##  Temel Özellikler
 
-(Not: Gerçek dosyada geçerli JSON formatı için tek tırnak değil çift tırnak kullanılmalıdır.)
+###  Güvenli Kimlik Doğrulama ve Kayıt Sistemi
+* Sisteme kayıt olmak isteyen kullanıcıların TC kimlik numaraları, hastane arşivindeki (hospital_records.json) kayıtlarla çapraz kontrolden geçirilir.
+* TC numarası arşivde bulunmayan yetkisiz kişilerin sisteme kaydolması engellenir. 
+* E-posta, telefon ve yaş gibi bilgilerin format geçerlilikleri çok katmanlı bir şekilde doğrulanarak sisteme eklenir.
 
-## Kullanılan / Önerilen Java Özellikleri ve Nasıl Kullanılırlar
-Aşağıda projede kullanılması önerilen Java özellikleri ve rolleri bulunmaktadır:
+###  Doktor Paneli
+* Doktorlar, sadece kendilerine bağlı olan hastaların listesini dinamik bir şekilde görüntüleyebilir.
+* Seçilen hastanın güncel sağlık verileri, geçmişe dönük ateş, nabız, tansiyon ve şeker (vital bulgular) ölçümleri detaylı tablolar halinde incelenebilir.
+* Hastanın beyan ettiği semptomlar analiz edilip, hastalık seyrine göre reçete kodu, yeni ilaçlar ve tıbbi tavsiyeler sisteme girilebilir.
 
-- Nesne Yönelimli Programlama (OOP)
-  - Sınıflar: Patient, Doctor, TestRecord, TestResult, AuthService vb.
-  - Soyutlama ve encapsulation ile veri modellerinin yönetimi.
-- Koleksiyonlar (java.util)
-  - List, Map gibi yapıların hasta, doktor ve tahlil kayıtlarını tutmak için kullanımı.
-- JSON Okuma/Yazma
-  - Gson veya Jackson kütüphanesi ile nesne <-> JSON dönüşümleri.
-  - Örnek: Gson gson = new Gson(); gson.toJson(patientList); Files.write(...);
-- Dosya I/O (java.nio.file)
-  - JSON dosyasını okuma/yazma için Files.readString / Files.write.
-- Stream API ve Lambda (java.util.stream)
-  - Hasta filtreleme, sıralama, son tahlili alma gibi işlemler için.
-- Exception Handling
-  - Bozuk JSON, I/O hataları veya doğrulama hatalarını yakalamak için try-catch blokları.
-- Generics ve Optional
-  - Tip güvenliği ve null-safety için.
-- Basit Çok Katmanlı Mimari (Layered / MVC yaklaşımları)
-  - Model (veri sınıfları), Service (iş kuralları, I/O), UI (girişler / görüntüleme).
-- (Opsiyonel) Concurrency
-  - Aynı anda birden fazla yazma işlemi olursa senkronizasyon veya basit kilitleme stratejileri.
-- (UI için seçenekler)
-  - Masaüstü: JavaFX veya Swing — giriş formları ve "Hastalarım" arayüzü için.
-  - Web: Spring Boot + Thymeleaf veya REST + JS frontend — daha ölçeklenebilir bir yapı istenirse.
+###  Hasta Paneli
+* Hastalar giriş yaptıklarında; aktif hastalıklarını, geçmiş hastalıklarını, şu an kullandıkları ve geçmişte kullandıkları ilaçları dört bölmeli bir panel üzerinden takip edebilir.
+* Kullanılan ilaçlara dair kategori bazlı temel yan etkiler ve doktorun o ilaca özel eklediği yan etki uyarıları şeffaf bir şekilde görüntülenir.
+* Hastalar, anlık yaşamsal bulgularını (vital bulgular) girip sistemdeki semptomları seçerek tedavi süreçleri hakkında doktorlarına not bırakabilir.
 
-## Proje Yapısı (Öneri)
-- src/
-  - com.follow_disease.com.follow_disease.controller.model/ (Patient, Doctor, TestRecord)
-  - service/ (AuthService, PatientService, JsonStorageService)
-  - ui/ (Swing/JavaFX veya web com.follow_disease.com.follow_disease.controller)
-  - util/ (JsonUtils, ValidationUtils)
-- data/
-  - patients.json (uygulama çalışırken okunur/yazılır)
+###  Çift Yönlü İletişim ve Bildirimler
+* `Feedback` arayüzü sayesinde doktor ve hasta arasında kesintisiz bir bilgi alışverişi (geri bildirim, şikayet, yan etki notları) sağlanır.
+* `Notification` arayüzü sayesinde, bir taraf güncelleme yaptığında diğer tarafın hesabına anlık bildirim düşer (Örn: "Hastanızdan gelen güncellemeleriniz var") ve bu durum arayüzde bildirim ikonu (badge) ile görselleştirilir.
 
-## Çalıştırma (özet)
-1. Maven/Gradle ile bağımlılıkları ekleyin (ör. Gson veya Jackson).
-2. data/patients.json dosyasını oluşturun (başlangıç için boş bir şablon).
-3. Uygulamayı IDE üzerinden veya `mvn package` ardından `java -jar` ile çalıştırın.
-4. Doctor veya hasta kullanıcı adı/şifre ile giriş yaparak özellikleri deneyin.
+## 🏗️ Yazılım Mimarisi ve OOP Prensipleri
 
-## Geliştirme & Katkı
-- Yeni özellik eklemek için:
-  - Yeni com.follow_disease.com.follow_disease.controller.model sınıfları ekleyin, JSON serileştirme kurallarını güncelleyin.
-  - Service katmanında veri okuma/yazma tutarlılığını sağlayın.
-  - UI tarafında "Hastalarım" listesi ve detay formu ekleyin.
-- Kodlama standardı: Anlaşılır isimlendirme, null kontrolleri, exception handling.
-- İstekler (issues) ve PR'lar açarak katkıda bulunabilirsiniz.
+Proje, katmanlı bir yapıda (Database, Service, Controller, Model) tasarlanarak veri katmanı ile arayüz katmanının birbirinden ayrılması hedeflenmiştir:
+* **Kalıtım (Inheritance):** Sistemdeki tüm kullanıcılar ortak bir `User` soyut sınıfından, tüm ilaçlar ise `Medicine` soyut sınıfından türetilmiştir.
+* **Çok Biçimlilik (Polymorphism):** İlaçlar kendi türlerine (Örn: Antibiyotik, Ağrı Kesici) göre alt sınıflara ayrılarak, ilaca özgü yan etkilerin gösteriminde çok biçimlilik kullanılmıştır.
+* **Arayüz (Interface) Kullanımı:** Ortak davranış gerektiren bildirim gönderme (`Notification`) ve geri bildirim (`Feedback`) mekanizmaları sistem genelinde uygulanmıştır.
 
-## Gelecek İyileştirmeler (fikirler)
-- Kullanıcı yetkilendirme (rol tabanlı erişim).
-- JSON yerine veritabanına (SQLite / PostgreSQL) geçiş.
-- API sunucu (REST) yapısı ile frontend ayrımı.
-- Test otomasyonu (JUnit) ve sürekli entegrasyon.
-
-## Lisans
-Proje lisansı eklenmemiştir — uygun bir açık kaynak lisansı (MIT, Apache-2.0 vb.) eklenmesi önerilir.
